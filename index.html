@@ -151,10 +151,7 @@
                     🏆
                 </div>
                     <div class="stat-label">Текущий уровень</div>
-                    <div class="stat-value" id="currentLevel">15</div>
-                    <div style="font-size: 0.875rem; color: #64748b">
-                        Продвинутый
-                    </div>
+                    <div class="stat-value" id="currentLevel">1</div>
                 </div>
 
                 <div class="card stat-card">
@@ -326,30 +323,55 @@
                         </h2>
                     </div>
 
-                    <div>
-                        <h3
-                            style="
-                                font-size: 0.875rem;
-                                font-weight: 600;
-                                color: #64748b;
-                                text-transform: uppercase;
-                                letter-spacing: 0.05em;
-                                margin-bottom: 12px;
-                            "
-                        >
-                            Полученные достижения
-                        </h3>
-                        <div class="achievements">
-                            <div class="achievement-badge">
-                                🔥
-                                Огненная серия
+                    <!-- Achievements Bank Panel -->
+                    <div class="achievements-bank-panel" id="achievementsBankPanel">
+                        <div class="bank-panel-header" onclick="toggleAchievementsBank()">
+                            <div class="bank-panel-title">
+                                <span class="bank-panel-icon">🏆</span>
+                                <span class="bank-panel-text">Банк достижений</span>
                             </div>
-                            <div class="achievement-badge">
-                                ⭐
-                                Первые шаги
+                            <div class="bank-panel-toggle" id="achievementsBankToggle">
+                                ▼
+                            </div>
+                        </div>
+                        <div class="bank-panel-content" id="achievementsBankPanelContent" style="display: none;">
+
+                            
+                            <!-- Achievements Summary -->
+                            <div class="achievements-summary">
+                                <div class="achievements-summary-item">
+                                    <div class="achievements-summary-icon">🎯</div>
+                                    <div class="achievements-summary-content">
+                                        <div class="achievements-summary-value" id="achievementsUnlocked">0</div>
+                                        <div class="achievements-summary-label">Достижений получено</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="achievements-summary-item">
+                                    <div class="achievements-summary-icon">📈</div>
+                                    <div class="achievements-summary-content">
+                                        <div class="achievements-summary-value" id="achievementsProgress">0%</div>
+                                        <div class="achievements-summary-label">Прогресс до 100 уровня</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="achievements-summary-item">
+                                    <div class="achievements-summary-icon">⭐</div>
+                                    <div class="achievements-summary-content">
+                                        <div class="achievements-summary-value" id="currentAchievementLevel">Новичок</div>
+                                        <div class="achievements-summary-label">Текущий статус</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Achievements List -->
+                            <div class="achievements-bank-content" id="achievementsBankContent">
+                                <!-- Достижения будут загружены динамически -->
                             </div>
                         </div>
                     </div>
+
+
 
                     <div style="margin-top: 32px">
                         <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
@@ -370,6 +392,10 @@
                                 <button class="btn btn-primary" onclick="showRewardModal()" id="redeemBtn">
                                     🎁
                                     Получить
+                                </button>
+                                <button class="btn btn-rewards" onclick="showRewardsBank()" title="Просмотреть все полученные награды">
+                                    🎁
+                                    Банк наград
                                 </button>
                             </div>
                         </div>
@@ -1223,6 +1249,30 @@
             }
         </script>
         
+        <!-- Rewards Bank Modal -->
+        <div class="modal" id="rewardsBankModal">
+            <div class="modal-content rewards-bank-modal" role="dialog" aria-modal="true" aria-labelledby="rewardsBankModalTitle">
+                <button class="close-btn" onclick="hideRewardsBank()">
+                    &times;
+                </button>
+                <div class="modal-header">
+                    <h3 class="modal-title" id="rewardsBankModalTitle">🎁 Банк наград</h3>
+                </div>
+                
+                <div class="rewards-bank-modal-body">
+                    <div class="rewards-bank-content" id="rewardsBankContent">
+                        <!-- Rewards will be loaded here -->
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="hideRewardsBank()">
+                        Закрыть
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- App Script -->
         <script src="app.js"></script>
     </body>

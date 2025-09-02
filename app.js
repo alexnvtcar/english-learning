@@ -33,11 +33,11 @@
                 pinCodes: {}, // PIN-коды загружаются только из Firebase
                 isVerified: false,
                 progress: {
-                    level: 15,
-                    totalXP: 4250,
+                    level: 1,
+                    totalXP: 0,
                     currentLevelXP: 0,
                     bestWeekXP: 0,
-                    weeklyXP: 340,
+                    weeklyXP: 0,
                     weeklyStars: 0,
                     starBank: 0,
                     weekStartKey: null,
@@ -1472,8 +1472,10 @@
                         Пока нет полученных наград
                     </div>
                 `;
-                    return;
                 }
+                
+                // Update achievements bank
+                updateAchievementsBank();
 
                 const cards = appState.rewards.slice(-9).reverse().map(reward => `
                     <div class="reward-card" title="${new Date(reward.redeemedAt).toLocaleDateString('ru-RU')}">
@@ -1933,6 +1935,12 @@
                     updateMonthlyProgressSection();
                     updateWeeklyStars();
                     
+                    // Check for new achievements
+                    checkForNewAchievements();
+                    
+                    // Update achievements bank
+                    updateAchievementsBank();
+                    
                     // 3. Проверяем, что все показатели обновлены
                     console.log('✅ Задание выполнено, показатели обновлены');
                     console.log('   - Получено XP:', customXP);
@@ -1995,6 +2003,7 @@
                         updateProgressWeekSection();
                         updateMonthlyProgressSection();
                         updateWeeklyStars();
+                        updateAchievementsBank();
                         
                         // 3. Проверяем, что все показатели обновлены
                         console.log('✅ Задания очищены через команду, показатели обновлены');
@@ -2042,6 +2051,7 @@
                 updateProgressWeekSection();
                 updateMonthlyProgressSection();
                 updateWeeklyStars();
+                updateAchievementsBank();
                 
                                     // 3. Проверяем, что все показатели обновлены
                     console.log('✅ Новое задание добавлено, показатели обновлены');
@@ -2099,6 +2109,7 @@
                 updateRedeemControls();
                 updateProgressWeekSection();
                 updateMonthlyProgressSection();
+                updateAchievementsBank();
                 
                                     // 3. Проверяем, что все показатели обновлены
                     console.log('✅ Награда получена, показатели обновлены');
@@ -2330,6 +2341,7 @@
                 updateMonthlyProgressSection();
                 updateWeeklyStars();
                 updateLearningTimeDisplay();
+                updateAchievementsBank();
                 
                 // 3. Проверяем, что все показатели обновлены
                 console.log('✅ Задание обновлено, показатели пересчитаны');
@@ -2613,6 +2625,9 @@
                 // Обновляем отображение времени обучения
                 updateLearningTimeDisplay();
                 
+                // Обновляем банк достижений
+                updateAchievementsBank();
+                
                 // Автоматическое сохранение отключено при инициализации
                 // saveDataToFirebase();
 
@@ -2835,6 +2850,7 @@
                     updateProgressWeekSection();
                     updateMonthlyProgressSection();
                     updateWeeklyStars();
+                    updateAchievementsBank();
                     
                     // 3. Проверяем, что все показатели обновлены
                     console.log('✅ Задание удалено, показатели обновлены');
@@ -2899,7 +2915,10 @@
                 // 6. Обновляем звезды
                 updateWeeklyStars();
                 
-                // 7. Проверяем, что все показатели обновлены
+                // 7. Обновляем банк достижений
+                updateAchievementsBank();
+                
+                // 8. Проверяем, что все показатели обновлены
                 console.log('✅ Активность удалена, все показатели пересчитаны');
                 console.log('   - Удалено XP:', deletedXP);
                 console.log('   - Новый общий XP:', appState.progress.totalXP);
@@ -2980,6 +2999,9 @@
                 // Сохраняем недельные данные для пересчета лучшей недели
                 appState.weeklyData = weeklyData;
                 
+                // Обновляем lastCheckedLevel для корректной работы системы достижений
+                appState.progress.lastCheckedLevel = appState.progress.level;
+                
                 console.log('🔄 Полный пересчет прогресса завершен, пересчитываем все показатели...');
                 
                 // ПОЛНЫЙ ПЕРЕСЧЕТ ВСЕХ ПОКАЗАТЕЛЕЙ ПОСЛЕ ПЕРЕСЧЕТА ПРОГРЕССА
@@ -2994,6 +3016,7 @@
                 updateProgressWeekSection();
                 updateMonthlyProgressSection();
                 updateWeeklyStars();
+                updateAchievementsBank();
                 
                                     // 3. Проверяем, что все показатели обновлены
                     console.log('✅ Полный пересчет прогресса завершен, все показатели пересчитаны');
@@ -3033,6 +3056,7 @@
                     updateProgressWeekSection();
                     updateMonthlyProgressSection();
                     updateWeeklyStars();
+                    updateAchievementsBank();
                     
                     // 3. Проверяем, что все показатели обновлены
                     console.log('✅ Задания очищены, показатели обновлены');
@@ -4112,23 +4136,428 @@
                 document.getElementById('monthlyGoal').textContent = `${monthlyProgress.toFixed(0)}%`;
             }
 
+            // Function to show achievement notification
+            function showAchievementNotification(achievement) {
+                const modalContent = `
+                    <div class="achievement-modal-overlay" id="achievementModal">
+                        <div class="achievement-modal-content">
+                            <div class="achievement-modal-header">
+                                <div class="achievement-modal-icon">🎉</div>
+                                <h2 class="achievement-modal-title">Поздравляем!</h2>
+                            </div>
+                            <div class="achievement-modal-body">
+                                <div class="achievement-modal-achievement">
+                                    <div class="achievement-modal-achievement-icon">${achievement.icon}</div>
+                                    <div class="achievement-modal-achievement-title">${achievement.title}</div>
+                                    <div class="achievement-modal-achievement-level">Уровень ${achievement.level} достигнут!</div>
+                                    <div class="achievement-modal-achievement-description">${achievement.description}</div>
+                                </div>
+                                <div class="achievement-modal-progress">
+                                    <div class="achievement-modal-progress-text">Ваш прогресс в изучении английского языка</div>
+                                    <div class="achievement-modal-progress-bar">
+                                        <div class="achievement-modal-progress-fill" style="width: ${achievement.level}%"></div>
+                                    </div>
+                                    <div class="achievement-modal-progress-level">Уровень ${achievement.level} из 100</div>
+                                </div>
+                            </div>
+                            <div class="achievement-modal-footer">
+                                <button class="btn btn-primary" onclick="hideAchievementModal()">
+                                    Продолжить обучение
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add modal to body
+                document.body.insertAdjacentHTML('beforeend', modalContent);
+                
+                // Add animation class after a small delay
+                setTimeout(() => {
+                    const modal = document.getElementById('achievementModal');
+                    if (modal) {
+                        modal.classList.add('show');
+                    }
+                }, 10);
+            }
+
+            // Function to hide achievement modal
+            function hideAchievementModal() {
+                const modal = document.getElementById('achievementModal');
+                if (modal) {
+                    modal.classList.remove('show');
+                    setTimeout(() => {
+                        modal.remove();
+                    }, 300);
+                }
+            }
+
+            // Function to check for new achievements
+            function checkForNewAchievements() {
+                const state = getEffectiveState();
+                const currentLevel = state.progress.level;
+                
+                // Get last checked level from state
+                const lastCheckedLevel = state.progress.lastCheckedLevel || 0;
+                
+                // Check if we have a new level
+                if (currentLevel > lastCheckedLevel) {
+                    // Find achievement for current level
+                    const achievement = getAchievementForLevel(currentLevel);
+                    if (achievement) {
+                        showAchievementNotification(achievement);
+                    }
+                    
+                    // Update last checked level
+                    state.progress.lastCheckedLevel = currentLevel;
+                }
+            }
+
+            // Function to get achievement for specific level
+            function getAchievementForLevel(level) {
+                const achievements = [
+                    // Уровни 1-5 (каждый уровень)
+                    { level: 1, title: '🌱 Первые шаги', description: 'Новичок в изучении английского языка. Начало увлекательного путешествия!', icon: '🌱' },
+                    { level: 2, title: '📚 Ученик', description: 'Осваиваете основы английского языка. Каждый день приносит новые знания!', icon: '📚' },
+                    { level: 3, title: '🎯 Целеустремленный', description: 'Показываете стабильный прогресс в изучении языка. Продолжайте в том же духе!', icon: '🎯' },
+                    { level: 4, title: '💪 Упорный', description: 'Демонстрируете настойчивость в изучении английского. Результат не заставит себя ждать!', icon: '💪' },
+                    { level: 5, title: '⭐ Уверенный новичок', description: 'Преодолели первые трудности! Теперь вы уверенно чувствуете себя в основах языка.', icon: '⭐' },
+                    
+                    // Уровни каждые 5 (10, 15, 20, 25...)
+                    { level: 10, title: '🚀 Активный изучающий', description: 'Достигли 10 уровня! Ваш английский становится все более уверенным.', icon: '🚀' },
+                    { level: 15, title: '🎓 Уверенный пользователь', description: '15 уровень покорен! Вы можете уверенно общаться на базовые темы.', icon: '🎓' },
+                    { level: 20, title: '🌟 Продвинутый ученик', description: '20 уровень! Ваши знания английского языка становятся глубокими и прочными.', icon: '🌟' },
+                    { level: 25, title: '💎 Опытный знаток', description: 'Четверть пути пройдена! Вы владеете английским на хорошем уровне.', icon: '💎' },
+                    { level: 30, title: '🏆 Мастер слова', description: '30 уровень! Ваш английский позволяет свободно выражать мысли.', icon: '🏆' },
+                    { level: 35, title: '🎭 Лингвистический артист', description: '35 уровень! Вы владеете языком с художественной точностью.', icon: '🎭' },
+                    { level: 40, title: '🧠 Языковой гений', description: '40 уровень! Ваше понимание английского языка поражает глубиной.', icon: '🧠' },
+                    { level: 45, title: '👑 Король английского', description: '45 уровень! Вы достигли высот в изучении языка.', icon: '👑' },
+                    { level: 50, title: '🎪 Половина пути к совершенству', description: '50 уровень! Половина пути пройдена. Вы на правильном пути к мастерству!', icon: '🎪' },
+                    { level: 55, title: '🌟 Звезда лингвистики', description: '55 уровень! Ваши знания английского сияют ярко.', icon: '🌟' },
+                    { level: 60, title: '🎯 Снайпер языка', description: '60 уровень! Вы попадаете в цель каждым словом.', icon: '🎯' },
+                    { level: 65, title: '⚡ Молния в изучении', description: '65 уровень! Ваш прогресс молниеносен и впечатляющ.', icon: '⚡' },
+                    { level: 70, title: '🔥 Огненный мастер', description: '70 уровень! Ваше владение языком пылает страстью и мастерством.', icon: '🔥' },
+                    { level: 75, title: '🎨 Художник слова', description: '75 уровень! Вы создаете шедевры из английских слов.', icon: '🎨' },
+                    { level: 80, title: '🏅 Чемпион английского', description: '80 уровень! Вы чемпион в изучении английского языка.', icon: '🏅' },
+                    { level: 85, title: '🎪 Виртуоз языка', description: '85 уровень! Ваше владение английским виртуозно.', icon: '🎪' },
+                    { level: 90, title: '👑 Император лингвистики', description: '90 уровень! Вы правите миром английского языка.', icon: '👑' },
+                    { level: 95, title: '🌟 Божественный оратор', description: '95 уровень! Ваша речь божественно красива и точна.', icon: '🌟' },
+                    { level: 100, title: '🏆 Богоподобный уровень', description: '100 уровень! Вы достигли богоподобного мастерства в английском языке!', icon: '🏆' }
+                ];
+                
+                return achievements.find(a => a.level === level);
+            }
+
+            // Function to update achievements bank
+            function updateAchievementsBank() {
+                console.log('🏆 updateAchievementsBank called');
+                const container = document.getElementById('achievementsBankContent');
+                const state = getEffectiveState();
+                const currentLevel = state.progress.level;
+                
+                console.log('Container element:', container);
+                console.log('Current level:', currentLevel);
+                
+                if (!container) {
+                    console.log('❌ Container not found!');
+                    return;
+                }
+                
+                // Get all achievements
+                const allAchievements = [
+                    // Уровни 1-5 (каждый уровень)
+                    { level: 1, title: '🌱 Первые шаги', description: 'Новичок в изучении английского языка. Начало увлекательного путешествия!', icon: '🌱' },
+                    { level: 2, title: '📚 Ученик', description: 'Осваиваете основы английского языка. Каждый день приносит новые знания!', icon: '📚' },
+                    { level: 3, title: '🎯 Целеустремленный', description: 'Показываете стабильный прогресс в изучении языка. Продолжайте в том же духе!', icon: '🎯' },
+                    { level: 4, title: '💪 Упорный', description: 'Демонстрируете настойчивость в изучении английского. Результат не заставит себя ждать!', icon: '💪' },
+                    { level: 5, title: '⭐ Уверенный новичок', description: 'Преодолели первые трудности! Теперь вы уверенно чувствуете себя в основах языка.', icon: '⭐' },
+                    
+                    // Уровни каждые 5 (10, 15, 20, 25...)
+                    { level: 10, title: '🚀 Активный изучающий', description: 'Достигли 10 уровня! Ваш английский становится все более уверенным.', icon: '🚀' },
+                    { level: 15, title: '🎓 Уверенный пользователь', description: '15 уровень покорен! Вы можете уверенно общаться на базовые темы.', icon: '🎓' },
+                    { level: 20, title: '🌟 Продвинутый ученик', description: '20 уровень! Ваши знания английского языка становятся глубокими и прочными.', icon: '🌟' },
+                    { level: 25, title: '💎 Опытный знаток', description: 'Четверть пути пройдена! Вы владеете английским на хорошем уровне.', icon: '💎' },
+                    { level: 30, title: '🏆 Мастер слова', description: '30 уровень! Ваш английский позволяет свободно выражать мысли.', icon: '🏆' },
+                    { level: 35, title: '🎭 Лингвистический артист', description: '35 уровень! Вы владеете языком с художественной точностью.', icon: '🎭' },
+                    { level: 40, title: '🧠 Языковой гений', description: '40 уровень! Ваше понимание английского языка поражает глубиной.', icon: '🧠' },
+                    { level: 45, title: '👑 Король английского', description: '45 уровень! Вы достигли высот в изучении языка.', icon: '👑' },
+                    { level: 50, title: '🎪 Половина пути к совершенству', description: '50 уровень! Половина пути пройдена. Вы на правильном пути к мастерству!', icon: '🎪' },
+                    { level: 55, title: '🌟 Звезда лингвистики', description: '55 уровень! Ваши знания английского сияют ярко.', icon: '🌟' },
+                    { level: 60, title: '🎯 Снайпер языка', description: '60 уровень! Вы попадаете в цель каждым словом.', icon: '🎯' },
+                    { level: 65, title: '⚡ Молния в изучении', description: '65 уровень! Ваш прогресс молниеносен и впечатляющ.', icon: '⚡' },
+                    { level: 70, title: '🔥 Огненный мастер', description: '70 уровень! Ваше владение языком пылает страстью и мастерством.', icon: '🔥' },
+                    { level: 75, title: '🎨 Художник слова', description: '75 уровень! Вы создаете шедевры из английских слов.', icon: '🎨' },
+                    { level: 80, title: '🏅 Чемпион английского', description: '80 уровень! Вы чемпион в изучении английского языка.', icon: '🏅' },
+                    { level: 85, title: '🎪 Виртуоз языка', description: '85 уровень! Ваше владение английским виртуозно.', icon: '🎪' },
+                    { level: 90, title: '👑 Император лингвистики', description: '90 уровень! Вы правите миром английского языка.', icon: '👑' },
+                    { level: 95, title: '🌟 Божественный оратор', description: '95 уровень! Ваша речь божественно красива и точна.', icon: '🌟' },
+                    { level: 100, title: '🏆 Богоподобный уровень', description: '100 уровень! Вы достигли богоподобного мастерства в английском языке!', icon: '🏆' }
+                ];
+                
+                // Calculate statistics
+                const achievedCount = allAchievements.filter(a => currentLevel >= a.level).length;
+                const progressPercent = Math.round((currentLevel / 100) * 100);
+                const currentStatus = getCurrentAchievementStatus(currentLevel);
+                
+                // Update summary
+                document.getElementById('achievementsUnlocked').textContent = achievedCount;
+                document.getElementById('achievementsProgress').textContent = `${progressPercent}%`;
+                document.getElementById('currentAchievementLevel').textContent = currentStatus;
+                
+                // Render all achievements
+                container.innerHTML = allAchievements.map(achievement => {
+                    const achieved = currentLevel >= achievement.level;
+                    return `
+                        <div class="achievement-bank-item ${achieved ? 'achieved' : 'locked'}">
+                            <div class="achievement-bank-icon">${achievement.icon}</div>
+                            <div class="achievement-bank-content">
+                                <div class="achievement-bank-title">${achievement.title}</div>
+                                <div class="achievement-bank-level">Уровень ${achievement.level}</div>
+                                <div class="achievement-bank-description">${achievement.description}</div>
+                            </div>
+                            <div class="achievement-bank-status">
+                                ${achieved ? 
+                                    '<span class="achievement-bank-status-achieved">✅ Получено</span>' : 
+                                    `<span class="achievement-bank-status-locked">🔒 ${currentLevel}/${achievement.level}</span>`
+                                }
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            // Function to get current achievement status
+            function getCurrentAchievementStatus(level) {
+                if (level >= 100) return 'Богоподобный';
+                if (level >= 90) return 'Император';
+                if (level >= 80) return 'Чемпион';
+                if (level >= 70) return 'Мастер';
+                if (level >= 60) return 'Эксперт';
+                if (level >= 50) return 'Продвинутый';
+                if (level >= 40) return 'Опытный';
+                if (level >= 30) return 'Уверенный';
+                if (level >= 20) return 'Развивающийся';
+                if (level >= 10) return 'Активный';
+                if (level >= 5) return 'Уверенный новичок';
+                if (level >= 1) return 'Новичок';
+                return 'Начинающий';
+            }
+
+            // Achievements Bank Panel Functions
+            let currentSelectedLevel = 1;
+            let achievementsBankExpanded = false;
+
+            function toggleAchievementsBank() {
+                console.log('🏆 toggleAchievementsBank called');
+                const content = document.getElementById('achievementsBankPanelContent');
+                const toggle = document.getElementById('achievementsBankToggle');
+                
+                console.log('Content element:', content);
+                console.log('Toggle element:', toggle);
+                console.log('Current expanded state:', achievementsBankExpanded);
+                
+                if (achievementsBankExpanded) {
+                    content.style.display = 'none';
+                    toggle.classList.remove('expanded');
+                    achievementsBankExpanded = false;
+                    console.log('🏆 Bank collapsed');
+                } else {
+                    // Update achievements bank content
+                    console.log('🏆 Updating achievements bank content...');
+                    updateAchievementsBank();
+                    
+                    content.style.display = 'block';
+                    toggle.classList.add('expanded');
+                    achievementsBankExpanded = true;
+                    console.log('🏆 Bank expanded');
+                }
+            }
+
+            // Rewards Bank Modal Functions
+            function showRewardsBank() {
+                const modal = document.getElementById('rewardsBankModal');
+                if (modal) {
+                    // Load rewards content
+                    loadRewardsBankContent();
+                    
+                    // Show modal
+                    modal.classList.add('show');
+                }
+            }
+
+            function hideRewardsBank() {
+                const modal = document.getElementById('rewardsBankModal');
+                if (modal) {
+                    modal.classList.remove('show');
+                }
+            }
+
+            function loadRewardsBankContent() {
+                const container = document.getElementById('rewardsBankContent');
+                const state = getEffectiveState();
+                const rewards = state.rewards || [];
+                
+                if (rewards.length === 0) {
+                    container.innerHTML = `
+                        <div class="rewards-bank-empty">
+                            <div class="rewards-bank-empty-icon">🎁</div>
+                            <div class="rewards-bank-empty-title">Пока нет полученных наград</div>
+                            <div class="rewards-bank-empty-description">
+                                Придумайте награду и получите её, накопив достаточно звёзд!
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Sort rewards by date (newest first)
+                const sortedRewards = rewards.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                container.innerHTML = sortedRewards.map(reward => {
+                    const date = new Date(reward.date);
+                    const formattedDate = date.toLocaleDateString('ru-RU', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+                    
+                    return `
+                        <div class="reward-bank-item">
+                            <div class="reward-bank-icon">${reward.icon || '🎁'}</div>
+                            <div class="reward-bank-content">
+                                <div class="reward-bank-title">${reward.name}</div>
+                                <div class="reward-bank-description">${reward.description || 'Описание не указано'}</div>
+                                <div class="reward-bank-meta">
+                                    <div class="reward-bank-date">${formattedDate}</div>
+                                    <div class="reward-bank-stars">${reward.stars} ⭐</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            function changeAchievementLevel(direction) {
+                const newLevel = currentSelectedLevel + direction;
+                if (newLevel >= 1 && newLevel <= 100) {
+                    updateAchievementLevel(newLevel);
+                }
+            }
+
+            function updateAchievementLevel(level) {
+                currentSelectedLevel = parseInt(level);
+                
+                // Update level display
+                document.getElementById('selectedLevelNumber').textContent = currentSelectedLevel;
+                document.getElementById('levelRangeSlider').value = currentSelectedLevel;
+                
+                // Update navigation buttons
+                document.getElementById('prevLevelBtn').disabled = currentSelectedLevel <= 1;
+                document.getElementById('nextLevelBtn').disabled = currentSelectedLevel >= 100;
+                
+                // Get achievement for this level
+                const achievement = getAchievementForLevel(currentSelectedLevel);
+                const state = getEffectiveState();
+                const currentLevel = state.progress.level;
+                
+                // Update achievement display
+                const displayContainer = document.getElementById('achievementDisplay');
+                const progressInfo = document.getElementById('achievementProgressInfo');
+                
+                if (achievement) {
+                    const isAchieved = currentLevel >= currentSelectedLevel;
+                    
+                    displayContainer.innerHTML = `
+                        <div class="achievement-display-icon">${achievement.icon}</div>
+                        <div class="achievement-display-title">${achievement.title}</div>
+                        <div class="achievement-display-description">${achievement.description}</div>
+                    `;
+                    
+                    // Update progress info
+                    if (isAchieved) {
+                        progressInfo.innerHTML = `
+                            <h5>✅ Достижение получено!</h5>
+                            <p>Вы достигли ${currentSelectedLevel} уровня и получили это достижение.</p>
+                        `;
+                    } else {
+                        const xpNeeded = (currentSelectedLevel - 1) * 810;
+                        const currentXP = state.progress.totalXP;
+                        const xpRemaining = Math.max(0, xpNeeded - currentXP);
+                        
+                        progressInfo.innerHTML = `
+                            <h5>🔒 Достижение заблокировано</h5>
+                            <p>Для получения этого достижения нужно достичь ${currentSelectedLevel} уровня.</p>
+                            <p>Осталось набрать: <strong>${xpRemaining} XP</strong></p>
+                        `;
+                    }
+                } else {
+                    displayContainer.innerHTML = `
+                        <div class="achievement-display-icon">❓</div>
+                        <div class="achievement-display-title">Достижение не найдено</div>
+                        <div class="achievement-display-description">Для этого уровня пока нет специального достижения.</div>
+                    `;
+                    
+                    progressInfo.innerHTML = `
+                        <h5>📈 Обычный уровень</h5>
+                        <p>Этот уровень не имеет специального достижения, но является важной частью вашего прогресса.</p>
+                    `;
+                }
+            }
+
             function updateMilestones() {
                 const container = document.getElementById('milestonesContent');
                 const state = getEffectiveState();
-                const milestones = [
-                    { level: 10, achieved: state.progress.level >= 10, title: 'Первые 10 уровней' },
-                    { level: 25, achieved: state.progress.level >= 25, title: 'Четверть пути' },
-                    { level: 50, achieved: state.progress.level >= 50, title: 'Половина пути' },
-                    { level: 75, achieved: state.progress.level >= 75, title: 'Три четверти' },
-                    { level: 100, achieved: state.progress.level >= 100, title: 'Максимальный уровень' }
+                const currentLevel = state.progress.level;
+                
+                // Создаем массив достижений на основе уровней изучения английского языка
+                const achievements = [
+                    // Уровни 1-5 (каждый уровень)
+                    { level: 1, achieved: currentLevel >= 1, title: '🌱 Первые шаги', description: 'Новичок в изучении английского языка. Начало увлекательного путешествия!' },
+                    { level: 2, achieved: currentLevel >= 2, title: '📚 Ученик', description: 'Осваиваете основы английского языка. Каждый день приносит новые знания!' },
+                    { level: 3, achieved: currentLevel >= 3, title: '🎯 Целеустремленный', description: 'Показываете стабильный прогресс в изучении языка. Продолжайте в том же духе!' },
+                    { level: 4, achieved: currentLevel >= 4, title: '💪 Упорный', description: 'Демонстрируете настойчивость в изучении английского. Результат не заставит себя ждать!' },
+                    { level: 5, achieved: currentLevel >= 5, title: '⭐ Уверенный новичок', description: 'Преодолели первые трудности! Теперь вы уверенно чувствуете себя в основах языка.' },
+                    
+                    // Уровни каждые 5 (10, 15, 20, 25...)
+                    { level: 10, achieved: currentLevel >= 10, title: '🚀 Активный изучающий', description: 'Достигли 10 уровня! Ваш английский становится все более уверенным.' },
+                    { level: 15, achieved: currentLevel >= 15, title: '🎓 Уверенный пользователь', description: '15 уровень покорен! Вы можете уверенно общаться на базовые темы.' },
+                    { level: 20, achieved: currentLevel >= 20, title: '🌟 Продвинутый ученик', description: '20 уровень! Ваши знания английского языка становятся глубокими и прочными.' },
+                    { level: 25, achieved: currentLevel >= 25, title: '💎 Опытный знаток', description: 'Четверть пути пройдена! Вы владеете английским на хорошем уровне.' },
+                    { level: 30, achieved: currentLevel >= 30, title: '🏆 Мастер слова', description: '30 уровень! Ваш английский позволяет свободно выражать мысли.' },
+                    { level: 35, achieved: currentLevel >= 35, title: '🎭 Лингвистический артист', description: '35 уровень! Вы владеете языком с художественной точностью.' },
+                    { level: 40, achieved: currentLevel >= 40, title: '🧠 Языковой гений', description: '40 уровень! Ваше понимание английского языка поражает глубиной.' },
+                    { level: 45, achieved: currentLevel >= 45, title: '👑 Король английского', description: '45 уровень! Вы достигли высот в изучении языка.' },
+                    { level: 50, achieved: currentLevel >= 50, title: '🎪 Половина пути к совершенству', description: '50 уровень! Половина пути пройдена. Вы на правильном пути к мастерству!' },
+                    { level: 55, achieved: currentLevel >= 55, title: '🌟 Звезда лингвистики', description: '55 уровень! Ваши знания английского сияют ярко.' },
+                    { level: 60, achieved: currentLevel >= 60, title: '🎯 Снайпер языка', description: '60 уровень! Вы попадаете в цель каждым словом.' },
+                    { level: 65, achieved: currentLevel >= 65, title: '⚡ Молния в изучении', description: '65 уровень! Ваш прогресс молниеносен и впечатляющ.' },
+                    { level: 70, achieved: currentLevel >= 70, title: '🔥 Огненный мастер', description: '70 уровень! Ваше владение языком пылает страстью и мастерством.' },
+                    { level: 75, achieved: currentLevel >= 75, title: '🎨 Художник слова', description: '75 уровень! Вы создаете шедевры из английских слов.' },
+                    { level: 80, achieved: currentLevel >= 80, title: '🏅 Чемпион английского', description: '80 уровень! Вы чемпион в изучении английского языка.' },
+                    { level: 85, achieved: currentLevel >= 85, title: '🎪 Виртуоз языка', description: '85 уровень! Ваше владение английским виртуозно.' },
+                    { level: 90, achieved: currentLevel >= 90, title: '👑 Император лингвистики', description: '90 уровень! Вы правите миром английского языка.' },
+                    { level: 95, achieved: currentLevel >= 95, title: '🌟 Божественный оратор', description: '95 уровень! Ваша речь божественно красива и точна.' },
+                    { level: 100, achieved: currentLevel >= 100, title: '🏆 Богоподобный уровень', description: '100 уровень! Вы достигли богоподобного мастерства в английском языке!' }
                 ];
                 
-                container.innerHTML = milestones.map(m => `
-                    <div class="stat-row">
-                        <span class="stat-label">${m.title}</span>
-                        <span class="stat-value" style="color: ${m.achieved ? '#059669' : '#94a3b8'};">
-                            ${m.achieved ? '✓ Получено' : `Уровень ${m.level}`}
-                        </span>
+                // Фильтруем достижения, которые нужно показать (достигнутые + следующие 2)
+                const achievedCount = achievements.filter(a => a.achieved).length;
+                const visibleAchievements = achievements.slice(0, Math.max(achievedCount + 2, 3));
+                
+                container.innerHTML = visibleAchievements.map(achievement => `
+                    <div class="achievement-item ${achievement.achieved ? 'achieved' : 'locked'}">
+                        <div class="achievement-icon">${achievement.achieved ? '✅' : '🔒'}</div>
+                        <div class="achievement-content">
+                            <div class="achievement-title">${achievement.title}</div>
+                            <div class="achievement-level">Уровень ${achievement.level}</div>
+                            <div class="achievement-description">${achievement.description}</div>
+                        </div>
+                        <div class="achievement-status">
+                            ${achievement.achieved ? 
+                                '<span class="status-achieved">Получено</span>' : 
+                                `<span class="status-locked">${currentLevel}/${achievement.level}</span>`
+                            }
+                        </div>
                     </div>
                 `).join('');
             }
@@ -5808,6 +6237,7 @@
                         updateProgressWeekSection();
                         updateMonthlyProgressSection();
                         updateWeeklyStars();
+                        updateAchievementsBank();
                         
                         // 3. Проверяем, что все показатели обновлены
                         console.log('✅ Данные успешно загружены из Firebase, все показатели пересчитаны');

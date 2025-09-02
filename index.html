@@ -147,20 +147,22 @@
             <!-- Stats Overview -->
             <div class="grid grid-cols-3">
                 <div class="card stat-card">
-                                    <div class="stat-icon">
-                    🏆
-                </div>
-                    <div class="stat-label">Текущий уровень</div>
+                    <div class="stat-header">
+                        <div class="stat-icon">🏆</div>
+                        <div class="stat-label">Текущий уровень</div>
+                    </div>
                     <div class="stat-value" id="currentLevel">1</div>
                 </div>
 
                 <div class="card stat-card">
-                                    <div class="stat-icon">
-                    ⭐
-                </div>
-                    <div class="stat-label">Общий опыт</div>
-                    <div class="stat-value" id="totalXP">4250</div>
-                    <div style="font-size: 0.875rem; color: #64748b">XP</div>
+                    <div class="stat-header">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-label">Общий опыт</div>
+                    </div>
+                    <div class="stat-value-with-label">
+                        <div class="stat-value" id="totalXP">4250</div>
+                        <div class="stat-unit">XP</div>
+                    </div>
                 </div>
 
 
@@ -168,7 +170,7 @@
 
             <div class="grid grid-cols-2">
                 <!-- Progress Section -->
-                <div class="card">
+                <div class="card gradient-header">
                     <div class="card-header">
                         <h2 class="card-title">
                             📊
@@ -283,7 +285,7 @@
                 </div>
 
                 <!-- Tasks Section -->
-                <div class="card">
+                <div class="card gradient-header">
                     <div
                         class="card-header"
                         style="
@@ -315,7 +317,7 @@
 
             <div class="grid grid-cols-2">
                 <!-- Achievements and Rewards -->
-                <div class="card">
+                <div class="card gradient-header">
                     <div class="card-header">
                         <h2 class="card-title">
                             🏅
@@ -389,13 +391,13 @@
                                 Получить
                             </button>
                         </div>
-                        <div id="plannedRewardCard" style="display:none; background:#fffbeb; border:1px solid #fde68a; color:#92400e; padding:12px; border-radius:10px; margin-bottom:12px;">
-                            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
-                                <div style="display:flex; align-items:center; gap:8px; font-weight:600;">
-                                    ✏️
-                                    Запланированная награда:
+                        <div id="plannedRewardCard" class="planned-reward-card">
+                            <div class="planned-reward-content">
+                                <div class="planned-reward-header">
+                                    <span class="planned-reward-icon">✏️</span>
+                                    <span class="planned-reward-label">Запланированная награда:</span>
                                 </div>
-                                <div style="font-size:0.9rem; color:#78350f;" id="plannedRewardText">—</div>
+                                <div class="planned-reward-text" id="plannedRewardText">—</div>
                             </div>
                         </div>
                     </div>
@@ -462,7 +464,7 @@
                             <div class="time-stat-card total-time">
                                 <div class="time-stat-icon">🕐</div>
                                 <div class="time-stat-content">
-                                    <div class="time-stat-value" id="totalLearningTime">00:00</div>
+                                    <div class="time-stat-value" id="totalLearningTime">0 ч 0 мин</div>
                                     <div class="time-stat-label">Всего времени</div>
                                 </div>
                                 <div class="time-stat-sparkle">✨</div>
@@ -471,8 +473,8 @@
                             <div class="time-stat-card weekly-avg">
                                 <div class="time-stat-icon">📅</div>
                                 <div class="time-stat-content">
-                                    <div class="time-stat-value" id="weeklyAvgTime">00:00</div>
-                                    <div class="time-stat-label">В среднем в неделю</div>
+                                    <div class="time-stat-value" id="weeklyAvgTime">0 ч 0 мин</div>
+                                    <div class="time-stat-label">В неделю</div>
                                 </div>
                                 <div class="time-stat-pulse"></div>
                             </div>
@@ -480,7 +482,7 @@
                             <div class="time-stat-card daily-avg">
                                 <div class="time-stat-icon">📊</div>
                                 <div class="time-stat-content">
-                                    <div class="time-stat-value" id="dailyAvgTime">00:00</div>
+                                    <div class="time-stat-value" id="dailyAvgTime">0 ч 0 мин</div>
                                     <div class="time-stat-label">В среднем в день</div>
                                 </div>
                                 <div class="time-stat-pulse"></div>
@@ -493,7 +495,7 @@
                             <div class="time-chart-container">
                                 <div class="time-chart" id="weeklyTimeChart">
                                     <div class="time-chart-center">
-                                        <div class="time-chart-total">0ч</div>
+                                        <div class="time-chart-total">0 ч</div>
                                         <div class="time-chart-label">в неделю</div>
                                     </div>
                                 </div>
@@ -510,7 +512,7 @@
                 </div>
 
                 <!-- Calendar -->
-                <div class="card">
+                <div class="card gradient-header">
                     <div class="card-header">
                         <h2 class="card-title">
                             📅
@@ -840,7 +842,7 @@
                 <form id="rewardForm" onsubmit="addReward(event)">
                     <div class="form-group">
                         <label class="form-label">Запланированная награда</label>
-                 <div id="plannedRewardDisplay" style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; color: #1e293b;">
+                 <div id="plannedRewardDisplay" class="planned-reward-display">
                             —
                         </div>
                     </div>

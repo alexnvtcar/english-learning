@@ -84,13 +84,51 @@
                 text-align: center;
                 position: relative;
                 overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                min-height: 140px;
+                justify-content: space-between;
+                padding: 20px;
+                background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+                border: 1px solid #e2e8f0;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                transition: all 0.3s ease;
+            }
+            
+            .stat-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             }
 
             .stat-value {
                 font-size: 3rem;
                 font-weight: 700;
                 color: #1e40af;
-                margin: 16px 0 8px 0;
+                margin: 0;
+                line-height: 1;
+                text-shadow: 0 2px 4px rgba(30, 64, 175, 0.2);
+            }
+            
+            .stat-value-with-label {
+                display: flex;
+                align-items: baseline;
+                justify-content: center;
+                gap: 8px;
+                margin: 0;
+                min-height: 3rem;
+                line-height: 1;
+            }
+            
+            .stat-unit {
+                font-size: 1.2rem;
+                font-weight: 600;
+                color: #3b82f6;
+                background: linear-gradient(135deg, #3b82f6, #1e40af);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                text-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+                line-height: 1;
             }
 
             .stat-label {
@@ -101,12 +139,18 @@
                 letter-spacing: 0.05em;
             }
 
+            .stat-header {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                margin-bottom: 16px;
+            }
+
             .stat-icon {
-                position: absolute;
-                top: 20px;
-                right: 20px;
                 font-size: 1.5rem;
                 color: #fbbf24;
+                filter: drop-shadow(0 2px 4px rgba(251, 191, 36, 0.3));
             }
 
             /* Progress Bar */
@@ -972,9 +1016,10 @@
                 justify-content: center;
                 border-radius: 8px;
                 font-size: 0.875rem;
-                cursor: pointer;
-                transition: all 0.2s ease;
+                cursor: pointer !important;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 position: relative;
+                pointer-events: auto !important;
             }
 
             .calendar-day.today {
@@ -984,39 +1029,53 @@
             }
 
             .calendar-day.active {
-                background: #dcfce7;
-                color: #059669;
-                border: 2px solid #059669;
-            }
-
-            /* Уровни активности по времени обучения */
-            .calendar-day.activity-low {
                 background: #dbeafe;
-                color: #1e40af;
-                border: 2px solid #93c5fd;
-            }
-
-            .calendar-day.activity-medium {
-                background: #93c5fd;
                 color: #1e40af;
                 border: 2px solid #3b82f6;
             }
 
+            /* Уровни активности по времени обучения */
+            .calendar-day.activity-low {
+                background: #dbeafe !important;
+                color: #1e40af !important;
+                border: 2px solid #93c5fd !important;
+            }
+
+            .calendar-day.activity-medium {
+                background: #93c5fd !important;
+                color: #1e40af !important;
+                border: 2px solid #3b82f6 !important;
+            }
+
             .calendar-day.activity-high {
-                background: #3b82f6;
-                color: white;
-                border: 2px solid #1e40af;
+                background: #3b82f6 !important;
+                color: white !important;
+                border: 2px solid #1e40af !important;
             }
 
             .calendar-day.activity-very-high {
-                background: #1e40af;
-                color: white;
-                border: 2px solid #1e3a8a;
+                background: #1e40af !important;
+                color: white !important;
+                border: 2px solid #1e3a8a !important;
             }
 
             .calendar-day.selected {
-                background: #dbeafe;
-                border: 2px solid #1e40af;
+                background: #f0fdf4 !important;
+                border: 3px solid #059669 !important;
+                color: #15803d !important;
+                font-weight: 700 !important;
+                box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.3) !important;
+                transform: scale(1.05) !important;
+                animation: selectedPulse 2s ease-in-out infinite !important;
+            }
+            
+            @keyframes selectedPulse {
+                0%, 100% {
+                    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.3);
+                }
+                50% {
+                    box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.5);
+                }
             }
 
             .calendar-day:hover {
@@ -1032,6 +1091,7 @@
                 height: 6px;
                 background: #059669;
                 border-radius: 50%;
+                pointer-events: none;
             }
 
             .calendar-header {
@@ -1310,6 +1370,30 @@
             .reward-date {
                 font-size: 0.75rem;
                 color: #64748b;
+            }
+
+            /* Gradient Header Cards */
+            .card.gradient-header {
+                background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+                border: 1px solid #e2e8f0;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .card.gradient-header::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, #1e40af, #3b82f6, #059669, #10b981);
+                animation: gradientFlow 3s ease-in-out infinite;
+            }
+
+            @keyframes gradientFlow {
+                0%, 100% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
             }
 
             /* Learning Time Block */
@@ -1650,8 +1734,8 @@
             .time-chart-legend {
                 flex: 1;
                 display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
+                grid-template-columns: 1fr;
+                gap: 8px;
             }
 
             .time-legend-item {
@@ -1968,6 +2052,10 @@
                     font-size: 2.75rem;
                 }
                 
+                .stat-unit {
+                    font-size: 1.1rem;
+                }
+                
                 .stat-label {
                     font-size: 0.8rem;
                 }
@@ -2072,13 +2160,20 @@
                     margin: 14px 0 6px 0;
                 }
                 
+                .stat-unit {
+                    font-size: 1rem;
+                }
+                
                 .stat-label {
                     font-size: 0.75rem;
                 }
                 
+                .stat-header {
+                    gap: 6px;
+                    margin-bottom: 12px;
+                }
+                
                 .stat-icon {
-                    top: 16px;
-                    right: 16px;
                     font-size: 1.3rem;
                 }
                 
@@ -2277,13 +2372,20 @@
                     margin: 12px 0 5px 0;
                 }
                 
+                .stat-unit {
+                    font-size: 0.9rem;
+                }
+                
                 .stat-label {
                     font-size: 0.7rem;
                 }
                 
+                .stat-header {
+                    gap: 5px;
+                    margin-bottom: 10px;
+                }
+                
                 .stat-icon {
-                    top: 14px;
-                    right: 14px;
                     font-size: 1.2rem;
                 }
                 
@@ -2474,13 +2576,20 @@
                     margin: 10px 0 4px 0;
                 }
                 
+                .stat-unit {
+                    font-size: 0.8rem;
+                }
+                
                 .stat-label {
                     font-size: 0.65rem;
                 }
                 
+                .stat-header {
+                    gap: 4px;
+                    margin-bottom: 8px;
+                }
+                
                 .stat-icon {
-                    top: 12px;
-                    right: 12px;
                     font-size: 1.1rem;
                 }
                 
@@ -2647,6 +2756,10 @@
                     font-size: 2.4rem;
                 }
                 
+                .stat-unit {
+                    font-size: 1rem;
+                }
+                
                 .task-item {
                     padding: 12px;
                 }
@@ -2665,6 +2778,10 @@
                 
                 .stat-value {
                     font-size: 2.2rem;
+                }
+                
+                .stat-unit {
+                    font-size: 0.9rem;
                 }
             }
             
@@ -3815,6 +3932,7 @@
             /* Other month days */
             .calendar-day.other-month {
                 opacity: 0.3;
+                pointer-events: auto;
             }
 
             /* Weekly Bar Chart */
@@ -4680,8 +4798,84 @@
                 transition: all 0.3s ease;
             }
 
+            /* Planned Reward Card Styles */
+            .planned-reward-card {
+                display: none;
+                background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+                border: 2px solid #3b82f6;
+                border-radius: 12px;
+                margin-bottom: 16px;
+                padding: 16px;
+                box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1), 0 2px 4px -1px rgba(59, 130, 246, 0.06);
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+
+
+            .planned-reward-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 15px -3px rgba(59, 130, 246, 0.2), 0 4px 6px -2px rgba(59, 130, 246, 0.1);
+            }
+
+            .planned-reward-content {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+            }
+
+            .planned-reward-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 600;
+                color: #1e40af;
+            }
+
+            .planned-reward-icon {
+                font-size: 1.1rem;
+                filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.3));
+            }
+
+            .planned-reward-label {
+                font-size: 0.95rem;
+                color: #1e40af;
+            }
+
+            .planned-reward-text {
+                font-size: 0.9rem;
+                color: #1e293b;
+                font-weight: 500;
+                background: rgba(255, 255, 255, 0.7);
+                padding: 6px 12px;
+                border-radius: 8px;
+                border: 1px solid rgba(59, 130, 246, 0.2);
+            }
+
+            /* Planned Reward Display in Modal */
+            .planned-reward-display {
+                padding: 16px;
+                background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+                border: 2px solid #0ea5e9;
+                border-radius: 12px;
+                color: #0c4a6e;
+                font-weight: 500;
+                font-size: 1rem;
+                text-align: center;
+                box-shadow: 0 2px 4px rgba(14, 165, 233, 0.1);
+                transition: all 0.3s ease;
+            }
+
+            .planned-reward-display:hover {
+                background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 8px rgba(14, 165, 233, 0.15);
+            }
+
             .rewards-bank-panel .bank-panel-header {
-                background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+                background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
                 color: white;
                 padding: 16px 20px;
                 cursor: pointer;
@@ -4693,7 +4887,7 @@
             }
 
             .rewards-bank-panel .bank-panel-header:hover {
-                background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+                background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
             }
 
             .rewards-bank-panel .bank-panel-content {
@@ -5152,14 +5346,15 @@
             .activity-item {
                 position: relative;
                 padding: 8px 12px 8px 8px;
-                background: #f0fdf4;
+                background: #dbeafe;
                 border-radius: 6px;
                 margin-bottom: 4px;
-                border-left: 3px solid #059669;
+                color: #1e293b;
+                border-left: 3px solid #3b82f6;
                 transition: all 0.2s ease;
             }
             .activity-item:hover {
-                background: #dcfce7;
+                background: #bfdbfe;
                 padding-right: 32px;
             }
             .activity-delete {
@@ -5474,6 +5669,18 @@
                 padding: 20px;
             }
             
+            .modal-footer {
+                padding: 20px;
+                border-top: 1px solid #e2e8f0;
+                display: flex;
+                justify-content: flex-end;
+                gap: 12px;
+            }
+
+            .modal-footer.centered {
+                justify-content: center;
+            }
+
             #syncPromptModal .modal-footer {
                 display: flex;
                 justify-content: center;
@@ -5581,8 +5788,12 @@
             
             /* Скрытие блоков для определенных ролей - теперь управляется через JavaScript */
 
-            /* Responsive Design for Learning Time Block */
+            /* Responsive Design for Gradient Header Cards */
             @media (max-width: 768px) {
+                .card.gradient-header {
+                    margin-bottom: 24px;
+                }
+                
                 .learning-time-card {
                     margin-bottom: 24px;
                 }
@@ -5977,6 +6188,32 @@
                     padding: 16px;
                 }
                 
+                /* Planned Reward Card Mobile Styles */
+                .planned-reward-card {
+                    padding: 12px;
+                    margin-bottom: 12px;
+                }
+                
+                .planned-reward-content {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 8px;
+                }
+                
+                .planned-reward-header {
+                    font-size: 0.9rem;
+                }
+                
+                .planned-reward-text {
+                    font-size: 0.85rem;
+                    padding: 4px 8px;
+                }
+                
+                .planned-reward-display {
+                    padding: 12px;
+                    font-size: 0.9rem;
+                }
+                
                 .rewards-summary {
                     grid-template-columns: 1fr;
                     gap: 12px;
@@ -6249,35 +6486,7 @@
 
 
 
-            /* Mobile adaptations for star notifications */
-            @media screen and (max-width: 768px) {
-                .star-notification-content {
-                    min-width: 280px;
-                    padding: 20px;
-                }
-
-                .star-notification-icon {
-                    font-size: 2rem;
-                }
-
-                .star-notification-title {
-                    font-size: 1.3rem;
-                }
-
-                .star-notification-message {
-                    font-size: 1rem;
-                }
-
-                .star-notification-stars {
-                    font-size: 1.8rem;
-                }
-
-                .star-notification-btn {
-                    padding: 10px 20px !important;
-                    font-size: 1rem !important;
-                }
-
-            }
+            /* Mobile adaptations for star notifications removed */
 
             /* ===== NOTIFICATION SYSTEM ===== */
             
@@ -6322,41 +6531,9 @@
                 opacity: 0;
             }
 
-            /* Star Notification Styles */
-            .popup-notification.star-notification {
-                background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-                border-color: #f59e0b;
-                border-left: 4px solid #f59e0b;
-            }
+            /* Star Notification Styles removed */
 
-            .popup-notification.star-notification::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                height: 3px;
-                background: linear-gradient(90deg, #f59e0b, #fbbf24, #f59e0b);
-                animation: starShine 2s infinite;
-            }
-
-            /* Achievement Notification Styles */
-            .popup-notification.achievement-notification {
-                background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-                border-color: #3b82f6;
-                border-left: 4px solid #3b82f6;
-            }
-
-            .popup-notification.achievement-notification::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                height: 3px;
-                background: linear-gradient(90deg, #3b82f6, #60a5fa, #3b82f6);
-                animation: achievementShine 2s infinite;
-            }
+            /* Achievement Notification Styles removed */
 
             /* Task Notification Styles */
             .popup-notification.task-notification {
@@ -6466,23 +6643,7 @@
                 transform: translateY(-1px);
             }
 
-            /* Star-specific styles */
-            .star-notification .notification-icon {
-                animation: starSparkle 2s infinite;
-            }
-
-            .star-notification .notification-title {
-                color: #92400e;
-            }
-
-            /* Achievement-specific styles */
-            .achievement-notification .notification-icon {
-                animation: achievementGlow 2s infinite;
-            }
-
-            .achievement-notification .notification-title {
-                color: #1e40af;
-            }
+            /* Star and Achievement-specific styles removed */
 
             /* Task-specific styles */
             .task-notification .notification-icon {
@@ -6503,50 +6664,14 @@
             }
 
             /* Animations */
-            @keyframes starShine {
-                0%, 100% { opacity: 0.5; }
-                50% { opacity: 1; }
-            }
-
-            @keyframes achievementShine {
-                0%, 100% { opacity: 0.5; }
-                50% { opacity: 1; }
-            }
+            /* Star and Achievement shine animations removed */
 
             @keyframes notificationPulse {
                 0%, 100% { transform: scale(1); }
                 50% { transform: scale(1.05); }
             }
 
-            @keyframes starSparkle {
-                0%, 100% { 
-                    transform: scale(1) rotate(0deg);
-                    filter: brightness(1);
-                }
-                25% { 
-                    transform: scale(1.1) rotate(5deg);
-                    filter: brightness(1.2);
-                }
-                50% { 
-                    transform: scale(1.05) rotate(-3deg);
-                    filter: brightness(1.1);
-                }
-                75% { 
-                    transform: scale(1.08) rotate(2deg);
-                    filter: brightness(1.15);
-                }
-            }
-
-            @keyframes achievementGlow {
-                0%, 100% { 
-                    transform: scale(1);
-                    filter: brightness(1) drop-shadow(0 0 5px rgba(59, 130, 246, 0.3));
-                }
-                50% { 
-                    transform: scale(1.05);
-                    filter: brightness(1.1) drop-shadow(0 0 10px rgba(59, 130, 246, 0.5));
-                }
-            }
+            /* Star sparkle and achievement glow animations removed */
 
             @keyframes taskShine {
                 0%, 100% { opacity: 0.5; }

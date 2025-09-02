@@ -656,8 +656,8 @@
             }
 
             // Function to get weekly progress percentage (based on 750 XP max)
-            function getWeeklyProgressPercent() {
-                const currentXP = appState.progress.weeklyXP;
+            function getWeeklyProgressPercent(weeklyXP = null) {
+                const currentXP = weeklyXP !== null ? weeklyXP : appState.progress.weeklyXP;
                 return Math.min(100, (currentXP / 750) * 100);
             }
 
@@ -767,20 +767,7 @@
                         weeklyXP: appState.progress.weeklyXP,
                         newStarBank: appState.progress.starBank
                     });
-                    // Show star notification for each star gained
-                    console.log('⭐ Starting star notification loop, starsGained:', starsGained);
-                    for (let i = 0; i < starsGained; i++) {
-                        console.log('⭐ Scheduling star notification', i + 1, 'of', starsGained, 'with delay:', i * 500, 'ms');
-                        setTimeout(() => {
-                            console.log('⭐ Executing star notification', i + 1, 'at', new Date().toLocaleTimeString());
-                            showStarNotification(1, appState.progress.starBank);
-                        }, i * 500); // Stagger notifications by 500ms
-                    }
-                    
-                    // Check for new achievements after gaining stars
-                    setTimeout(() => {
-                        checkForNewAchievements();
-                    }, starsGained * 500 + 1000); // After all star notifications
+                    // Star notifications and achievement checks removed
                 } else {
                     console.log('⭐ Звезды НЕ получены. Причина:', {
                         newEarned,
@@ -926,12 +913,22 @@
 
 
             function formatTime(minutes) {
-                if (!minutes || minutes === 0) return '00:00';
+                if (!minutes || minutes === 0) return '0 ч 0 мин';
                 
                 const hours = Math.floor(minutes / 60);
                 const mins = Math.round(minutes % 60);
                 
-                return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+                // Если есть часы, показываем и часы, и минуты
+                if (hours > 0) {
+                    if (mins > 0) {
+                        return `${hours} ч ${mins} мин`;
+                    } else {
+                        return `${hours} ч`;
+                    }
+                } else {
+                    // Если нет часов, показываем только минуты
+                    return `${mins} мин`;
+                }
             }
 
             function updateWeeklyTimeChart(weeklyTime) {
@@ -945,11 +942,11 @@
                 const isMobile = window.innerWidth <= 480;
                 const isTablet = window.innerWidth <= 768;
                 
-                let labelText = "среднее в неделю";
+                let labelText = "в неделю";
                 if (isMobile) {
-                    labelText = "среднее";
+                    labelText = "в неделю";
                 } else if (isTablet) {
-                    labelText = "среднее в неделю";
+                    labelText = "в неделю";
                 }
                 
                 document.getElementById('weeklyTimeChart').innerHTML = `
@@ -1003,7 +1000,7 @@
                         legendHTML += `
                             <div class="time-legend-item">
                                 <div class="time-legend-color" style="background-color: ${colors[index]};"></div>
-                                <span>${days[index]}: ${formatTime(time)} среднее</span>
+                                <span>${days[index]}: ${formatTime(time)}</span>
                                 <span style="color: #94a3b8; font-size: 0.75rem;">(${percentage}%)</span>
                             </div>
                         `;
@@ -1159,6 +1156,15 @@
                 base.setDate(base.getDate() - day + (offset * 7));
                 return base;
             }
+            
+            // Function to get week start for a specific date
+            function getWeekStartForDate(date) {
+                const weekStart = new Date(date);
+                const day = (weekStart.getDay() + 6) % 7; // 0=Mon
+                weekStart.setHours(0, 0, 0, 0);
+                weekStart.setDate(weekStart.getDate() - day);
+                return weekStart;
+            }
 
             function formatWeekRangeLabel(weekStart) {
                 const end = new Date(weekStart);
@@ -1186,11 +1192,15 @@
                 const label = document.getElementById('weekRangeLabel');
                 if (label) label.textContent = formatWeekRangeLabel(start);
                 const weekXP = computeWeekXP(start);
-                const weeklyProgressPct = calculateXPProgress(weekXP, 750);
+                
+                // Правильный расчет процента недельного прогресса (максимум 750 XP)
+                const weeklyProgressPct = Math.min(100, (weekXP / 750) * 100);
+                
                 const weeklyBar = document.getElementById('weeklyBar');
                 if (weeklyBar) weeklyBar.style.width = `${weeklyProgressPct}%`;
                 const weeklyText = document.getElementById('weeklyProgress');
                 if (weeklyText) weeklyText.textContent = `${weekXP} / 750 XP`;
+                
                 // Update threshold markers
                 const m500 = document.getElementById('marker500');
                 const m750 = document.getElementById('marker750');
@@ -1199,6 +1209,13 @@
                 updateWeeklyStarsDisplayForXP(weekXP);
                 renderWeeklyChart(start);
                 updateWeekNavControls();
+                
+                console.log('📊 Недельный прогресс обновлен:', {
+                    weekOffset: offset,
+                    weekStart: start.toISOString().split('T')[0],
+                    weekXP: weekXP,
+                    progressPercent: weeklyProgressPct
+                });
             }
 
             function updateWeekNavControls() {
@@ -1617,6 +1634,15 @@
 
             // Function to show task completion confirmation modal
             function showTaskCompletionModal(task) {
+                // Calculate initial weekly progress for today's date
+                const today = new Date();
+                const weekStart = getWeekStartForDate(today);
+                const currentWeekXP = computeWeekXP(weekStart);
+                const initialXP = task.xpReward; // Начальное значение XP из задания
+                const initialTotalXP = currentWeekXP + initialXP; // Текущий + добавляемый XP
+                const initialProgressPercent = getWeeklyProgressPercent(initialTotalXP);
+                const initialStage = getWeeklyProgressStage(initialTotalXP);
+                
                 // Create modal content
                 const modalContent = `
                     <div class="completion-modal-overlay" onclick="hideTaskCompletionModal()">
@@ -1665,10 +1691,10 @@
                                 <div class="completion-weekly-progress">
                                     <h4>Недельный прогресс:</h4>
                                     <div class="weekly-progress-container">
-                                        <div class="weekly-progress-bar ${getWeeklyProgressStage(appState.progress.weeklyXP)}">
-                                            <div class="weekly-progress-fill" id="weeklyProgressFill" style="width: ${getWeeklyProgressPercent()}%"></div>
+                                        <div class="weekly-progress-bar ${initialStage}">
+                                            <div class="weekly-progress-fill" id="weeklyProgressFill" style="width: ${initialProgressPercent}%"></div>
                                             <div class="weekly-progress-text">
-                                                <span class="current-weekly-xp">${appState.progress.weeklyXP}</span>
+                                                <span class="current-weekly-xp">${initialTotalXP}</span>
                                                 <span class="weekly-xp-separator">/</span>
                                                 <span class="max-weekly-xp">750</span>
                                                 <span class="weekly-xp-label">XP</span>
@@ -1700,9 +1726,16 @@
                 // Add event listeners for real-time preview updates
                 const xpInput = document.getElementById('completionXP');
                 const timeInput = document.getElementById('completionTime');
+                const dateInput = document.getElementById('completionDate');
                 
                 xpInput.addEventListener('input', updateCompletionPreview);
                 timeInput.addEventListener('input', updateCompletionPreview);
+                dateInput.addEventListener('change', updateCompletionPreview);
+                
+                // Initial preview update to show correct progress
+                setTimeout(() => {
+                    updateCompletionPreview();
+                }, 100);
                 
                 // Add animation class after a small delay
                 setTimeout(() => {
@@ -1717,11 +1750,13 @@
             function updateCompletionPreview() {
                 const xpInput = document.getElementById('completionXP');
                 const timeInput = document.getElementById('completionTime');
+                const dateInput = document.getElementById('completionDate');
                 
-                if (!xpInput || !timeInput) return;
+                if (!xpInput || !timeInput || !dateInput) return;
                 
                 const newXP = parseInt(xpInput.value) || 0;
                 const newTime = parseInt(timeInput.value) || 0;
+                const completionDate = new Date(dateInput.value);
                 
                 // Update XP addition text
                 const previewXPAddition = document.getElementById('previewXPAddition');
@@ -1729,15 +1764,19 @@
                     previewXPAddition.textContent = newXP;
                 }
                 
-                // Update weekly progress bar with animation
-                const weeklyProgressFill = document.getElementById('weeklyProgressFill');
-                const weeklyProgressBar = document.querySelector('.weekly-progress-bar');
-                const currentWeeklyXP = appState.progress.weeklyXP;
-                const newWeeklyXP = currentWeeklyXP + newXP;
+                // Calculate current weekly XP for the selected date's week
+                const weekStart = getWeekStartForDate(completionDate);
+                const currentWeekXP = computeWeekXP(weekStart);
+                const newWeeklyXP = currentWeekXP + newXP;
                 
                 // Calculate new progress percentage (based on 750 XP max)
                 const newProgressPercent = Math.min(100, (newWeeklyXP / 750) * 100);
                 const newStage = getWeeklyProgressStage(newWeeklyXP);
+                
+                // Update weekly progress bar with animation
+                const weeklyProgressFill = document.getElementById('weeklyProgressFill');
+                const weeklyProgressBar = document.querySelector('.weekly-progress-bar');
+                const currentWeeklyXPText = document.querySelector('.current-weekly-xp');
                 
                 if (weeklyProgressFill && weeklyProgressBar) {
                     // Update progress bar class for color changes
@@ -1746,6 +1785,11 @@
                     // Animate the progress bar
                     weeklyProgressFill.style.transition = 'width 0.5s ease-out';
                     weeklyProgressFill.style.width = newProgressPercent + '%';
+                    
+                    // Update current XP text
+                    if (currentWeeklyXPText) {
+                        currentWeeklyXPText.textContent = newWeeklyXP;
+                    }
                     
                     // Add pulse animation to show XP addition
                     const xpAdditionAnimation = document.querySelector('.xp-addition-animation');
@@ -1756,6 +1800,16 @@
                         }, 500);
                     }
                 }
+                
+                console.log('📊 Предварительный просмотр недельного прогресса:', {
+                    completionDate: completionDate.toISOString().split('T')[0],
+                    weekStart: weekStart.toISOString().split('T')[0],
+                    currentWeekXP: currentWeekXP,
+                    newXP: newXP,
+                    newWeeklyXP: newWeeklyXP,
+                    progressPercent: newProgressPercent,
+                    stage: newStage
+                });
             }
             
             // Function to hide task completion modal
@@ -1852,8 +1906,7 @@
                     appState.progress.lastCheckedLevel = oldLevel;
                     console.log('🔄 Восстанавливаем lastCheckedLevel на:', oldLevel, 'новый уровень:', appState.progress.level);
                     
-                    // Check for new achievements after level calculation
-                    checkForNewAchievements();
+                    // Achievement checks removed
                     
                     // 1. Пересчитываем лучшую неделю
                     recalculateBestWeek();
@@ -1865,7 +1918,10 @@
                     renderWeeklyChart();
                     updateBestWeekDisplay();
                     updateRedeemControls();
+                    
+                    // Обновляем недельный прогресс с учетом текущего просмотра
                     updateProgressWeekSection();
+                    
                     updateMonthlyProgressSection();
                     
                     // Show task completion notification immediately
@@ -2083,11 +2139,17 @@
             }
 
             function selectDate(dateStr) {
-                appState.selectedDate = new Date(dateStr);
-                generateCalendar();
-                updateDayActivity();
-                // Автоматическое сохранение отключено
-                renderWeeklyChart();
+                console.log('🗓️ Выбрана дата:', dateStr);
+                try {
+                    appState.selectedDate = new Date(dateStr);
+                    console.log('✅ Дата успешно установлена:', appState.selectedDate);
+                    generateCalendar();
+                    updateDayActivity();
+                    // Автоматическое сохранение отключено
+                    renderWeeklyChart();
+                } catch (error) {
+                    console.error('❌ Ошибка при выборе даты:', error, 'dateStr:', dateStr);
+                }
             }
 
             function changeMonth(direction) {
@@ -3904,18 +3966,8 @@
                 if (currentLevel > lastCheckedLevel) {
                     console.log('🏆 Новый уровень обнаружен! Ищем достижение...');
                     
-                    // Find achievement for current level
-                    const achievement = getAchievementForLevel(currentLevel);
-                    if (achievement) {
-                        console.log('🏆 Достижение найдено:', achievement);
-                        
-                        // Show achievement notification
-                        setTimeout(() => {
-                            showAchievementNotification(achievement);
-                        }, 1000); // Delay to let star notifications show first
-                    } else {
-                        console.log('🏆 Достижение не найдено для уровня:', currentLevel);
-                    }
+                    // Achievement notification removed
+                    console.log('🏆 Достижение найдено для уровня:', currentLevel, 'но уведомление отключено');
                     
                     // Update last checked level
                     state.progress.lastCheckedLevel = currentLevel;
@@ -6517,7 +6569,6 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h3>📥 Общие данные загружены из Firebase</h3>
-                            <button class="modal-close" onclick="this.closest('.modal').remove()">×</button>
                         </div>
                         <div class="modal-body">
                             <div class="load-details">
@@ -6547,8 +6598,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-primary" onclick="this.closest('.modal').remove()">OK</button>
+                        <div class="modal-footer centered">
+                            <button class="btn btn-primary" onclick="this.closest('.modal').remove()">ОК</button>
                         </div>
                     </div>
                 `;
@@ -6669,7 +6720,6 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h3>🔄 Синхронизация завершена</h3>
-                            <button class="modal-close" onclick="this.closest('.modal').remove()">×</button>
                         </div>
                         <div class="modal-body">
                             <div class="sync-summary">
@@ -6699,8 +6749,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-primary" onclick="this.closest('.modal').remove()">OK</button>
+                        <div class="modal-footer centered">
+                            <button class="btn btn-primary" onclick="this.closest('.modal').remove()">Продолжить</button>
                         </div>
                     </div>
                 `;
@@ -6968,7 +7018,7 @@
                                 <p>Теперь вы можете работать с последними сохраненными данными.</p>
                             </div>
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer centered">
                             <button class="btn btn-primary" onclick="closeFirstTimeSyncModal()">Продолжить</button>
                         </div>
                     </div>
@@ -7451,7 +7501,7 @@
                 // Create notification content
                 notificationEl.innerHTML = `
                     <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
-                        <div style="font-size: 3rem; animation: starShine 2s infinite;">${notification.icon}</div>
+                        <div style="font-size: 3rem;">${notification.icon}</div>
                         <h3 style="margin: 0; font-size: 1.5rem; font-weight: 700; color: #1e40af;">${notification.title}</h3>
                     </div>
                     <div style="margin-bottom: 24px;">
@@ -7522,49 +7572,9 @@
                 }, 400);
             }
 
-            // Show star notification
-            function showStarNotification(starsGained, totalStars) {
-                console.log('⭐ showStarNotification called:', { starsGained, totalStars });
-                
-                const messages = [
-                    `Получена ${starsGained} звезда! Продолжайте в том же духе!`,
-                    `Отлично! Вы заработали ${starsGained} звезду!`,
-                    `Поздравляем! Новая звезда в вашей коллекции!`,
-                    `Великолепно! ${starsGained} звезда добавлена в банк!`
-                ];
-                
-                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-                
-                console.log('⭐ Calling showPopupNotification with:', {
-                    type: 'star',
-                    title: '⭐ Звезда получена!',
-                    message: `${randomMessage} Всего звезд: ${totalStars}`,
-                    icon: '⭐'
-                });
-                
-                showPopupNotification(
-                    'star',
-                    '⭐ Звезда получена!',
-                    `${randomMessage} Всего звезд: ${totalStars}`,
-                    '⭐',
-                    () => {
-                        console.log('🌟 Star notification closed');
-                    }
-                );
-            }
+            // Star notification function removed
 
-            // Show achievement notification
-            function showAchievementNotification(achievement) {
-                showPopupNotification(
-                    'achievement',
-                    '🏆 Достижение получено!',
-                    `${achievement.title}\n\n${achievement.description}`,
-                    achievement.icon,
-                    () => {
-                        console.log('🏆 Achievement notification closed');
-                    }
-                );
-            }
+            // Achievement notification function removed
 
             // Show task completion notification
             function showTaskCompletionNotification(task, xpEarned) {
@@ -7595,32 +7605,7 @@
             // Global function to close notification
             window.closeNotification = closeNotification;
 
-            // Test functions for notifications (for development/testing)
-            window.testStarNotification = function() {
-                showStarNotification(1, 5);
-            };
-
-            window.testAchievementNotification = function() {
-                const testAchievement = {
-                    title: '🌱 Первые шаги',
-                    description: 'Новичок в изучении английского языка. Начало увлекательного путешествия!',
-                    icon: '🌱'
-                };
-                showAchievementNotification(testAchievement);
-            };
-
-            window.testMultipleNotifications = function() {
-                showStarNotification(1, 3);
-                setTimeout(() => showStarNotification(1, 4), 200);
-                setTimeout(() => {
-                    const testAchievement = {
-                        title: '📚 Ученик',
-                        description: 'Осваиваете основы английского языка. Каждый день приносит новые знания!',
-                        icon: '📚'
-                    };
-                    showAchievementNotification(testAchievement);
-                }, 400);
-            };
+            // Test functions for star and achievement notifications removed
 
 
 
@@ -7652,22 +7637,79 @@
                 console.log('⭐ calculateWeeklyStars result:', calculateWeeklyStars(appState.progress.weeklyXP));
                 console.log('🏆 checkForNewAchievements result:', appState.progress.level > (appState.progress.lastCheckedLevel || 0));
             };
-
-            // Force trigger notifications for testing
-            window.forceStarNotification = function() {
-                console.log('🧪 Принудительно показываем уведомление о звезде');
-                showStarNotification(1, (appState.progress.starBank || 0) + 1);
+            
+            // Test function for weekly progress logic
+            window.testWeeklyProgress = function() {
+                console.log('🧪 Тестирование логики недельного прогресса:');
+                
+                // Test current week
+                const today = new Date();
+                const currentWeekStart = getWeekStartForDate(today);
+                const currentWeekXP = computeWeekXP(currentWeekStart);
+                
+                console.log('📅 Текущая неделя:', {
+                    today: today.toISOString().split('T')[0],
+                    weekStart: currentWeekStart.toISOString().split('T')[0],
+                    weekXP: currentWeekXP,
+                    progressPercent: getWeeklyProgressPercent(currentWeekXP)
+                });
+                
+                // Test different dates
+                const testDates = [
+                    new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000), // 1 week ago
+                    new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000), // 2 weeks ago
+                    new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000)  // 1 month ago
+                ];
+                
+                testDates.forEach((date, index) => {
+                    const weekStart = getWeekStartForDate(date);
+                    const weekXP = computeWeekXP(weekStart);
+                    console.log(`📅 Неделя ${index + 1} назад:`, {
+                        date: date.toISOString().split('T')[0],
+                        weekStart: weekStart.toISOString().split('T')[0],
+                        weekXP: weekXP,
+                        progressPercent: getWeeklyProgressPercent(weekXP)
+                    });
+                });
+                
+                // Test progress view offset
+                const currentOffset = appState.progressView?.weekOffset || 0;
+                const viewWeekStart = getWeekStartFromOffset(currentOffset);
+                const viewWeekXP = computeWeekXP(viewWeekStart);
+                
+                console.log('👁️ Текущий просмотр недели:', {
+                    offset: currentOffset,
+                    weekStart: viewWeekStart.toISOString().split('T')[0],
+                    weekXP: viewWeekXP,
+                    progressPercent: getWeeklyProgressPercent(viewWeekXP)
+                });
             };
-
-            window.forceAchievementNotification = function() {
-                console.log('🧪 Принудительно показываем уведомление о достижении');
-                const testAchievement = {
-                    title: '🧪 Тестовое достижение',
-                    description: 'Это тестовое достижение для проверки уведомлений',
+            
+            // Test function for modal progress preview
+            window.testModalProgress = function() {
+                console.log('🧪 Тестирование предварительного просмотра в модальном окне:');
+                
+                // Create a test task
+                const testTask = {
+                    id: 999999,
+                    name: 'Тестовое задание',
+                    description: 'Для проверки предварительного просмотра',
+                    xpReward: 100,
+                    duration: 30,
                     icon: '🧪'
                 };
-                showAchievementNotification(testAchievement);
+                
+                // Show modal
+                showTaskCompletionModal(testTask);
+                
+                console.log('📊 Модальное окно открыто с тестовым заданием (100 XP)');
+                console.log('💡 Проверьте в модальном окне:');
+                console.log('   - Полоска прогресса должна показывать текущий XP + 100');
+                console.log('   - При изменении XP в поле ввода полоска должна обновляться');
+                console.log('   - При изменении даты полоска должна пересчитываться для новой недели');
             };
+
+            // Force trigger functions for star and achievement notifications removed
 
             // Force gain a star for testing
             window.forceGainStar = function() {

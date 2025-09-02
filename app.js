@@ -80,6 +80,19 @@
                 resetDate: new Date(),
                 progressView: { weekOffset: 0, monthOffset: 0 },
                 isInitializing: true, // Флаг для отслеживания инициализации
+                
+                // Настройки бэкапов
+                backupSettings: {
+                    autoBackup: true,
+                    backupFrequency: 'daily', // daily, weekly, monthly
+                    maxBackups: 7, // количество хранимых бэкапов
+                    lastBackup: null,
+                    nextBackup: null,
+                    backupTypes: {
+                        scheduled: true,
+                        manual: true
+                    }
+                }
             };
 
             function getEffectiveState() {
@@ -358,6 +371,12 @@
                             pinCodes: appState.pinCodes // Сохраняем PIN-коды локально
                         };
                         
+                        // Сохраняем настройки бэкапов, если они есть в загруженных данных
+                        if (restoredData.backupSettings) {
+                            console.log('🔄 Загружаем настройки бэкапов из Firebase:', restoredData.backupSettings);
+                            localSettings.backupSettings = restoredData.backupSettings;
+                        }
+                        
                         // Обновляем локальное состояние
                         appState = { ...appState, ...restoredData, ...localSettings };
                         
@@ -475,7 +494,8 @@
                 const blocksToHide = [
                     { element: document.getElementById('techDiagnosticsBlock'), divider: document.getElementById('dividerBeforeTech') },
                     { element: document.getElementById('firebaseOperationsBlock'), divider: document.getElementById('dividerBeforeFirebase') },
-                    { element: document.getElementById('dangerousOperationsBlock'), divider: document.getElementById('dividerBeforeDanger') }
+                    { element: document.getElementById('dangerousOperationsBlock'), divider: document.getElementById('dividerBeforeDanger') },
+                    { element: document.getElementById('backupManagementBlock'), divider: document.getElementById('dividerBeforeBackups') }
                 ];
                 
                 blocksToHide.forEach(({ element, divider }) => {
@@ -3324,16 +3344,39 @@
                 }
                 
                 const dataToExport = {
+                    // Основные данные приложения
                     progress: appState.progress,
                     tasks: appState.tasks,
                     rewards: appState.rewards,
                     activityData: appState.activityData,
                     rewardPlan: appState.rewardPlan,
                     resetDate: appState.resetDate,
+                    
+                    // Информация о пользователе
+                    user: appState.user,
                     userName: appState.userName,
+                    role: appState.role,
+                    isVerified: appState.isVerified,
                     pinCodes: appState.pinCodes,
+                    
+                    // Настройки интерфейса
+                    currentMonth: appState.currentMonth,
+                    selectedDate: appState.selectedDate,
+                    progressView: appState.progressView,
+                    
+                    // Метаданные экспорта
                     exportDate: new Date().toISOString(),
-                    version: '1.0'
+                    version: '1.1',
+                    exportInfo: {
+                        exportedBy: appState.userName,
+                        exportRole: appState.role,
+                        totalTasks: appState.tasks.length,
+                        totalRewards: appState.rewards.length,
+                        totalActivityDays: Object.keys(appState.activityData).length,
+                        currentLevel: appState.progress.level,
+                        totalXP: appState.progress.totalXP,
+                        starBank: appState.progress.starBank
+                    }
                 };
 
                 const dataStr = JSON.stringify(dataToExport, null, 2);
@@ -3342,7 +3385,8 @@
                 
                 const link = document.createElement('a');
                 link.href = url;
-                link.download = `english-learning-progress-${formatDate(new Date())}.json`;
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+                link.download = `english-learning-backup-${appState.userName}-${timestamp}.json`;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -5974,6 +6018,19 @@
                         currentMonth: appState.currentMonth ? appState.currentMonth.toISOString() : null,
                         selectedDate: appState.selectedDate ? appState.selectedDate.toISOString() : null,
                         
+                        // Настройки бэкапов (ВАЖНО!)
+                        backupSettings: appState.backupSettings || {
+                            autoBackup: true,
+                            backupFrequency: 'daily',
+                            maxBackups: 7,
+                            lastBackup: null,
+                            nextBackup: null,
+                            backupTypes: {
+                                scheduled: true,
+                                manual: true
+                            }
+                        },
+                        
                         // Метаданные
                         lastUpdated: new Date().toISOString(),
                         lastSavedBy: appState.userName || 'Unknown',
@@ -6326,6 +6383,12 @@
                             isVerified: appState.isVerified,
                             pinCodes: appState.pinCodes // Сохраняем PIN-коды локально
                         };
+                        
+                        // Сохраняем настройки бэкапов, если они есть в загруженных данных
+                        if (restoredData.backupSettings) {
+                            console.log('🔄 Загружаем настройки бэкапов из Firebase:', restoredData.backupSettings);
+                            localSettings.backupSettings = restoredData.backupSettings;
+                        }
                         
                         // Обновляем локальное состояние
                         appState = { ...appState, ...restoredData, ...localSettings };
@@ -7737,5 +7800,712 @@
                     console.log('✅ Тестовое уведомление закрыто');
                 });
             };
+
+            // ==================== СИСТЕМА БЭКАПОВ ====================
+
+            // Подготовка данных для бэкапа
+            function prepareBackupData(type = 'manual', reason = '') {
+                const backupData = {
+                    // Основные данные приложения
+                    progress: appState.progress,
+                    tasks: appState.tasks,
+                    rewards: appState.rewards,
+                    activityData: appState.activityData,
+                    rewardPlan: appState.rewardPlan,
+                    resetDate: appState.resetDate,
+                    
+                    // Информация о пользователе
+                    user: appState.user,
+                    userName: appState.userName,
+                    role: appState.role,
+                    isVerified: appState.isVerified,
+                    pinCodes: appState.pinCodes,
+                    
+                    // Настройки интерфейса
+                    currentMonth: appState.currentMonth,
+                    selectedDate: appState.selectedDate,
+                    progressView: appState.progressView,
+                    
+                    // Настройки бэкапов
+                    backupSettings: appState.backupSettings,
+                    
+                    // Метаданные бэкапа
+                    backupInfo: {
+                        type: type,
+                        reason: reason,
+                        timestamp: new Date().toISOString(),
+                        version: '1.1',
+                        exportedBy: appState.userName,
+                        exportRole: appState.role,
+                        totalTasks: appState.tasks.length,
+                        totalRewards: appState.rewards.length,
+                        totalActivityDays: Object.keys(appState.activityData).length,
+                        currentLevel: appState.progress.level,
+                        totalXP: appState.progress.totalXP,
+                        starBank: appState.progress.starBank,
+                        checksum: calculateChecksum(appState)
+                    }
+                };
+                
+                return backupData;
+            }
+
+            // Генерация ID бэкапа
+            function generateBackupId(type, timestamp = null) {
+                const ts = timestamp || new Date();
+                const dateStr = ts.toISOString().split('T')[0];
+                const timeStr = ts.toISOString().split('T')[1].split('.')[0].replace(/:/g, '-');
+                return `backup-${type}-${dateStr}-${timeStr}`;
+            }
+
+            // Расчет контрольной суммы
+            function calculateChecksum(data) {
+                const str = JSON.stringify(data);
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    const char = str.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash; // Convert to 32bit integer
+                }
+                return hash.toString(16);
+            }
+
+            // Сохранение бэкапа в Firebase
+            async function saveBackupToFirebase(backupId, backupData) {
+                if (!isFirebaseAvailable()) {
+                    throw new Error('Firebase недоступен');
+                }
+
+                try {
+                    const backupRef = doc(db, 'backups', backupId);
+                    await setDoc(backupRef, backupData);
+                    
+                    console.log('✅ Бэкап сохранен в Firebase:', backupId);
+                    return true;
+                } catch (error) {
+                    console.error('❌ Ошибка сохранения бэкапа:', error);
+                    throw error;
+                }
+            }
+
+            // Создание ручного бэкапа
+            async function createManualBackup() {
+                if (appState.role === 'viewer' || appState.userName === 'Михаил') {
+                    showNotification('Доступ к управлению бэкапами ограничен', 'warning');
+                    return;
+                }
+
+                try {
+                    showNotification('Создание бэкапа...', 'info');
+                    
+                    const backupData = prepareBackupData('manual', 'Ручное создание');
+                    const backupId = generateBackupId('manual');
+                    
+                    await saveBackupToFirebase(backupId, backupData);
+                    
+                    // Обновляем настройки
+                    appState.backupSettings.lastBackup = new Date().toISOString();
+                    updateNextBackupTime();
+                    
+                    // Сохраняем обновленные настройки
+                    try {
+                        localStorage.setItem('englishLearningData', JSON.stringify(appState));
+                        if (isFirebaseAvailable()) {
+                            await saveDataToFirebase();
+                        }
+                    } catch (error) {
+                        console.error('❌ Ошибка сохранения настроек после создания бэкапа:', error);
+                    }
+                    
+                    showNotification('Бэкап создан успешно!', 'success');
+                    toggleSettingsMenu();
+                } catch (error) {
+                    showNotification('Ошибка создания бэкапа: ' + error.message, 'error');
+                }
+            }
+
+            // Создание автоматического бэкапа
+            async function createScheduledBackup() {
+                if (!appState.backupSettings.autoBackup) {
+                    return;
+                }
+
+                try {
+                    console.log('🔄 Создание автоматического бэкапа...');
+                    
+                    const backupData = prepareBackupData('scheduled', 'Автоматический бэкап');
+                    const backupId = generateBackupId('scheduled');
+                    
+                    await saveBackupToFirebase(backupId, backupData);
+                    
+                    // Обновляем настройки
+                    appState.backupSettings.lastBackup = new Date().toISOString();
+                    updateNextBackupTime();
+                    
+                    // Сохраняем обновленные настройки
+                    try {
+                        localStorage.setItem('englishLearningData', JSON.stringify(appState));
+                        if (isFirebaseAvailable()) {
+                            await saveDataToFirebase();
+                        }
+                    } catch (error) {
+                        console.error('❌ Ошибка сохранения настроек после автоматического бэкапа:', error);
+                    }
+                    
+                    console.log('✅ Автоматический бэкап создан:', backupId);
+                    
+                    // Очищаем старые бэкапы
+                    await cleanupOldBackups();
+                } catch (error) {
+                    console.error('❌ Ошибка создания автоматического бэкапа:', error);
+                }
+            }
+
+            // Обновление времени следующего бэкапа
+            function updateNextBackupTime() {
+                if (!appState.backupSettings.autoBackup) return;
+                
+                const now = new Date();
+                const frequency = appState.backupSettings.backupFrequency;
+                
+                let nextBackup = new Date(now);
+                
+                switch (frequency) {
+                    case 'daily':
+                        nextBackup.setDate(now.getDate() + 1);
+                        nextBackup.setHours(2, 0, 0, 0); // 2:00 утра
+                        break;
+                    case 'weekly':
+                        nextBackup.setDate(now.getDate() + 7);
+                        nextBackup.setHours(2, 0, 0, 0);
+                        break;
+                    case 'monthly':
+                        nextBackup.setMonth(now.getMonth() + 1);
+                        nextBackup.setHours(2, 0, 0, 0);
+                        break;
+                }
+                
+                appState.backupSettings.nextBackup = nextBackup.toISOString();
+                console.log('📅 Следующий бэкап запланирован на:', nextBackup.toLocaleString());
+            }
+
+            // Проверка необходимости создания бэкапа
+            function shouldCreateScheduledBackup() {
+                if (!appState.backupSettings.autoBackup) return false;
+                if (!appState.backupSettings.nextBackup) return true;
+                
+                const now = new Date();
+                const nextBackup = new Date(appState.backupSettings.nextBackup);
+                
+                return now >= nextBackup;
+            }
+
+            // Очистка старых бэкапов
+            async function cleanupOldBackups() {
+                if (!isFirebaseAvailable()) return;
+                
+                try {
+                    const backupsRef = collection(db, 'backups');
+                    const snapshot = await getDocs(backupsRef);
+                    
+                    const backups = [];
+                    snapshot.forEach(doc => {
+                        backups.push({
+                            id: doc.id,
+                            timestamp: doc.data().backupInfo?.timestamp || doc.id
+                        });
+                    });
+                    
+                    // Сортируем по времени (новые первыми)
+                    backups.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    
+                    // Удаляем старые бэкапы
+                    const maxBackups = appState.backupSettings.maxBackups;
+                    if (backups.length > maxBackups) {
+                        const toDelete = backups.slice(maxBackups);
+                        
+                        for (const backup of toDelete) {
+                            await deleteDoc(doc(db, 'backups', backup.id));
+                            console.log('🗑️ Удален старый бэкап:', backup.id);
+                        }
+                    }
+                } catch (error) {
+                    console.error('❌ Ошибка очистки старых бэкапов:', error);
+                }
+            }
+
+            // Запуск проверки автоматических бэкапов
+            function startBackupScheduler() {
+                // Проверяем каждые 30 минут
+                setInterval(async () => {
+                    if (shouldCreateScheduledBackup()) {
+                        await createScheduledBackup();
+                    }
+                }, 30 * 60 * 1000);
+                
+                console.log('⏰ Планировщик бэкапов запущен');
+            }
+
+            // Инициализация системы бэкапов
+            function initializeBackupSystem() {
+                // Убеждаемся, что настройки бэкапов инициализированы
+                if (!appState.backupSettings) {
+                    appState.backupSettings = {
+                        autoBackup: true,
+                        backupFrequency: 'daily',
+                        maxBackups: 7,
+                        lastBackup: null,
+                        nextBackup: null,
+                        backupTypes: {
+                            scheduled: true,
+                            manual: true
+                        }
+                    };
+                }
+                
+                // Устанавливаем время следующего бэкапа если его нет
+                if (!appState.backupSettings.nextBackup) {
+                    updateNextBackupTime();
+                }
+                
+                // Запускаем планировщик
+                startBackupScheduler();
+                
+                console.log('🔄 Система бэкапов инициализирована');
+                console.log('📊 Текущие настройки бэкапов:', appState.backupSettings);
+            }
+
+            // Запускаем систему бэкапов после загрузки
+            setTimeout(initializeBackupSystem, 2000);
+
+            // ==================== ТЕСТИРОВАНИЕ СИСТЕМЫ БЭКАПОВ ====================
+
+            // Тест сохранения настроек бэкапов
+            window.testBackupSettings = function() {
+                console.log('🧪 Тестируем систему настроек бэкапов...');
+                
+                // Проверяем текущие настройки
+                console.log('📊 Текущие настройки бэкапов:', appState.backupSettings);
+                
+                // Изменяем настройки
+                const originalSettings = { ...appState.backupSettings };
+                appState.backupSettings.autoBackup = false;
+                appState.backupSettings.backupFrequency = 'weekly';
+                appState.backupSettings.maxBackups = 10;
+                
+                console.log('🔄 Измененные настройки:', appState.backupSettings);
+                
+                // Сохраняем в localStorage
+                try {
+                    localStorage.setItem('englishLearningData', JSON.stringify(appState));
+                    console.log('✅ Настройки сохранены в localStorage');
+                } catch (error) {
+                    console.error('❌ Ошибка сохранения в localStorage:', error);
+                }
+                
+                // Загружаем обратно
+                try {
+                    const loadedData = JSON.parse(localStorage.getItem('englishLearningData'));
+                    console.log('📥 Загруженные настройки бэкапов:', loadedData.backupSettings);
+                    
+                    if (loadedData.backupSettings.autoBackup === false && 
+                        loadedData.backupSettings.backupFrequency === 'weekly' && 
+                        loadedData.backupSettings.maxBackups === 10) {
+                        console.log('✅ Тест localStorage прошел успешно!');
+                    } else {
+                        console.error('❌ Тест localStorage не прошел!');
+                    }
+                } catch (error) {
+                    console.error('❌ Ошибка загрузки из localStorage:', error);
+                }
+                
+                // Восстанавливаем оригинальные настройки
+                appState.backupSettings = originalSettings;
+                localStorage.setItem('englishLearningData', JSON.stringify(appState));
+                console.log('🔄 Оригинальные настройки восстановлены');
+            };
+
+            // Тест планировщика бэкапов
+            window.testBackupScheduler = function() {
+                console.log('🧪 Тестируем планировщик бэкапов...');
+                
+                const now = new Date();
+                console.log('🕐 Текущее время:', now.toLocaleString());
+                console.log('📅 Следующий бэкап:', appState.backupSettings.nextBackup ? new Date(appState.backupSettings.nextBackup).toLocaleString() : 'Не установлен');
+                console.log('⏰ Нужен ли бэкап сейчас:', shouldCreateScheduledBackup());
+                
+                // Тестируем разные частоты
+                const frequencies = ['daily', 'weekly', 'monthly'];
+                frequencies.forEach(freq => {
+                    const testSettings = { ...appState.backupSettings, backupFrequency: freq };
+                    const nextTime = calculateNextBackupTime(testSettings);
+                    console.log(`📊 ${freq}: следующий бэкап будет ${nextTime.toLocaleString()}`);
+                });
+            };
+
+            // Вспомогательная функция для расчета времени следующего бэкапа
+            function calculateNextBackupTime(settings) {
+                const now = new Date();
+                let nextBackup = new Date(now);
+                
+                switch (settings.backupFrequency) {
+                    case 'daily':
+                        nextBackup.setDate(now.getDate() + 1);
+                        nextBackup.setHours(2, 0, 0, 0);
+                        break;
+                    case 'weekly':
+                        nextBackup.setDate(now.getDate() + 7);
+                        nextBackup.setHours(2, 0, 0, 0);
+                        break;
+                    case 'monthly':
+                        nextBackup.setMonth(now.getMonth() + 1);
+                        nextBackup.setHours(2, 0, 0, 0);
+                        break;
+                }
+                
+                return nextBackup;
+            }
+
+            // ==================== UI УПРАВЛЕНИЯ БЭКАПАМИ ====================
+
+            // Показать менеджер бэкапов
+            async function showBackupManager() {
+                if (appState.role === 'viewer' || appState.userName === 'Михаил') {
+                    showNotification('Доступ к управлению бэкапами ограничен', 'warning');
+                    return;
+                }
+
+                try {
+                    showNotification('Загрузка списка бэкапов...', 'info');
+                    
+                    const backups = await listAllBackups();
+                    
+                    const modal = document.createElement('div');
+                    modal.className = 'modal show';
+                    modal.innerHTML = `
+                        <div class="modal-content backup-manager-modal">
+                            <div class="modal-header">
+                                <h3>🔄 Менеджер бэкапов</h3>
+                            </div>
+                            <div class="modal-body">
+                                <div class="backup-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-label">Всего бэкапов:</span>
+                                        <span class="stat-value">${backups.length}</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Последний бэкап:</span>
+                                        <span class="stat-value">${appState.backupSettings.lastBackup ? new Date(appState.backupSettings.lastBackup).toLocaleString() : 'Никогда'}</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Следующий бэкап:</span>
+                                        <span class="stat-value">${appState.backupSettings.nextBackup ? new Date(appState.backupSettings.nextBackup).toLocaleString() : 'Не запланирован'}</span>
+                                    </div>
+                                </div>
+                                <div class="backup-list">
+                                    <h4>Список бэкапов:</h4>
+                                    <div class="backup-items">
+                                        ${backups.map(backup => `
+                                            <div class="backup-item">
+                                                <div class="backup-info">
+                                                    <div class="backup-type">${getBackupTypeIcon(backup.type)} ${backup.type}</div>
+                                                    <div class="backup-date">${new Date(backup.timestamp).toLocaleString()}</div>
+                                                    <div class="backup-details">
+                                                        Уровень: ${backup.level} | XP: ${backup.totalXP} | Заданий: ${backup.totalTasks}
+                                                    </div>
+                                                </div>
+                                                <div class="backup-actions">
+                                                    <button class="btn btn-sm btn-primary" onclick="restoreFromSpecificBackup('${backup.id}')">
+                                                        Восстановить
+                                                    </button>
+                                                    <button class="btn btn-sm btn-danger" onclick="deleteBackup('${backup.id}')">
+                                                        Удалить
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer centered">
+                                <button class="btn btn-primary" onclick="createManualBackup(); this.closest('.modal').remove();">
+                                    Создать новый бэкап
+                                </button>
+                                <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">
+                                    Закрыть
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(modal);
+                } catch (error) {
+                    showNotification('Ошибка загрузки бэкапов: ' + error.message, 'error');
+                }
+            }
+
+            // Получить список всех бэкапов
+            async function listAllBackups() {
+                if (!isFirebaseAvailable()) {
+                    throw new Error('Firebase недоступен');
+                }
+
+                const backupsRef = collection(db, 'backups');
+                const snapshot = await getDocs(backupsRef);
+                
+                const backups = [];
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const backupInfo = data.backupInfo || {};
+                    
+                    backups.push({
+                        id: doc.id,
+                        type: backupInfo.type || 'unknown',
+                        timestamp: backupInfo.timestamp || doc.id,
+                        level: backupInfo.currentLevel || 0,
+                        totalXP: backupInfo.totalXP || 0,
+                        totalTasks: backupInfo.totalTasks || 0,
+                        exportedBy: backupInfo.exportedBy || 'Unknown'
+                    });
+                });
+                
+                // Сортируем по времени (новые первыми)
+                backups.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                
+                return backups;
+            }
+
+            // Получить иконку типа бэкапа
+            function getBackupTypeIcon(type) {
+                switch (type) {
+                    case 'manual': return '👤';
+                    case 'scheduled': return '⏰';
+                    default: return '📁';
+                }
+            }
+
+            // Показать настройки бэкапов
+            function showBackupSettings() {
+                if (appState.role === 'viewer' || appState.userName === 'Михаил') {
+                    showNotification('Доступ к настройкам бэкапов ограничен', 'warning');
+                    return;
+                }
+
+                console.log('🔧 Текущие настройки бэкапов:', appState.backupSettings);
+
+                const modal = document.createElement('div');
+                modal.className = 'modal show';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>⚙️ Настройки бэкапов</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <input type="checkbox" id="autoBackupEnabled" ${appState.backupSettings.autoBackup ? 'checked' : ''}>
+                                    Автоматические бэкапы
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Частота бэкапов:</label>
+                                <select id="backupFrequency" class="form-input">
+                                    <option value="daily" ${appState.backupSettings.backupFrequency === 'daily' ? 'selected' : ''}>Ежедневно</option>
+                                    <option value="weekly" ${appState.backupSettings.backupFrequency === 'weekly' ? 'selected' : ''}>Еженедельно</option>
+                                    <option value="monthly" ${appState.backupSettings.backupFrequency === 'monthly' ? 'selected' : ''}>Ежемесячно</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Максимум бэкапов:</label>
+                                <input type="number" id="maxBackups" class="form-input" value="${appState.backupSettings.maxBackups || 7}" min="1" max="30">
+                            </div>
+                            <div class="backup-info">
+                                <h4>Информация о бэкапах:</h4>
+                                <p><strong>Последний бэкап:</strong> ${appState.backupSettings.lastBackup ? new Date(appState.backupSettings.lastBackup).toLocaleString() : 'Никогда'}</p>
+                                <p><strong>Следующий бэкап:</strong> ${appState.backupSettings.nextBackup ? new Date(appState.backupSettings.nextBackup).toLocaleString() : 'Не запланирован'}</p>
+                                <p><strong>Текущая частота:</strong> ${getFrequencyText(appState.backupSettings.backupFrequency)}</p>
+                                <p><strong>Автоматические бэкапы:</strong> ${appState.backupSettings.autoBackup ? 'Включены' : 'Выключены'}</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer centered">
+                            <button class="btn btn-primary" onclick="saveBackupSettings(); this.closest('.modal').remove();">
+                                Сохранить
+                            </button>
+                            <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">
+                                Отмена
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+            }
+
+            // Получить текст частоты бэкапов
+            function getFrequencyText(frequency) {
+                switch (frequency) {
+                    case 'daily': return 'Ежедневно';
+                    case 'weekly': return 'Еженедельно';
+                    case 'monthly': return 'Ежемесячно';
+                    default: return 'Не установлено';
+                }
+            }
+
+            // Сохранить настройки бэкапов
+            async function saveBackupSettings() {
+                const autoBackup = document.getElementById('autoBackupEnabled').checked;
+                const frequency = document.getElementById('backupFrequency').value;
+                const maxBackups = parseInt(document.getElementById('maxBackups').value);
+                
+                console.log('💾 Сохраняем настройки бэкапов:', { autoBackup, frequency, maxBackups });
+                
+                // Обновляем настройки в appState
+                appState.backupSettings.autoBackup = autoBackup;
+                appState.backupSettings.backupFrequency = frequency;
+                appState.backupSettings.maxBackups = maxBackups;
+                
+                // Обновляем время следующего бэкапа
+                updateNextBackupTime();
+                
+                console.log('📊 Обновленные настройки бэкапов:', appState.backupSettings);
+                
+                // Сохраняем в localStorage
+                try {
+                    localStorage.setItem('englishLearningData', JSON.stringify(appState));
+                    console.log('✅ Настройки бэкапов сохранены в localStorage');
+                } catch (error) {
+                    console.error('❌ Ошибка сохранения в localStorage:', error);
+                    showNotification('Ошибка сохранения в localStorage', 'error');
+                    return;
+                }
+                
+                // Синхронизируем с Firebase
+                try {
+                    if (isFirebaseAvailable()) {
+                        await saveDataToFirebase();
+                        console.log('✅ Настройки бэкапов синхронизированы с Firebase');
+                    }
+                } catch (error) {
+                    console.error('❌ Ошибка синхронизации с Firebase:', error);
+                    showNotification('Настройки сохранены локально, но не синхронизированы с Firebase', 'warning');
+                    return;
+                }
+                
+                showNotification('Настройки бэкапов сохранены!', 'success');
+            }
+
+            // Восстановить из бэкапа (общий)
+            async function restoreFromBackup() {
+                if (appState.role === 'viewer' || appState.userName === 'Михаил') {
+                    showNotification('Доступ к восстановлению из бэкапов ограничен', 'warning');
+                    return;
+                }
+
+                try {
+                    const backups = await listAllBackups();
+                    
+                    if (backups.length === 0) {
+                        showNotification('Бэкапы не найдены', 'warning');
+                        return;
+                    }
+                    
+                    // Показываем список бэкапов для выбора
+                    showBackupManager();
+                } catch (error) {
+                    showNotification('Ошибка загрузки бэкапов: ' + error.message, 'error');
+                }
+            }
+
+            // Восстановить из конкретного бэкапа
+            async function restoreFromSpecificBackup(backupId) {
+                if (appState.role === 'viewer' || appState.userName === 'Михаил') {
+                    showNotification('Доступ к восстановлению из бэкапов ограничен', 'warning');
+                    return;
+                }
+
+                if (!confirm('Вы уверены, что хотите восстановить данные из этого бэкапа? Текущие данные будут заменены.')) {
+                    return;
+                }
+
+                try {
+                    showNotification('Восстановление из бэкапа...', 'info');
+                    
+                    const backupRef = doc(db, 'backups', backupId);
+                    const backupDoc = await getDoc(backupRef);
+                    
+                    if (!backupDoc.exists()) {
+                        throw new Error('Бэкап не найден');
+                    }
+                    
+                    const backupData = backupDoc.data();
+                    
+                    // Восстанавливаем данные
+                    appState.progress = backupData.progress;
+                    appState.tasks = backupData.tasks;
+                    appState.rewards = backupData.rewards;
+                    appState.activityData = backupData.activityData;
+                    appState.rewardPlan = backupData.rewardPlan;
+                    appState.resetDate = backupData.resetDate;
+                    appState.user = backupData.user;
+                    appState.userName = backupData.userName;
+                    appState.role = backupData.role;
+                    appState.isVerified = backupData.isVerified;
+                    appState.pinCodes = backupData.pinCodes;
+                    appState.currentMonth = backupData.currentMonth;
+                    appState.selectedDate = backupData.selectedDate;
+                    appState.progressView = backupData.progressView;
+                    
+                    // Обновляем UI
+                    updateProgressDisplay();
+                    renderTasks();
+                    renderRewards();
+                    generateCalendar();
+                    updateDayActivity();
+                    renderWeeklyChart();
+                    updateBestWeekDisplay();
+                    updateRedeemControls();
+                    updateProgressWeekSection();
+                    updateMonthlyProgressSection();
+                    updateWeeklyStars();
+                    updateAchievementsBank();
+                    updateLearningTimeDisplay();
+                    
+                    showNotification('Данные восстановлены из бэкапа!', 'success');
+                    
+                    // Закрываем модальное окно менеджера
+                    const modal = document.querySelector('.backup-manager-modal');
+                    if (modal) {
+                        modal.closest('.modal').remove();
+                    }
+                } catch (error) {
+                    showNotification('Ошибка восстановления: ' + error.message, 'error');
+                }
+            }
+
+            // Удалить бэкап
+            async function deleteBackup(backupId) {
+                if (appState.role === 'viewer' || appState.userName === 'Михаил') {
+                    showNotification('Доступ к удалению бэкапов ограничен', 'warning');
+                    return;
+                }
+
+                if (!confirm('Вы уверены, что хотите удалить этот бэкап?')) {
+                    return;
+                }
+
+                try {
+                    await deleteDoc(doc(db, 'backups', backupId));
+                    showNotification('Бэкап удален!', 'success');
+                    
+                    // Обновляем список бэкапов
+                    const modal = document.querySelector('.backup-manager-modal');
+                    if (modal) {
+                        modal.closest('.modal').remove();
+                        showBackupManager();
+                    }
+                } catch (error) {
+                    showNotification('Ошибка удаления бэкапа: ' + error.message, 'error');
+                }
+            }
         
         

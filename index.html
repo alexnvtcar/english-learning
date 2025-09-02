@@ -28,16 +28,19 @@
                     ✕
                 </div>
                 <!-- Основные настройки -->
-                <div class="settings-block-title" onclick="toggleSettingsBlock(this)">Основные настройки</div>
-                <div class="settings-block-content">
+                <div class="settings-block">
+                    <div class="settings-block-title" onclick="toggleSettingsBlock(this)">Основные настройки</div>
+                    <div class="settings-block-content">
                     <div class="settings-item" onclick="showChangeAccountModal()">
                         👤
                         Сменить учетную запись
                     </div>
+                    </div>
                 </div>
                 <!-- Блок управления PIN-кодами -->
-                <div class="settings-block-title" onclick="toggleSettingsBlock(this)">Управление PIN-кодами</div>
-                <div class="settings-block-content">
+                <div class="settings-block">
+                    <div class="settings-block-title" onclick="toggleSettingsBlock(this)">Управление PIN-кодами</div>
+                    <div class="settings-block-content">
                     <div class="settings-item" onclick="showChangePinModal()">
                         🔐
                         Сменить PIN-код
@@ -49,6 +52,7 @@
                     <div class="settings-item" onclick="forceRestorePinCodes().then(success => { if(success) showNotification('PIN-коды восстановлены из Firebase', 'success'); else showNotification('PIN-коды не найдены в Firebase', 'warning'); }).catch(error => { showNotification('Ошибка восстановления', 'error'); })">
                         🔐
                         Восстановить PIN-коды из Firebase
+                    </div>
                     </div>
                 </div>
                 
@@ -94,8 +98,9 @@
                 <hr class="settings-divider">
                 
                 <!-- Блок управления данными -->
-                <div class="settings-block-title" onclick="toggleSettingsBlock(this)">Управление данными</div>
-                <div class="settings-block-content">
+                <div class="settings-block">
+                    <div class="settings-block-title" onclick="toggleSettingsBlock(this)">Управление данными</div>
+                    <div class="settings-block-content">
                     <div class="settings-item" onclick="exportData()">
                         💾
                         Экспорт данных
@@ -104,11 +109,37 @@
                         📤
                         Импорт данных
                     </div>
+                    </div>
                 </div>
                  
                  <hr class="settings-divider" id="dividerBeforeDanger">
                  
-                                 <!-- Блок опасных операций -->
+                <hr class="settings-divider" id="dividerBeforeBackups">
+                <!-- Блок управления бэкапами -->
+                <div class="settings-block" id="backupManagementBlock">
+                    <div class="settings-block-title" onclick="toggleSettingsBlock(this)">Управление бэкапами</div>
+                    <div class="settings-block-content">
+                        <div class="settings-item" onclick="showBackupManager()">
+                            🔄
+                            Менеджер бэкапов
+                        </div>
+                        <div class="settings-item" onclick="createManualBackup()">
+                            💾
+                            Создать бэкап
+                        </div>
+                        <div class="settings-item" onclick="showBackupSettings()">
+                            ⚙️
+                            Настройки бэкапов
+                        </div>
+                        <div class="settings-item" onclick="restoreFromBackup()">
+                            🔄
+                            Восстановить из бэкапа
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="settings-divider" id="dividerBeforeDangerous">
+                <!-- Блок опасных операций -->
                 <div class="settings-block" id="dangerousOperationsBlock">
                     <div class="settings-block-title" onclick="toggleSettingsBlock(this)">Опасные операции</div>
                     <div class="settings-block-content">
@@ -151,7 +182,10 @@
                         <div class="stat-icon">🏆</div>
                         <div class="stat-label">Текущий уровень</div>
                     </div>
-                    <div class="stat-value" id="currentLevel">1</div>
+                    <div class="stat-value-with-label">
+                        <div class="stat-value" id="currentLevel">1</div>
+                        <div class="stat-unit">ур.</div>
+                    </div>
                 </div>
 
                 <div class="card stat-card">

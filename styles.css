@@ -698,7 +698,15 @@
                 font-size: 1.1rem;
                 font-weight: 600;
                 color: #1f2937;
+                margin: 0 0 8px 0;
+            }
+
+            .completion-hint {
                 margin: 0 0 16px 0;
+                color: #64748b;
+                font-size: 0.85rem;
+                font-style: italic;
+                line-height: 1.4;
             }
 
             .completion-input-group {
@@ -1335,21 +1343,26 @@
             /* Time Stats Grid */
             .time-stats-grid {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 16px;
-                margin-bottom: 32px;
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+                gap: 8px;
+                margin-bottom: 16px;
             }
 
             .time-stat-card {
                 background: white;
-                border-radius: 16px;
-                padding: 20px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+                border-radius: 12px;
+                padding: 12px 8px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
                 border: 1px solid #f1f5f9;
                 position: relative;
                 overflow: hidden;
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 animation: timeCardAppear 0.6s ease-out;
+                min-height: 80px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
             }
 
             .time-stat-card:nth-child(1) { animation-delay: 0.1s; }
@@ -1388,8 +1401,8 @@
             }
 
             .time-stat-icon {
-                font-size: 2rem;
-                margin-bottom: 12px;
+                font-size: 1.2rem;
+                margin-bottom: 6px;
                 animation: timeIconFloat 2s ease-in-out infinite;
             }
 
@@ -1403,23 +1416,26 @@
             }
 
             .time-stat-value {
-                font-size: 2rem;
+                font-size: 1.1rem;
                 font-weight: 700;
                 margin-bottom: 4px;
                 text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                line-height: 1.2;
             }
 
             .time-stat-label {
-                font-size: 0.875rem;
+                font-size: 0.6rem;
                 font-weight: 500;
                 opacity: 0.9;
+                text-align: center;
+                line-height: 1.1;
             }
 
             .time-stat-sparkle {
                 position: absolute;
-                top: 12px;
-                right: 12px;
-                font-size: 1.2rem;
+                top: 8px;
+                right: 8px;
+                font-size: 0.8rem;
                 animation: sparkleRotate 3s linear infinite;
             }
 
@@ -1432,9 +1448,9 @@
             .time-stat-pulse {
                 position: absolute;
                 top: 50%;
-                right: 20px;
-                width: 8px;
-                height: 8px;
+                right: 12px;
+                width: 6px;
+                height: 6px;
                 background: rgba(255, 255, 255, 0.8);
                 border-radius: 50%;
                 animation: timePulse 2s ease-in-out infinite;
@@ -1496,30 +1512,108 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                animation: timeChartRotate 20s linear infinite;
+                animation: timeChartPulse 3s ease-in-out infinite;
+                box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
             }
 
-            @keyframes timeChartRotate {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
+            .time-chart::before {
+                content: '';
+                position: absolute;
+                top: -4px;
+                left: -4px;
+                right: -4px;
+                bottom: -4px;
+                border-radius: 50%;
+                background: conic-gradient(
+                    from 0deg,
+                    #1e40af 0deg 51.4deg,
+                    #3b82f6 51.4deg 102.8deg,
+                    #059669 102.8deg 154.2deg,
+                    #10b981 154.2deg 205.6deg,
+                    #f59e0b 205.6deg 257deg,
+                    #ef4444 257deg 308.4deg,
+                    #8b5cf6 308.4deg 360deg
+                );
+                z-index: -1;
+                animation: timeChartGlow 2s ease-in-out infinite alternate;
+                filter: blur(8px);
+                opacity: 0.6;
+            }
+
+            @keyframes timeChartPulse {
+                0%, 100% { 
+                    transform: scale(1);
+                    box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+                }
+                50% { 
+                    transform: scale(1.05);
+                    box-shadow: 0 0 40px rgba(59, 130, 246, 0.5);
+                }
+            }
+
+            @keyframes timeChartGlow {
+                0% { 
+                    opacity: 0.4;
+                    transform: scale(1);
+                }
+                100% { 
+                    opacity: 0.8;
+                    transform: scale(1.1);
+                }
             }
 
             .time-chart-center {
                 width: 140px;
                 height: 140px;
-                background: white;
+                background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
                 border-radius: 50%;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.1);
+                box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.1), 0 0 20px rgba(59, 130, 246, 0.2);
+                animation: timeChartCenterFloat 4s ease-in-out infinite;
+                position: relative;
+                z-index: 2;
+            }
+
+            .time-chart-center::before {
+                content: '';
+                position: absolute;
+                top: 2px;
+                left: 2px;
+                right: 2px;
+                bottom: 2px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+                z-index: -1;
+                animation: timeChartCenterGlow 3s ease-in-out infinite alternate;
+            }
+
+            @keyframes timeChartCenterFloat {
+                0%, 100% { 
+                    transform: translateY(0px) scale(1);
+                }
+                50% { 
+                    transform: translateY(-2px) scale(1.02);
+                }
+            }
+
+            @keyframes timeChartCenterGlow {
+                0% { 
+                    opacity: 0.3;
+                }
+                100% { 
+                    opacity: 0.6;
+                }
             }
 
             .time-chart-total {
                 font-size: 1.5rem;
                 font-weight: 700;
                 color: #1e40af;
+                animation: timeChartTextPulse 2s ease-in-out infinite;
+                text-shadow: 0 2px 4px rgba(30, 64, 175, 0.2);
             }
 
             .time-chart-label {
@@ -1530,6 +1624,27 @@
                 text-align: center;
                 line-height: 1.1;
                 max-width: 120px;
+                animation: timeChartLabelFade 3s ease-in-out infinite;
+            }
+
+            @keyframes timeChartTextPulse {
+                0%, 100% { 
+                    transform: scale(1);
+                    color: #1e40af;
+                }
+                50% { 
+                    transform: scale(1.05);
+                    color: #3b82f6;
+                }
+            }
+
+            @keyframes timeChartLabelFade {
+                0%, 100% { 
+                    opacity: 0.7;
+                }
+                50% { 
+                    opacity: 1;
+                }
             }
 
             .time-chart-legend {
@@ -2570,20 +2685,44 @@
                 
                 .time-stats-grid {
                     grid-template-columns: repeat(3, 1fr);
-                    gap: 12px;
+                    gap: 6px;
                 }
                 
                 .time-stat-card {
-                    padding: 16px;
+                    padding: 10px 6px;
+                    min-height: 70px;
                 }
                 
                 .time-stat-icon {
-                    font-size: 1.5rem;
-                    margin-bottom: 8px;
+                    font-size: 1rem;
+                    margin-bottom: 4px;
                 }
                 
                 .time-stat-value {
-                    font-size: 1.4rem;
+                    font-size: 0.9rem;
+                }
+                
+                .time-stat-label {
+                    font-size: 0.5rem;
+                }
+                
+                .time-chart {
+                    width: 160px;
+                    height: 160px;
+                }
+                
+                .time-chart-center {
+                    width: 110px;
+                    height: 110px;
+                }
+                
+                .time-chart-total {
+                    font-size: 1.2rem;
+                }
+                
+                .time-chart-label {
+                    font-size: 0.6rem;
+                    max-width: 90px;
                 }
             }
             
@@ -2679,6 +2818,15 @@
                 }
                 
                 .form-input {
+                    min-height: 44px;
+                }
+                
+                .time-stat-card {
+                    min-height: 44px;
+                }
+                
+                .time-chart {
+                    min-width: 44px;
                     min-height: 44px;
                 }
                 
@@ -2849,11 +2997,13 @@
                 
                 .form-input {
                     -webkit-appearance: none;
+                    appearance: none;
                     border-radius: 8px;
                 }
                 
                 .form-input:focus {
                     -webkit-appearance: none;
+                    appearance: none;
                 }
                 
                 /* Weekly progress iOS optimizations */
@@ -4450,7 +4600,25 @@
 
                 .time-stats-grid {
                     grid-template-columns: 1fr;
-                    gap: 12px;
+                    gap: 6px;
+                }
+                
+                .time-stat-card {
+                    padding: 12px 8px;
+                    min-height: 60px;
+                }
+                
+                .time-stat-icon {
+                    font-size: 1.1rem;
+                    margin-bottom: 5px;
+                }
+                
+                .time-stat-value {
+                    font-size: 1rem;
+                }
+                
+                .time-stat-label {
+                    font-size: 0.55rem;
                 }
 
                 .calendar-legend {
@@ -4494,22 +4662,22 @@
                 }
 
                 .time-chart {
-                    width: 150px;
-                    height: 150px;
+                    width: 140px;
+                    height: 140px;
                 }
 
                 .time-chart-center {
-                    width: 100px;
-                    height: 100px;
+                    width: 95px;
+                    height: 95px;
                 }
 
                 .time-chart-total {
-                    font-size: 1.2rem;
+                    font-size: 1.1rem;
                 }
 
                 .time-chart-label {
                     font-size: 0.6rem;
-                    max-width: 80px;
+                    max-width: 75px;
                 }
 
                 .time-chart-legend {
@@ -4523,11 +4691,25 @@
 
             @media (max-width: 480px) {
                 .learning-time-content {
-                    padding: 16px;
+                    padding: 14px;
                 }
 
                 .time-stat-card {
-                    padding: 12px;
+                    padding: 10px 6px;
+                    min-height: 55px;
+                }
+                
+                .time-stat-icon {
+                    font-size: 1rem;
+                    margin-bottom: 4px;
+                }
+                
+                .time-stat-value {
+                    font-size: 0.9rem;
+                }
+                
+                .time-stat-label {
+                    font-size: 0.5rem;
                 }
 
                 .calendar-legend {
@@ -4573,22 +4755,22 @@
                 }
 
                 .time-chart {
-                    width: 120px;
-                    height: 120px;
+                    width: 110px;
+                    height: 110px;
                 }
 
                 .time-chart-center {
-                    width: 80px;
-                    height: 80px;
+                    width: 75px;
+                    height: 75px;
                 }
 
                 .time-chart-total {
-                    font-size: 1rem;
+                    font-size: 0.9rem;
                 }
 
                 .time-chart-label {
                     font-size: 0.5rem;
-                    max-width: 60px;
+                    max-width: 55px;
                 }
             }
             

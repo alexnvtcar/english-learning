@@ -1701,6 +1701,7 @@
                                 
                                 <div class="completion-adjustments">
                                     <h4>Настройки выполнения:</h4>
+                                    <p class="completion-hint">Укажите реальные значения XP и времени (от 1 до 500):</p>
                                     
                                     <div class="completion-input-group">
                                         <label for="completionXP">Получено XP:</label>
@@ -1836,16 +1837,16 @@
                 
                 if (!xpInput || !timeInput) return;
                 
-                const customXP = parseInt(xpInput.value) || task.xpReward;
-                const customTime = parseInt(timeInput.value) || task.duration;
+                const customXP = parseInt(xpInput.value);
+                const customTime = parseInt(timeInput.value);
                 
                 // Validate inputs
-                if (customXP < 1 || customXP > 500) {
+                if (isNaN(customXP) || customXP < 1 || customXP > 500) {
                     showNotification('XP должно быть от 1 до 500', 'error');
                     return;
                 }
                 
-                if (customTime < 1 || customTime > 500) {
+                if (isNaN(customTime) || customTime < 1 || customTime > 500) {
                     showNotification('Время должно быть от 1 до 500 минут', 'error');
                     return;
                 }

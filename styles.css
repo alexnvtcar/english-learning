@@ -1132,6 +1132,51 @@
                 box-shadow: 0 1px 4px rgba(148, 163, 184, 0.3);
             }
 
+            /* Special styles for monthly progress navigation buttons */
+            #monthPrevBtn,
+            #monthNextBtn {
+                background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+                border: 1px solid #1e40af;
+                color: white;
+                font-weight: 600;
+                box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+            }
+
+            #monthPrevBtn:hover,
+            #monthNextBtn:hover {
+                background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+                border-color: #1e3a8a;
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+            }
+
+            #monthPrevBtn:active,
+            #monthNextBtn:active {
+                transform: translateY(-1px);
+                box-shadow: 0 2px 8px rgba(59, 130, 246, 0.5);
+            }
+
+            #monthPrevBtn:disabled,
+            #monthNextBtn:disabled {
+                background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+                border-color: #64748b;
+                color: #f8fafc;
+                cursor: not-allowed;
+                opacity: 0.7;
+                transform: none;
+                box-shadow: 0 1px 4px rgba(148, 163, 184, 0.3);
+            }
+
+            #monthPrevBtn:disabled:hover,
+            #monthNextBtn:disabled:hover {
+                background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+                border-color: #64748b;
+                color: #f8fafc;
+                transform: none;
+                box-shadow: 0 1px 4px rgba(148, 163, 184, 0.3);
+            }
+
             /* Легенда календаря */
             .calendar-legend {
                 display: flex;
@@ -2036,6 +2081,16 @@
                     min-height: 36px;
                 }
                 
+                #monthPrevBtn,
+                #monthNextBtn {
+                    width: 36px;
+                    height: 36px;
+                    font-size: 0.9rem;
+                    padding: 6px 10px;
+                    min-width: 36px;
+                    min-height: 36px;
+                }
+                
                 .notification {
                     top: 15px;
                     right: 15px;
@@ -2221,6 +2276,16 @@
                     min-height: 32px;
                 }
                 
+                #monthPrevBtn,
+                #monthNextBtn {
+                    width: 32px;
+                    height: 32px;
+                    font-size: 0.8rem;
+                    padding: 5px 8px;
+                    min-width: 32px;
+                    min-height: 32px;
+                }
+                
                 .notification {
                     top: 10px;
                     right: 10px;
@@ -2398,6 +2463,16 @@
                 
                 #weekPrevBtn,
                 #weekNextBtn {
+                    width: 28px;
+                    height: 28px;
+                    font-size: 0.75rem;
+                    padding: 4px 6px;
+                    min-width: 28px;
+                    min-height: 28px;
+                }
+                
+                #monthPrevBtn,
+                #monthNextBtn {
                     width: 28px;
                     height: 28px;
                     font-size: 0.75rem;
@@ -2627,6 +2702,19 @@
                 
                 #weekPrevBtn:hover,
                 #weekNextBtn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.5);
+                }
+                
+                #monthPrevBtn,
+                #monthNextBtn {
+                    min-width: 44px;
+                    min-height: 44px;
+                    padding: 10px 12px;
+                }
+                
+                #monthPrevBtn:hover,
+                #monthNextBtn:hover {
                     transform: translateY(-2px);
                     box-shadow: 0 4px 16px rgba(59, 130, 246, 0.5);
                 }

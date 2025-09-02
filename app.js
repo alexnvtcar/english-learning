@@ -1265,6 +1265,20 @@
                 // Автоматическое сохранение отключено
             }
 
+            function changeMonthProgress(direction) {
+                const newOffset = (appState.progressView?.monthOffset || 0) + direction;
+                if (newOffset > 0) return; // prevent going to future
+                appState.progressView.monthOffset = newOffset;
+                updateMonthlyProgressSection();
+                updateMonthNavControls();
+                // Автоматическое сохранение отключено
+            }
+
+            function updateMonthNavControls() {
+                const nextBtn = document.getElementById('monthNextBtn');
+                if (nextBtn) nextBtn.disabled = (appState.progressView?.monthOffset || 0) >= 0;
+            }
+
             function updateWeeklyStarsDisplayForXP(weeklyXP) {
                 const stars = document.querySelectorAll('#weeklyStars .star');
                 const count = calculateWeeklyStars(weeklyXP);
@@ -1279,10 +1293,27 @@
             }
 
             function updateMonthlyProgressSection() {
+                const offset = appState.progressView?.monthOffset || 0;
                 const now = new Date();
-                const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-                const nextMonth = new Date(now.getFullYear(), now.getMonth()+1, 1);
+                const targetMonth = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+                const monthStart = new Date(targetMonth.getFullYear(), targetMonth.getMonth(), 1);
+                const nextMonth = new Date(targetMonth.getFullYear(), targetMonth.getMonth()+1, 1);
                 const daysInMonth = Math.round((nextMonth - monthStart)/(24*60*60*1000));
+                
+                // Update month label
+                const label = document.getElementById('monthProgressLabel');
+                if (label) {
+                    if (offset === 0) {
+                        label.textContent = 'Текущий месяц';
+                    } else {
+                        const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+                                          'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+                        const monthName = monthNames[targetMonth.getMonth()];
+                        const year = targetMonth.getFullYear();
+                        label.textContent = `${monthName} ${year}`;
+                    }
+                }
+                
                 let monthXP = 0;
                 const xpByDay = [];
                 for (let i=0;i<daysInMonth;i++) {
@@ -1300,6 +1331,7 @@
                 const text = document.getElementById('monthlyProgressText');
                 if (text) text.textContent = `${monthXP} / 3000 XP`;
                 renderMonthlyInlineChart(monthStart, xpByDay);
+                updateMonthNavControls();
             }
 
             function renderMonthlyInlineChart(monthStart, xpByDay) {

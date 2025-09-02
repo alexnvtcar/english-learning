@@ -260,16 +260,19 @@
                         <div id="weeklyChart" class="weekly-chart" aria-label="XP за дни недели"></div>
 
                         <div style="margin-top: 24px;">
-                            <h3
-                                style="
-                                    font-size: 1rem;
-                                    font-weight: 600;
-                                    color: #1e293b;
-                                    margin-bottom: 12px;
-                                "
-                            >
-                                Прогресс за месяц
-                            </h3>
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 8px;">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <button class="calendar-nav" id="monthPrevBtn" onclick="changeMonthProgress(-1)" title="Предыдущий месяц">
+                                        ◀️
+                                    </button>
+                                    <div class="month-title" id="monthProgressLabel" style="text-align:left; min-width: 220px;">
+                                        Текущий месяц
+                                    </div>
+                                    <button class="calendar-nav" id="monthNextBtn" onclick="changeMonthProgress(1)" title="Следующий месяц">
+                                        ▶️
+                                    </button>
+                                </div>
+                            </div>
                             <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 8px;">
                                 <span>Месячный прогресс</span>
                                 <span id="monthlyProgressText" style="font-weight:600; color:#1e40af;">—</span>

@@ -1,544 +1,565 @@
 {
   "progress": {
-    "weeklyStars": 1,
-    "currentLevelXP": 726,
-    "weeklyXP": 595,
-    "level": 3,
+    "totalXP": 3021,
+    "level": 4,
+    "weeklyXP": 690,
     "bestWeekXP": 755,
+    "starBank": 1,
+    "weeklyStars": 1,
+    "weekStartKey": "2025-09-01",
     "streak": 0,
-    "weekStartKey": "2025-08-25",
-    "totalXP": 2346,
-    "starBank": 1
+    "currentLevelXP": 591
   },
   "tasks": [
     {
+      "id": 1756661903632,
       "category": "custom",
+      "duration": 7,
+      "description": "Чтение отрывка из книги, адаптированной по методу Ильи Франка.",
       "xpReward": 50,
-      "duration": 15,
-      "id": 1754686154101,
-      "icon": "fas fa-book",
-      "description": "",
-      "name": "апв"
+      "icon": "🎓",
+      "name": "Адаптированное чтение (И. Франк)"
     },
     {
-      "name": "Новое",
-      "duration": 15,
       "category": "custom",
+      "icon": "⭐",
+      "xpReward": 100,
+      "name": "Разбор тематического видео",
+      "id": 1756661937604,
+      "duration": 10,
+      "description": "Просмотр видеоролика на английском языке с расшифрованным текстом на английском. Перевод, разбор лексики и фраз. Разговор по содержанию видео, проверка понимания содержания."
+    },
+    {
+      "category": "custom",
+      "xpReward": 30,
+      "name": "Карточки с глаголами и дополнениями",
+      "icon": "🎯",
+      "duration": 7,
+      "description": "Поиск соответствия между глаголом и дополнением.",
+      "id": 1756661964265
+    },
+    {
+      "id": 1756661982188,
+      "xpReward": 30,
+      "name": "Ролевая игра / диалог по ролям",
+      "category": "custom",
+      "duration": 10,
+      "icon": "🗣️",
+      "description": "Чтение текста на английском языке, разбор содержания и незнакомой лексики. Пересказ текста по ролям с подсказкой в виде ключевых тезисов/вопросов."
+    },
+    {
+      "id": 1756662040514,
       "xpReward": 50,
-      "id": 1754690309707,
+      "name": "Упражнение для самостоятельной работы (удаленно)",
+      "category": "custom",
+      "icon": "📚",
+      "description": "Задание на расстановку слов по порядку в предложение/перевод предложений на английский язык.",
+      "duration": 10
+    },
+    {
       "description": "",
-      "icon": "fas fa-book"
-    },
-    {
-      "description": "",
-      "category": "custom",
-      "icon": "fas fa-book",
-      "name": "Ура",
-      "id": 1754690319644,
-      "xpReward": 36,
-      "duration": 15
-    },
-    {
-      "category": "custom",
-      "name": "Сложный выбор",
-      "description": "",
-      "id": 1754690894000,
-      "icon": "fas fa-book",
-      "xpReward": 222,
-      "duration": 34
-    },
-    {
-      "category": "custom",
-      "xpReward": 123,
-      "id": 1754851388264,
-      "duration": 36,
-      "icon": "fas fa-book",
-      "description": "Нужная карочка",
-      "name": "Важное"
-    },
-    {
-      "icon": "fas fa-book",
-      "name": "ЫЫЫ",
-      "description": "",
-      "xpReward": 50,
-      "category": "custom",
-      "id": 1755350552778,
-      "duration": 15
-    },
-    {
-      "description": "Тест",
-      "xpReward": 120,
-      "id": 1755351426985,
-      "category": "custom",
-      "icon": "fas fa-chalkboard-teacher",
-      "name": "Новыая иконка",
-      "duration": 45
-    },
-    {
-      "xpReward": 50,
-      "icon": "fas fa-medal",
-      "duration": 15,
-      "id": 1755351446477,
-      "name": "Медаль",
-      "category": "custom",
-      "description": ""
-    },
-    {
-      "icon": "fas fa-graduation-cap",
-      "name": "fgkuy",
-      "description": "",
-      "duration": 15,
-      "xpReward": 50,
-      "id": 1755354081563,
+      "name": "Новое задание",
+      "id": 1756711782418,
+      "icon": "👁️",
+      "duration": 10,
+      "xpReward": 110,
       "category": "custom"
     },
     {
-      "category": "custom",
-      "name": "настя",
-      "id": 1756575693254,
-      "icon": "🏆",
-      "xpReward": 500,
-      "duration": 15,
-      "description": ""
-    },
-    {
-      "duration": 15,
-      "xpReward": 150,
-      "name": "тест крайний",
-      "category": "custom",
-      "description": "22:15",
-      "icon": "🎧",
-      "id": 1756581333595
-    },
-    {
-      "xpReward": 115,
-      "category": "custom",
-      "duration": 15,
-      "name": "22:48",
-      "id": 1756583320535,
-      "icon": "⏰",
-      "description": "22:48"
-    },
-    {
-      "category": "custom",
-      "id": 1756626843220,
-      "icon": "🎮",
-      "description": "10:53",
-      "name": "31.08.2025",
-      "xpReward": 100,
-      "duration": 15
-    },
-    {
-      "category": "custom",
-      "xpReward": 125,
-      "id": 1756650617821,
-      "icon": "👨‍🏫",
-      "description": "31.08.2025 в 17:30",
-      "duration": 120,
-      "name": "Новое задание"
-    },
-    {
       "icon": "📚",
-      "xpReward": 128,
-      "duration": 90,
-      "name": "Аудирование",
+      "xpReward": 10,
       "category": "custom",
-      "id": 1756655423526,
-      "description": ""
-    },
-    {
-      "category": "custom",
-      "id": 1756657478079,
-      "name": "Любое",
-      "duration": 55,
-      "icon": "👨‍🏫",
-      "description": "описание",
-      "xpReward": 120
+      "id": 1756718477458,
+      "description": "Подробно",
+      "name": "Частичное выполнение задачи",
+      "duration": 5
     }
   ],
   "rewards": [
     {
-      "starsUsed": 3,
       "description": "Макдональдс",
-      "id": 1755375464237,
-      "redeemedAt": "2025-08-16T20:17:44.237Z"
+      "redeemedAt": "2025-08-16T20:17:44.237Z",
+      "starsUsed": 3,
+      "id": 1755375464237
     },
     {
       "id": 1755716167040,
+      "starsUsed": 3,
       "redeemedAt": "2025-08-20T18:56:07.040Z",
-      "description": "Поход в театр",
-      "starsUsed": 3
+      "description": "Поход в театр"
     }
   ],
   "activityData": {
-    "2025-08-26": [
+    "2025-08-12": [
       {
-        "taskId": 2,
-        "taskName": "Грамматические упражнения",
-        "timeSpent": 26,
         "xpEarned": 75,
         "completedAt": {
-          "nanoseconds": 992000000,
-          "seconds": 1756204347
+          "seconds": 1754976643,
+          "nanoseconds": 358000000
+        },
+        "timeSpent": 35,
+        "taskName": "Грамматические упражнения",
+        "taskId": 2
+      },
+      {
+        "taskId": 1,
+        "taskName": "Изучение новых слов",
+        "xpEarned": 50,
+        "completedAt": {
+          "nanoseconds": 738000000,
+          "seconds": 1754976644
+        },
+        "timeSpent": 20
+      }
+    ],
+    "2025-08-10": [
+      {
+        "xpEarned": 75,
+        "timeSpent": 45,
+        "taskName": "Грамматические упражнения",
+        "completedAt": {
+          "seconds": 1754842506,
+          "nanoseconds": 93000000
+        },
+        "taskId": 2
+      },
+      {
+        "xpEarned": 50,
+        "taskName": "апв",
+        "timeSpent": 19,
+        "taskId": 1754686154101,
+        "completedAt": {
+          "seconds": 1754842507,
+          "nanoseconds": 115000000
+        }
+      },
+      {
+        "xpEarned": 36,
+        "timeSpent": 29,
+        "completedAt": {
+          "seconds": 1754842509,
+          "nanoseconds": 590000000
+        },
+        "taskId": 1754690319644,
+        "taskName": "Ура"
+      },
+      {
+        "taskId": 1,
+        "timeSpent": 19,
+        "completedAt": {
+          "nanoseconds": 143000000,
+          "seconds": 1754851245
+        },
+        "xpEarned": 50,
+        "taskName": "Изучение новых слов"
+      }
+    ],
+    "2025-08-07": [
+      {
+        "xpEarned": 75,
+        "timeSpent": 26,
+        "taskName": "Грамматические упражнения",
+        "taskId": 2,
+        "completedAt": {
+          "seconds": 1754599672,
+          "nanoseconds": 778000000
         }
       },
       {
         "taskName": "Аудирование",
-        "taskId": 3,
-        "completedAt": {
-          "nanoseconds": 992000000,
-          "seconds": 1756204347
-        },
         "xpEarned": 60,
-        "timeSpent": 29
+        "taskId": 3,
+        "timeSpent": 26,
+        "completedAt": {
+          "seconds": 1754599672,
+          "nanoseconds": 778000000
+        }
       }
     ],
-    "2025-08-12": [
+    "2025-08-27": [
       {
-        "taskId": 2,
         "completedAt": {
-          "nanoseconds": 358000000,
-          "seconds": 1754976643
+          "nanoseconds": 992000000,
+          "seconds": 1756290747
         },
-        "timeSpent": 35,
-        "xpEarned": 75,
-        "taskName": "Грамматические упражнения"
+        "taskName": "Изучение новых слов",
+        "timeSpent": 30,
+        "taskId": 1,
+        "xpEarned": 50
+      }
+    ],
+    "2025-08-31": [
+      {
+        "taskName": "Новое задание",
+        "completedAt": {
+          "nanoseconds": 213000000,
+          "seconds": 1756656149
+        },
+        "taskId": 1756650617821,
+        "xpEarned": 125,
+        "timeSpent": 120
       },
       {
-        "taskName": "Изучение новых слов",
+        "taskName": "Ролевая игра / диалог по ролям",
         "completedAt": {
-          "seconds": 1754976644,
-          "nanoseconds": 738000000
+          "seconds": 1756662044,
+          "nanoseconds": 104000000
         },
-        "taskId": 1,
+        "timeSpent": 10,
+        "taskId": 1756661982188,
+        "xpEarned": 30
+      },
+      {
+        "completedAt": {
+          "seconds": 1756663239,
+          "nanoseconds": 485000000
+        },
+        "taskId": 1756661937604,
+        "taskName": "Разбор тематического видео",
+        "timeSpent": 10,
+        "xpEarned": 100
+      },
+      {
+        "taskName": "Упражнение для самостоятельной работы (удаленно)",
+        "timeSpent": 10,
         "xpEarned": 50,
-        "timeSpent": 20
+        "taskId": 1756662040514,
+        "completedAt": {
+          "nanoseconds": 18000000,
+          "seconds": 1756664348
+        }
+      }
+    ],
+    "2025-08-30": [
+      {
+        "timeSpent": 25,
+        "xpEarned": 50,
+        "taskName": "fgkuy",
+        "taskId": 1755354081563,
+        "completedAt": {
+          "seconds": 1756569361,
+          "nanoseconds": 875000000
+        }
+      },
+      {
+        "xpEarned": 115,
+        "completedAt": {
+          "seconds": 1756583324,
+          "nanoseconds": 960000000
+        },
+        "taskName": "22:48",
+        "timeSpent": 37,
+        "taskId": 1756583320535
       }
     ],
     "2025-08-19": [
       {
         "xpEarned": 222,
-        "taskId": 1754690894000,
+        "taskName": "Сложный выбор",
         "timeSpent": 38,
         "completedAt": {
-          "seconds": 1755628236,
-          "nanoseconds": 476000000
+          "nanoseconds": 476000000,
+          "seconds": 1755628236
         },
-        "taskName": "Сложный выбор"
+        "taskId": 1754690894000
       },
       {
-        "xpEarned": 36,
         "taskId": 1754690319644,
-        "timeSpent": 22,
-        "taskName": "Ура",
+        "xpEarned": 36,
         "completedAt": {
-          "seconds": 1755628257,
-          "nanoseconds": 434000000
+          "nanoseconds": 434000000,
+          "seconds": 1755628257
+        },
+        "taskName": "Ура",
+        "timeSpent": 22
+      }
+    ],
+    "2025-09-01": [
+      {
+        "taskId": 1756661937604,
+        "completedAt": {
+          "seconds": 1756706516,
+          "nanoseconds": 269000000
+        },
+        "timeSpent": 10,
+        "taskName": "Разбор тематического видео",
+        "xpEarned": 100
+      },
+      {
+        "timeSpent": 10,
+        "xpEarned": 50,
+        "taskName": "Упражнение для самостоятельной работы (удаленно)",
+        "taskId": 1756662040514,
+        "completedAt": {
+          "seconds": 1756706525,
+          "nanoseconds": 917000000
+        }
+      },
+      {
+        "xpEarned": 30,
+        "timeSpent": 7,
+        "taskName": "Карточки с глаголами и дополнениями",
+        "taskId": 1756661964265,
+        "completedAt": {
+          "seconds": 1756711883,
+          "nanoseconds": 356000000
+        }
+      },
+      {
+        "taskName": "Новое задание",
+        "taskId": 1756711782418,
+        "completedAt": {
+          "nanoseconds": 247000000,
+          "seconds": 1756718982
+        },
+        "timeSpent": 10,
+        "xpEarned": 110
+      },
+      {
+        "completedAt": {
+          "nanoseconds": 267000000,
+          "seconds": 1756728043
+        },
+        "timeSpent": 10,
+        "taskName": "Разбор тематического видео",
+        "xpEarned": 100,
+        "taskId": 1756661937604
+      },
+      {
+        "xpEarned": 50,
+        "timeSpent": 7,
+        "taskName": "Адаптированное чтение (И. Франк)",
+        "taskId": 1756661903632,
+        "completedAt": {
+          "seconds": 1756744771,
+          "nanoseconds": 458000000
+        }
+      },
+      {
+        "taskName": "Адаптированное чтение (И. Франк)",
+        "timeSpent": 7,
+        "completedAt": {
+          "seconds": 1756744774,
+          "nanoseconds": 46000000
+        },
+        "xpEarned": 50,
+        "taskId": 1756661903632
+      },
+      {
+        "taskId": 1756661937604,
+        "timeSpent": 10,
+        "completedAt": {
+          "seconds": 1756744779,
+          "nanoseconds": 859000000
+        },
+        "xpEarned": 100,
+        "taskName": "Разбор тематического видео"
+      },
+      {
+        "taskId": 1756661937604,
+        "timeSpent": 10,
+        "taskName": "Разбор тематического видео",
+        "xpEarned": 100,
+        "completedAt": {
+          "seconds": 1756744823,
+          "nanoseconds": 294000000
         }
       }
     ],
-    "2025-08-10": [
+    "2025-08-09": [
       {
-        "taskName": "Грамматические упражнения",
-        "xpEarned": 75,
-        "timeSpent": 45,
-        "taskId": 2,
         "completedAt": {
-          "nanoseconds": 93000000,
-          "seconds": 1754842506
-        }
-      },
-      {
-        "taskId": 1754686154101,
-        "timeSpent": 19,
-        "xpEarned": 50,
-        "completedAt": {
-          "seconds": 1754842507,
-          "nanoseconds": 115000000
+          "seconds": 1754690322,
+          "nanoseconds": 537000000
         },
-        "taskName": "апв"
-      },
-      {
-        "xpEarned": 36,
         "taskName": "Ура",
-        "completedAt": {
-          "nanoseconds": 590000000,
-          "seconds": 1754842509
-        },
-        "timeSpent": 29,
+        "timeSpent": 19,
+        "xpEarned": 36,
         "taskId": 1754690319644
       },
       {
-        "timeSpent": 19,
-        "taskName": "Изучение новых слов",
+        "taskName": "апв",
         "xpEarned": 50,
         "completedAt": {
-          "seconds": 1754851245,
-          "nanoseconds": 143000000
+          "seconds": 1754690328,
+          "nanoseconds": 738000000
         },
-        "taskId": 1
-      }
-    ],
-    "2025-08-13": [
-      {
-        "xpEarned": 75,
-        "taskName": "Грамматические упражнения",
-        "timeSpent": 35,
-        "taskId": 2,
-        "completedAt": {
-          "seconds": 1755106241,
-          "nanoseconds": 947000000
-        }
-      },
-      {
-        "completedAt": {
-          "nanoseconds": 228000000,
-          "seconds": 1755106243
-        },
-        "taskName": "Грамматические упражнения",
-        "xpEarned": 75,
-        "timeSpent": 25,
-        "taskId": 2
+        "taskId": 1754686154101,
+        "timeSpent": 20
       }
     ],
     "2025-08-11": [
       {
-        "timeSpent": 15,
-        "taskId": 1,
-        "xpEarned": 50,
         "completedAt": {
           "seconds": 1754887577,
           "nanoseconds": 940000000
         },
-        "taskName": "Изучение новых слов"
+        "xpEarned": 50,
+        "taskId": 1,
+        "taskName": "Изучение новых слов",
+        "timeSpent": 15
       },
       {
-        "timeSpent": 31,
+        "taskName": "Аудирование",
         "taskId": 3,
         "xpEarned": 60,
-        "taskName": "Аудирование",
+        "timeSpent": 31,
         "completedAt": {
           "seconds": 1754887579,
           "nanoseconds": 972000000
         }
       }
     ],
-    "2025-08-31": [
+    "2025-08-13": [
       {
-        "timeSpent": 120,
-        "taskId": 1756650617821,
         "completedAt": {
-          "seconds": 1756656149,
-          "nanoseconds": 213000000
+          "nanoseconds": 947000000,
+          "seconds": 1755106241
         },
-        "xpEarned": 125,
-        "taskName": "Новое задание"
-      },
-      {
-        "xpEarned": 120,
-        "taskName": "Любое",
-        "timeSpent": 55,
-        "completedAt": {
-          "seconds": 1756657533,
-          "nanoseconds": 67000000
-        },
-        "taskId": 1756657478079
-      }
-    ],
-    "2025-08-14": [
-      {
+        "timeSpent": 35,
+        "xpEarned": 75,
         "taskId": 2,
-        "xpEarned": 75,
-        "completedAt": {
-          "seconds": 1755159650,
-          "nanoseconds": 360000000
-        },
-        "taskName": "Грамматические упражнения",
-        "timeSpent": 31
+        "taskName": "Грамматические упражнения"
       },
       {
-        "timeSpent": 37,
-        "taskName": "Грамматические упражнения",
-        "xpEarned": 75,
         "completedAt": {
-          "nanoseconds": 237000000,
-          "seconds": 1755170228
+          "nanoseconds": 228000000,
+          "seconds": 1755106243
         },
-        "taskId": 2
-      }
-    ],
-    "2025-08-30": [
-      {
-        "taskId": 1755354081563,
+        "taskId": 2,
         "timeSpent": 25,
-        "completedAt": {
-          "seconds": 1756569361,
-          "nanoseconds": 875000000
-        },
-        "taskName": "fgkuy",
-        "xpEarned": 50
-      },
-      {
-        "timeSpent": 37,
-        "completedAt": {
-          "seconds": 1756583324,
-          "nanoseconds": 960000000
-        },
-        "taskId": 1756583320535,
-        "taskName": "22:48",
-        "xpEarned": 115
-      }
-    ],
-    "2025-08-07": [
-      {
-        "timeSpent": 26,
         "xpEarned": 75,
-        "completedAt": {
-          "seconds": 1754599672,
-          "nanoseconds": 778000000
-        },
-        "taskName": "Грамматические упражнения",
-        "taskId": 2
-      },
-      {
-        "timeSpent": 26,
-        "xpEarned": 60,
-        "completedAt": {
-          "nanoseconds": 778000000,
-          "seconds": 1754599672
-        },
-        "taskName": "Аудирование",
-        "taskId": 3
+        "taskName": "Грамматические упражнения"
       }
     ],
     "2025-08-20": [
       {
+        "taskId": 1754690319644,
         "completedAt": {
           "seconds": 1755716134,
           "nanoseconds": 148000000
         },
-        "taskId": 1754690319644,
-        "taskName": "Ура",
         "timeSpent": 17,
-        "xpEarned": 36
-      }
-    ],
-    "2025-08-09": [
-      {
         "taskName": "Ура",
-        "timeSpent": 19,
-        "xpEarned": 36,
-        "taskId": 1754690319644,
-        "completedAt": {
-          "nanoseconds": 537000000,
-          "seconds": 1754690322
-        }
-      },
-      {
-        "timeSpent": 20,
-        "taskName": "апв",
-        "xpEarned": 50,
-        "taskId": 1754686154101,
-        "completedAt": {
-          "nanoseconds": 738000000,
-          "seconds": 1754690328
-        }
+        "xpEarned": 36
       }
     ],
     "2025-08-08": [
       {
-        "timeSpent": 32,
+        "xpEarned": 60,
         "taskId": 3,
-        "taskName": "Аудирование",
+        "timeSpent": 32,
         "completedAt": {
           "nanoseconds": 836000000,
           "seconds": 1754686699
         },
-        "xpEarned": 60
+        "taskName": "Аудирование"
       },
       {
-        "taskName": "Аудирование",
+        "taskId": 3,
         "completedAt": {
-          "seconds": 1754686710,
-          "nanoseconds": 198000000
+          "nanoseconds": 198000000,
+          "seconds": 1754686710
         },
-        "timeSpent": 31,
         "xpEarned": 60,
-        "taskId": 3
+        "taskName": "Аудирование",
+        "timeSpent": 31
       },
       {
-        "taskId": 2,
-        "xpEarned": 75,
         "timeSpent": 30,
+        "xpEarned": 75,
         "taskName": "Грамматические упражнения",
+        "taskId": 2,
         "completedAt": {
           "seconds": 1754686710,
           "nanoseconds": 988000000
         }
-      },
-      {
-        "timeSpent": 33,
-        "xpEarned": 75,
-        "taskId": 2,
-        "taskName": "Грамматические упражнения",
-        "completedAt": {
-          "seconds": 1754686712,
-          "nanoseconds": 921000000
-        }
       }
     ],
-    "2025-08-27": [
+    "2025-08-14": [
       {
-        "xpEarned": 50,
+        "taskName": "Грамматические упражнения",
         "completedAt": {
-          "nanoseconds": 992000000,
-          "seconds": 1756290747
+          "nanoseconds": 360000000,
+          "seconds": 1755159650
         },
-        "timeSpent": 30,
-        "taskName": "Изучение новых слов",
-        "taskId": 1
+        "timeSpent": 31,
+        "xpEarned": 75,
+        "taskId": 2
+      },
+      {
+        "timeSpent": 37,
+        "xpEarned": 75,
+        "taskId": 2,
+        "completedAt": {
+          "nanoseconds": 237000000,
+          "seconds": 1755170228
+        },
+        "taskName": "Грамматические упражнения"
       }
     ],
     "2025-08-16": [
       {
+        "taskId": 1754690309707,
+        "xpEarned": 50,
         "timeSpent": 21,
         "completedAt": {
-          "nanoseconds": 329000000,
-          "seconds": 1755350528
+          "seconds": 1755350528,
+          "nanoseconds": 329000000
         },
-        "taskId": 1754690309707,
-        "taskName": "Новое",
-        "xpEarned": 50
+        "taskName": "Новое"
       },
       {
         "xpEarned": 60,
-        "taskName": "Аудирование",
         "taskId": 3,
+        "taskName": "Аудирование",
+        "timeSpent": 31,
         "completedAt": {
           "seconds": 1755350530,
           "nanoseconds": 33000000
-        },
-        "timeSpent": 31
+        }
       },
       {
+        "taskName": "Аудирование",
         "completedAt": {
-          "seconds": 1755351430,
-          "nanoseconds": 728000000
+          "nanoseconds": 728000000,
+          "seconds": 1755351430
+        },
+        "timeSpent": 34,
+        "taskId": 3,
+        "xpEarned": 60
+      },
+      {
+        "taskId": 1755351446477,
+        "timeSpent": 20,
+        "completedAt": {
+          "seconds": 1755375449,
+          "nanoseconds": 203000000
+        },
+        "taskName": "Медаль",
+        "xpEarned": 50
+      }
+    ],
+    "2025-08-26": [
+      {
+        "taskId": 2,
+        "taskName": "Грамматические упражнения",
+        "completedAt": {
+          "nanoseconds": 992000000,
+          "seconds": 1756204347
+        },
+        "timeSpent": 26,
+        "xpEarned": 75
+      },
+      {
+        "xpEarned": 60,
+        "timeSpent": 29,
+        "completedAt": {
+          "seconds": 1756204347,
+          "nanoseconds": 992000000
         },
         "taskName": "Аудирование",
-        "xpEarned": 60,
-        "timeSpent": 34,
         "taskId": 3
-      },
-      {
-        "timeSpent": 20,
-        "taskName": "Медаль",
-        "xpEarned": 50,
-        "completedAt": {
-          "nanoseconds": 203000000,
-          "seconds": 1755375449
-        },
-        "taskId": 1755351446477
       }
     ]
   },
@@ -548,9 +569,9 @@
   "resetDate": "2025-08-08T21:18:45.938Z",
   "userName": "Admin",
   "pinCodes": {
-    "Михаил": "1234",
-    "Admin": "0000"
+    "Admin": "0000",
+    "Михаил": "1234"
   },
-  "exportDate": "2025-08-31T17:25:55.455Z",
+  "exportDate": "2025-09-02T07:49:46.630Z",
   "version": "1.0"
 }

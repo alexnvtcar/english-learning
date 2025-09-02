@@ -1164,20 +1164,22 @@
 
         
 
-        <!-- Firebase SDK (v9 with compat mode) -->
+        <!-- Firebase SDK (v12.2.1) -->
         <script type="module">
             // Import the functions you need from the SDKs you need
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-            import { getFirestore, doc, setDoc, getDoc, collection, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+            import { getFirestore, doc, setDoc, getDoc, collection, updateDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+            import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-analytics.js";
             
             // Your web app's Firebase configuration
             const firebaseConfig = {
-                apiKey: "AIzaSyBDVhjiXaw26HhD8TBULTc4dHRDTSb-fI4",
-                authDomain: "alexnvtcar-c443c.firebaseapp.com",
-                projectId: "alexnvtcar-c443c",
-                storageBucket: "alexnvtcar-c443c.firebasestorage.app",
-                messagingSenderId: "972197392704",
-                appId: "1:972197392704:web:85c308f2c4482890fb8aa5"
+                apiKey: "AIzaSyB-i-9ToVcqiqTGovCB---SKYadh53ysRU",
+                authDomain: "english-learning-6dd75.firebaseapp.com",
+                projectId: "english-learning-6dd75",
+                storageBucket: "english-learning-6dd75.firebasestorage.app",
+                messagingSenderId: "695373353831",
+                appId: "1:695373353831:web:74192c1f632282931155c2",
+                measurementId: "G-VD971DCJJJ"
             };
             
             // Initialize Firebase
@@ -1186,23 +1188,30 @@
             // Initialize Firestore
             const db = getFirestore(app);
             
+            // Initialize Analytics (optional)
+            const analytics = getAnalytics(app);
+            
             // Make available globally
             window.db = db;
             window.doc = doc;
             window.setDoc = setDoc;
             window.getDoc = getDoc;
+            window.getDocs = getDocs;
             window.collection = collection;
             window.updateDoc = updateDoc;
+            window.deleteDoc = deleteDoc;
+            window.analytics = analytics;
             
             // Debug logging
-            console.log('🔥 Firebase initialized successfully!');
+            console.log('🔥 Firebase v12.2.1 initialized successfully!');
             console.log('📱 App ID:', firebaseConfig.appId);
             console.log('🌐 Project ID:', firebaseConfig.projectId);
             console.log('💾 Firestore DB:', db);
-            console.log('🔧 Available functions:', { doc, setDoc, getDoc, collection, updateDoc });
+            console.log('📊 Analytics:', analytics);
+            console.log('🔧 Available functions:', { doc, setDoc, getDoc, getDocs, collection, updateDoc, deleteDoc });
             
             // Check if Firebase is available globally
-            if (window.db && window.doc && window.setDoc && window.getDoc && window.updateDoc) {
+            if (window.db && window.doc && window.setDoc && window.getDoc && window.getDocs && window.updateDoc && window.deleteDoc) {
                 console.log('✅ Firebase functions are globally available');
                 window.firebaseReady = true;
             } else {

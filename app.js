@@ -1315,31 +1315,31 @@
                     .map(
                         (task) => `
                 <div class="task-item">
-                    <div class="task-info" onclick="completeTask(event, ${task.id})" onkeydown="if(event.key==='Enter'||event.key===' '){completeTask(event, ${task.id})}" role="button" tabindex="0" style="flex: 1; cursor: pointer;">
-                        <div class="task-icon">
-                            ${task.icon}
+                    <div class="task-main" onclick="completeTask(event, ${task.id})" onkeydown="if(event.key==='Enter'||event.key===' '){completeTask(event, ${task.id})}" role="button" tabindex="0">
+                        <div class="task-header">
+                            <div class="task-icon">
+                                ${task.icon}
+                            </div>
+                            <div class="task-details">
+                                <h4>${escapeHTML(task.name)}</h4>
+                                <p>${escapeHTML(task.description)}</p>
+                            </div>
                         </div>
-                        <div class="task-details">
-                            <h4>${escapeHTML(task.name)}</h4>
-                            <p>${escapeHTML(task.description)} • ${task.duration} мин</p>
+                        <div class="task-meta">
+                            <div class="task-duration">⏱️ ${task.duration} мин</div>
+                            <div class="task-reward">⭐ +${task.xpReward} XP</div>
                         </div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div class="task-reward">
-                            ⭐
-                            +${task.xpReward} XP
-                        </div>
-                        ${appState.role === 'admin' ? `
+                    ${appState.role === 'admin' ? `
+                    <div class="task-actions">
                         <button class="btn-icon-edit" onclick="editTask(${task.id})" title="Редактировать задание" aria-label="Редактировать задание">
                             ✏️
                         </button>
-                        ` : ''}
-                        ${appState.role === 'admin' ? `
                         <button class="btn-icon-delete" onclick="deleteTask(${task.id})" title="Удалить задание" aria-label="Удалить задание">
                             🗑️
                         </button>
-                        ` : ''}
                     </div>
+                    ` : ''}
                 </div>
             `,
                     )

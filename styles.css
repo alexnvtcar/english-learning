@@ -4688,11 +4688,7 @@
                 padding: 24px;
             }
 
-            .rewards-bank-content {
-                display: flex;
-                flex-direction: column;
-                gap: 16px;
-            }
+
 
             .reward-bank-item {
                 background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
@@ -4708,6 +4704,239 @@
             .reward-bank-item:hover {
                 border-color: #8b5cf6;
                 box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+            }
+
+            .reward-bank-icon {
+                font-size: 2rem;
+                min-width: 60px;
+                text-align: center;
+            }
+
+            .reward-bank-content {
+                flex: 1;
+            }
+
+            .reward-bank-title {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #1e293b;
+                margin-bottom: 4px;
+            }
+
+            .reward-bank-description {
+                font-size: 0.9rem;
+                color: #64748b;
+                margin-bottom: 8px;
+            }
+
+            .reward-bank-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-size: 0.8rem;
+                color: #64748b;
+            }
+
+            .reward-bank-date {
+                background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+                padding: 4px 8px;
+                border-radius: 8px;
+                font-weight: 500;
+            }
+
+            .reward-bank-stars {
+                background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+                color: white;
+                padding: 4px 8px;
+                border-radius: 8px;
+                font-weight: 600;
+            }
+
+            .rewards-bank-empty {
+                text-align: center;
+                padding: 40px 20px;
+                color: #64748b;
+            }
+
+            .rewards-bank-empty-icon {
+                font-size: 3rem;
+                margin-bottom: 16px;
+                opacity: 0.5;
+            }
+
+            .rewards-bank-empty-title {
+                font-size: 1.2rem;
+                font-weight: 600;
+                margin-bottom: 8px;
+                color: #1e293b;
+            }
+
+            .rewards-bank-empty-description {
+                font-size: 0.9rem;
+                line-height: 1.5;
+            }
+
+            /* Rewards Bank Panel Styles */
+            .rewards-bank-panel {
+                background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+                border-radius: 16px;
+                border: 2px solid #e2e8f0;
+                margin-top: 24px;
+                overflow: hidden;
+                transition: all 0.3s ease;
+            }
+
+            .rewards-bank-panel .bank-panel-header {
+                background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+                color: white;
+                padding: 16px 20px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                transition: all 0.3s ease;
+                user-select: none;
+            }
+
+            .rewards-bank-panel .bank-panel-header:hover {
+                background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            }
+
+            .rewards-bank-panel .bank-panel-content {
+                padding: 24px;
+                background: white;
+                border-top: 1px solid #e2e8f0;
+            }
+
+            /* Rewards Summary Styles */
+            .rewards-summary {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 16px;
+                margin-bottom: 24px;
+            }
+
+            .rewards-summary-item {
+                background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+                border: 2px solid #e2e8f0;
+                border-radius: 12px;
+                padding: 16px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                transition: all 0.3s ease;
+            }
+
+            .rewards-summary-item:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                border-color: #8b5cf6;
+            }
+
+            .rewards-summary-icon {
+                font-size: 2rem;
+                flex-shrink: 0;
+            }
+
+            .rewards-summary-content {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .rewards-summary-value {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #1e293b;
+                line-height: 1.2;
+                margin-bottom: 4px;
+            }
+
+            .rewards-summary-label {
+                font-size: 0.8rem;
+                color: #64748b;
+                font-weight: 500;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            /* Rewards Bank Content Styles */
+            .rewards-bank-content {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+                max-height: 400px;
+                overflow-y: auto;
+                padding-right: 8px;
+            }
+
+            .rewards-bank-content::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .rewards-bank-content::-webkit-scrollbar-track {
+                background: #f1f5f9;
+                border-radius: 3px;
+            }
+
+            .rewards-bank-content::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 3px;
+            }
+
+            .rewards-bank-content::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
+            }
+
+            .reward-bank-item {
+                background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+                border: 2px solid #e2e8f0;
+                border-radius: 12px;
+                padding: 16px;
+                margin-bottom: 8px;
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                transition: all 0.3s ease;
+            }
+
+            .reward-bank-item:hover {
+                border-color: #8b5cf6;
+                box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+                transform: translateY(-1px);
+            }
+
+            .reward-bank-actions {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-left: auto;
+            }
+
+            .reward-delete-btn {
+                background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+                border: none;
+                border-radius: 8px;
+                padding: 8px 12px;
+                color: white;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 36px;
+                height: 36px;
+            }
+
+            .reward-delete-btn:hover {
+                background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            }
+
+            .reward-delete-btn:active {
+                transform: translateY(0);
+                box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
             }
 
             .reward-bank-icon {
@@ -5589,7 +5818,7 @@
                 .time-chart-legend {
                     grid-template-columns: 1fr;
                 }
-                
+
                 .achievement-item {
                     padding: 14px;
                     margin-bottom: 10px;
@@ -5875,6 +6104,73 @@
                     align-items: flex-start;
                     gap: 6px;
                 }
+                
+                /* Rewards Bank Panel Mobile Styles */
+                .rewards-bank-panel {
+                    margin-top: 16px;
+                }
+                
+                .rewards-bank-panel .bank-panel-header {
+                    padding: 12px 16px;
+                }
+                
+                .rewards-bank-panel .bank-panel-title {
+                    font-size: 1rem;
+                    gap: 8px;
+                }
+                
+                .rewards-bank-panel .bank-panel-content {
+                    padding: 16px;
+                }
+                
+                .rewards-summary {
+                    grid-template-columns: 1fr;
+                    gap: 12px;
+                }
+                
+                .rewards-summary-item {
+                    padding: 12px;
+                }
+                
+                .rewards-summary-icon {
+                    font-size: 1.5rem;
+                }
+                
+                .rewards-summary-value {
+                    font-size: 1.2rem;
+                }
+                
+                .rewards-summary-label {
+                    font-size: 0.75rem;
+                }
+                
+                .rewards-bank-content {
+                    max-height: 300px;
+                }
+                
+                .reward-bank-item {
+                    padding: 12px;
+                    gap: 12px;
+                }
+                
+                .reward-bank-icon {
+                    font-size: 1.5rem;
+                    min-width: 50px;
+                }
+                
+                .reward-bank-title {
+                    font-size: 1rem;
+                }
+                
+                .reward-bank-description {
+                    font-size: 0.85rem;
+                }
+                
+                .reward-bank-meta {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 6px;
+                }
 
 
 
@@ -6057,6 +6353,29 @@
                 .settings-menu {
                     max-height: 45vh;
                     padding: 35px 20px 20px 20px;
+                }
+            }
+
+            /* Mobile styles for reward delete button */
+            @media screen and (max-width: 768px) {
+                .reward-bank-actions {
+                    gap: 6px;
+                }
+
+                .reward-delete-btn {
+                    min-width: 32px;
+                    height: 32px;
+                    font-size: 0.9rem;
+                    padding: 6px 10px;
+                }
+            }
+
+            @media screen and (max-width: 480px) {
+                .reward-delete-btn {
+                    min-width: 28px;
+                    height: 28px;
+                    font-size: 0.8rem;
+                    padding: 4px 8px;
                 }
             }
         

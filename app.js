@@ -157,7 +157,8 @@
                 // stars and rewards demo
                 let totalStars = 0;
                 Object.values(weekTotals).forEach(xp => totalStars += calculateWeeklyStars(xp));
-                const rewardsCount = Math.max(1, Math.floor(totalStars / 5));
+                const rewardsCount = Math.max(8, Math.floor(totalStars / 5));
+                console.log('🎁 Creating demo rewards:', { totalStars, rewardsCount });
                 const rewards = [];
                 for (let i = 0; i < rewardsCount; i++) {
                     const d = new Date(today);
@@ -1464,30 +1465,11 @@
             }
 
             function renderRewards() {
-                const rewardsList = document.getElementById("rewardsList");
-
-                if (appState.rewards.length === 0) {
-                    rewardsList.innerHTML = `
-                    <div style="text-align: center; padding: 20px; color: #64748b; font-size: 0.875rem;">
-                        Пока нет полученных наград
-                    </div>
-                `;
-                }
-                
                 // Update achievements bank
                 updateAchievementsBank();
-
-                const cards = appState.rewards.slice(-9).reverse().map(reward => `
-                    <div class="reward-card" title="${new Date(reward.redeemedAt).toLocaleDateString('ru-RU')}">
-                        <div class="rc-top">
-                            <span class="reward-chip">⭐ -${reward.starsUsed} ⭐</span>
-                            🎁
-                        </div>
-                        <div class="reward-title">${escapeHTML(reward.description)}</div>
-                        <div class="reward-date-2">${new Date(reward.redeemedAt).toLocaleDateString('ru-RU')}</div>
-                    </div>
-                `).join('');
-                rewardsList.innerHTML = `<div class="rewards-grid">${cards}</div>`;
+                
+                // Update rewards bank
+                updateRewardsBank();
             }
 
             function clearRewards() {
@@ -1703,7 +1685,14 @@
                                 
                                 <div class="completion-adjustments">
                                     <h4>Настройки выполнения:</h4>
-                                    <p class="completion-hint">Укажите реальные значения XP и времени (от 1 до 500):</p>
+                                    <p class="completion-hint">Укажите дату выполнения и реальные значения XP и времени (от 1 до 500):</p>
+                                    
+                                    <div class="completion-input-group">
+                                        <label for="completionDate">Дата выполнения:</label>
+                                        <div class="completion-input-wrapper">
+                                            <input type="date" id="completionDate" value="${new Date().toISOString().split('T')[0]}" max="${new Date().toISOString().split('T')[0]}" class="completion-input">
+                                        </div>
+                                    </div>
                                     
                                     <div class="completion-input-group">
                                         <label for="completionXP">Получено XP:</label>
@@ -1834,13 +1823,31 @@
                 const task = appState.tasks.find((t) => t.id === taskId);
                 if (!task) return;
                 
+                const dateInput = document.getElementById('completionDate');
                 const xpInput = document.getElementById('completionXP');
                 const timeInput = document.getElementById('completionTime');
                 
-                if (!xpInput || !timeInput) return;
+                if (!dateInput || !xpInput || !timeInput) return;
                 
+                const completionDate = new Date(dateInput.value);
                 const customXP = parseInt(xpInput.value);
                 const customTime = parseInt(timeInput.value);
+                
+                // Validate date
+                if (isNaN(completionDate.getTime())) {
+                    showNotification('Выберите корректную дату выполнения', 'error');
+                    return;
+                }
+                
+                // Check if date is in the future (not allowed)
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Reset time to start of day
+                completionDate.setHours(0, 0, 0, 0); // Reset time to start of day
+                
+                if (completionDate > today) {
+                    showNotification('Нельзя выполнять задания в будущем. Выберите сегодняшнюю дату или дату в прошлом.', 'error');
+                    return;
+                }
                 
                 // Validate inputs
                 if (isNaN(customXP) || customXP < 1 || customXP > 500) {
@@ -1856,70 +1863,35 @@
                 // Hide modal first
                 hideTaskCompletionModal();
                 
-                // Execute task completion with custom values
-                executeTaskCompletion(task, customXP, customTime);
+                // Execute task completion with custom values and date
+                executeTaskCompletion(task, customXP, customTime, completionDate);
             }
             
             // Function to execute actual task completion
-            function executeTaskCompletion(task, customXP, customTime) {
+            function executeTaskCompletion(task, customXP, customTime, completionDate = new Date()) {
                 // Animate task completion
                 const taskElement = document.querySelector(`[onclick*="completeTask(event, ${task.id})"]`).closest('.task-item');
                 taskElement.classList.add("task-completed");
 
                 setTimeout(() => {
-                    ensureWeeklyReset();
-                    // Update progress with custom values
-                    appState.progress.totalXP += customXP;
-                    appState.progress.currentLevelXP += customXP;
-                    appState.progress.weeklyXP += customXP;
-                    
-                    // Обновляем лучшую неделю
-                    updateBestWeekProgress();
-
-                    // Check for level up
-                    let xpNeeded = getXPRequiredForLevel(appState.progress.level);
-                    let leveledUp = false;
-                    while (xpNeeded > 0 && appState.progress.currentLevelXP >= xpNeeded && appState.progress.level < 100) {
-                        appState.progress.currentLevelXP -= xpNeeded;
-                        appState.progress.level += 1;
-                        leveledUp = true;
-                        xpNeeded = getXPRequiredForLevel(appState.progress.level);
-                    }
-                    if (appState.progress.level >= 100) {
-                        appState.progress.level = 100;
-                        appState.progress.currentLevelXP = 0;
-                    }
-
-                    if (leveledUp) {
-                        showNotification(
-                            `Поздравляем! Вы достигли ${appState.progress.level} уровня!`,
-                            "success",
-                        );
-                        document.getElementById("currentLevel").classList.add("level-up");
-                        setTimeout(() => {
-                            document.getElementById("currentLevel").classList.remove("level-up");
-                        }, 1000);
-                    } else {
-                        showNotification(`Задание выполнено! +${customXP} XP`, "success");
-                    }
-
-                    // Log activity with custom values
-                    const today = formatDate(new Date());
-                    if (!appState.activityData[today]) {
-                        appState.activityData[today] = [];
+                    // Log activity with custom values and date first
+                    const activityDate = formatDate(completionDate);
+                    if (!appState.activityData[activityDate]) {
+                        appState.activityData[activityDate] = [];
                     }
                     
-                    appState.activityData[today].push({
+                    appState.activityData[activityDate].push({
                         taskId: task.id,
                         taskName: task.name,
                         xpEarned: customXP,
                         timeSpent: customTime,
-                        completedAt: new Date(),
+                        completedAt: completionDate,
                     });
 
                     console.log('🔄 Задание выполнено, пересчитываем все показатели...');
                     
-                    // ПОЛНЫЙ ПЕРЕСЧЕТ ВСЕХ ПОКАЗАТЕЛЕЙ
+                    // ПОЛНЫЙ ПЕРЕСЧЕТ ВСЕХ ПОКАЗАТЕЛЕЙ (включая прогресс)
+                    recalculateAllProgress();
                     
                     // 1. Пересчитываем лучшую неделю
                     recalculateBestWeek();
@@ -1941,10 +1913,16 @@
                     // Update achievements bank
                     updateAchievementsBank();
                     
+                    // Show completion notification
+                    const isToday = formatDate(completionDate) === formatDate(new Date());
+                    const dateStr = isToday ? 'сегодня' : completionDate.toLocaleDateString('ru-RU');
+                    showNotification(`Задание выполнено ${dateStr}! +${customXP} XP`, "success");
+                    
                     // 3. Проверяем, что все показатели обновлены
                     console.log('✅ Задание выполнено, показатели обновлены');
                     console.log('   - Получено XP:', customXP);
                     console.log('   - Затрачено времени:', customTime);
+                    console.log('   - Дата выполнения:', activityDate);
                     console.log('   - Новый общий XP:', appState.progress.totalXP);
                     console.log('   - Новый уровень:', appState.progress.level);
                     console.log('   - XP за неделю:', appState.progress.weeklyXP);
@@ -2628,6 +2606,9 @@
                 // Обновляем банк достижений
                 updateAchievementsBank();
                 
+                // Обновляем банк наград
+                updateRewardsBank();
+                
                 // Автоматическое сохранение отключено при инициализации
                 // saveDataToFirebase();
 
@@ -2934,6 +2915,81 @@
                 showNotification(`Активность удалена (-${deletedXP} XP)! Все показатели пересчитаны.`, 'success');
             }
 
+            // Test function to verify weekly calculations
+            function testWeeklyCalculations() {
+                console.log('🧪 Тестирование недельных расчетов...');
+                
+                // Test getWeekStartKey
+                const testDates = [
+                    new Date('2025-01-15'), // Wednesday
+                    new Date('2025-01-13'), // Monday
+                    new Date('2025-01-19'), // Sunday
+                ];
+                
+                testDates.forEach(date => {
+                    const weekStart = getWeekStartKey(date);
+                    console.log(`📅 ${date.toLocaleDateString('ru-RU')} (${['ВС','ПН','ВТ','СР','ЧТ','ПТ','СБ'][date.getDay()]}) -> неделя начинается: ${weekStart}`);
+                });
+                
+                // Test weekly data calculation
+                const dates = Object.keys(appState.activityData).sort();
+                console.log('📊 Все даты активностей:', dates);
+                
+                const weeklyData = {};
+                dates.forEach(dateStr => {
+                    const logs = appState.activityData[dateStr];
+                    if (!Array.isArray(logs)) return;
+                    
+                    const dayXP = logs.reduce((sum, log) => sum + (log.xpEarned || 0), 0);
+                    const weekKey = getWeekStartKey(new Date(dateStr));
+                    
+                    if (!weeklyData[weekKey]) weeklyData[weekKey] = { xp: 0, tasks: 0 };
+                    weeklyData[weekKey].xp += dayXP;
+                    weeklyData[weekKey].tasks += logs.length;
+                    
+                    console.log(`📈 ${dateStr}: ${dayXP} XP -> неделя ${weekKey} (всего: ${weeklyData[weekKey].xp} XP)`);
+                });
+                
+                console.log('📊 Итоговые недельные данные:', weeklyData);
+                
+                // Test current week
+                const currentWeekKey = getWeekStartKey(new Date());
+                console.log(`📅 Текущая неделя: ${currentWeekKey}`);
+                console.log(`📈 XP за текущую неделю: ${weeklyData[currentWeekKey]?.xp || 0}`);
+            }
+
+            // Test function for cross-week scenarios
+            function testCrossWeekScenarios() {
+                console.log('🧪 Тестирование межнедельных сценариев...');
+                
+                // Test current week calculation
+                const currentWeekKey = getWeekStartKey(new Date());
+                const currentWeekXP = computeWeekXP(new Date(currentWeekKey));
+                console.log(`📅 Текущая неделя (${currentWeekKey}): ${currentWeekXP} XP`);
+                
+                // Test previous week calculation
+                const prevWeek = new Date(currentWeekKey);
+                prevWeek.setDate(prevWeek.getDate() - 7);
+                const prevWeekKey = formatDate(prevWeek);
+                const prevWeekXP = computeWeekXP(prevWeek);
+                console.log(`📅 Предыдущая неделя (${prevWeekKey}): ${prevWeekXP} XP`);
+                
+                // Test next week calculation
+                const nextWeek = new Date(currentWeekKey);
+                nextWeek.setDate(nextWeek.getDate() + 7);
+                const nextWeekKey = formatDate(nextWeek);
+                const nextWeekXP = computeWeekXP(nextWeek);
+                console.log(`📅 Следующая неделя (${nextWeekKey}): ${nextWeekXP} XP`);
+                
+                // Test weekly progress display
+                console.log(`📊 Отображаемый недельный прогресс: ${appState.progress.weeklyXP} XP`);
+                console.log(`📊 Звезды за неделю: ${appState.progress.weeklyStars}`);
+                console.log(`📊 Банк звезд: ${appState.progress.starBank}`);
+                
+                // Test best week
+                console.log(`🏆 Лучшая неделя: ${appState.progress.bestWeekXP} XP`);
+            }
+
             // Recalculate all progress from activity data
             function recalculateAllProgress() {
                 // Reset progress to base values
@@ -3003,6 +3059,12 @@
                 appState.progress.lastCheckedLevel = appState.progress.level;
                 
                 console.log('🔄 Полный пересчет прогресса завершен, пересчитываем все показатели...');
+                
+                // Test weekly calculations for debugging
+                testWeeklyCalculations();
+                
+                // Additional test for cross-week scenarios
+                testCrossWeekScenarios();
                 
                 // ПОЛНЫЙ ПЕРЕСЧЕТ ВСЕХ ПОКАЗАТЕЛЕЙ ПОСЛЕ ПЕРЕСЧЕТА ПРОГРЕССА
                 
@@ -4373,30 +4435,148 @@
                 }
             }
 
-            // Rewards Bank Modal Functions
-            function showRewardsBank() {
-                const modal = document.getElementById('rewardsBankModal');
-                if (modal) {
-                    // Load rewards content
-                    loadRewardsBankContent();
+            // Rewards Bank Panel Functions
+            let rewardsBankExpanded = false;
+
+            function toggleRewardsBank() {
+                console.log('🎁 toggleRewardsBank called');
+                const content = document.getElementById('rewardsBankPanelContent');
+                const toggle = document.getElementById('rewardsBankToggle');
+                
+                console.log('Content element:', content);
+                console.log('Toggle element:', toggle);
+                console.log('Current expanded state:', rewardsBankExpanded);
+                
+                if (rewardsBankExpanded) {
+                    content.style.display = 'none';
+                    toggle.classList.remove('expanded');
+                    rewardsBankExpanded = false;
+                    console.log('🎁 Rewards bank collapsed');
+                } else {
+                    // Update rewards bank content
+                    console.log('🎁 Updating rewards bank content...');
+                    updateRewardsBank();
                     
-                    // Show modal
-                    modal.classList.add('show');
+                    content.style.display = 'block';
+                    toggle.classList.add('expanded');
+                    rewardsBankExpanded = true;
+                    console.log('🎁 Rewards bank expanded');
+                    
+                    // Отладочная информация после открытия панели
+                    setTimeout(() => {
+                        const container = document.getElementById('rewardsBankContent');
+                        if (container) {
+                            console.log('After panel opened:', {
+                                containerVisible: container.offsetParent !== null,
+                                containerScrollHeight: container.scrollHeight,
+                                containerClientHeight: container.clientHeight,
+                                containerMaxHeight: window.getComputedStyle(container).maxHeight,
+                                shouldShowScroll: container.scrollHeight > container.clientHeight
+                            });
+                        }
+                    }, 100);
                 }
             }
 
-            function hideRewardsBank() {
-                const modal = document.getElementById('rewardsBankModal');
-                if (modal) {
-                    modal.classList.remove('show');
+            // Function to delete a reward (admin only)
+            function deleteReward(rewardId) {
+                // Check if user is admin
+                if (appState.role !== 'admin') {
+                    showNotification('Только администратор может удалять награды', 'error');
+                    return;
                 }
+                
+                // Find the reward
+                const rewardIndex = appState.rewards.findIndex(r => r.id === rewardId);
+                if (rewardIndex === -1) {
+                    showNotification('Награда не найдена', 'error');
+                    return;
+                }
+                
+                const reward = appState.rewards[rewardIndex];
+                
+                // Show confirmation dialog
+                const confirmMessage = `Удалить награду "${reward.description}"?\n\nЭто действие нельзя отменить.`;
+                if (!confirm(confirmMessage)) {
+                    return;
+                }
+                
+                // Remove reward from array
+                appState.rewards.splice(rewardIndex, 1);
+                
+                console.log('🗑️ Награда удалена:', reward);
+                
+                // Recalculate all progress
+                recalculateAllProgress();
+                
+                // Update all displays
+                updateProgressDisplay();
+                updateBestWeekDisplay();
+                updateRedeemControls();
+                updateProgressWeekSection();
+                updateMonthlyProgressSection();
+                updateWeeklyStars();
+                updateLearningTimeDisplay();
+                
+                // Update rewards bank
+                updateRewardsBank();
+                
+                // Update achievements bank
+                updateAchievementsBank();
+                
+                // Show success notification
+                showNotification(`Награда "${reward.description}" удалена! Все показатели пересчитаны.`, 'success');
+                
+                // Auto-save to Firebase
+                setTimeout(() => {
+                    saveDataToFirebaseSilent();
+                }, 1000);
             }
 
-            function loadRewardsBankContent() {
+            function updateRewardsBank() {
+                console.log('🎁 updateRewardsBank called');
                 const container = document.getElementById('rewardsBankContent');
                 const state = getEffectiveState();
                 const rewards = state.rewards || [];
                 
+                console.log('Container element:', container);
+                console.log('Rewards count:', rewards.length);
+                console.log('Sample reward:', rewards[0]);
+                
+                if (container) {
+                    console.log('Container computed styles:', {
+                        maxHeight: window.getComputedStyle(container).maxHeight,
+                        height: window.getComputedStyle(container).height,
+                        overflowY: window.getComputedStyle(container).overflowY,
+                        scrollHeight: container.scrollHeight,
+                        clientHeight: container.clientHeight
+                    });
+                }
+                
+                if (!container) {
+                    console.log('❌ Rewards container not found!');
+                    return;
+                }
+                
+                // Calculate statistics
+                const rewardsCount = rewards.length;
+                const totalStarsSpent = rewards.reduce((sum, reward) => sum + (reward.starsUsed || 0), 0);
+                const lastRewardDate = rewards.length > 0 ? 
+                    (() => {
+                        const date = new Date(rewards[rewards.length - 1].redeemedAt);
+                        return isNaN(date.getTime()) ? '—' : 
+                            date.toLocaleDateString('ru-RU', {
+                                day: '2-digit',
+                                month: '2-digit'
+                            });
+                    })() : '—';
+                
+                // Update summary
+                document.getElementById('rewardsReceived').textContent = rewardsCount;
+                document.getElementById('totalStarsSpent').textContent = totalStarsSpent;
+                document.getElementById('lastRewardDate').textContent = lastRewardDate;
+                
+                // Render rewards
                 if (rewards.length === 0) {
                     container.innerHTML = `
                         <div class="rewards-bank-empty">
@@ -4411,30 +4591,47 @@
                 }
                 
                 // Sort rewards by date (newest first)
-                const sortedRewards = rewards.sort((a, b) => new Date(b.date) - new Date(a.date));
+                const sortedRewards = rewards.sort((a, b) => new Date(b.redeemedAt) - new Date(a.redeemedAt));
                 
                 container.innerHTML = sortedRewards.map(reward => {
-                    const date = new Date(reward.date);
-                    const formattedDate = date.toLocaleDateString('ru-RU', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric'
-                    });
+                    const date = new Date(reward.redeemedAt);
+                    const formattedDate = isNaN(date.getTime()) ? 'Дата неизвестна' : 
+                        date.toLocaleDateString('ru-RU', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                        });
                     
                     return `
                         <div class="reward-bank-item">
                             <div class="reward-bank-icon">${reward.icon || '🎁'}</div>
                             <div class="reward-bank-content">
-                                <div class="reward-bank-title">${reward.name}</div>
-                                <div class="reward-bank-description">${reward.description || 'Описание не указано'}</div>
+                                <div class="reward-bank-title">${reward.description}</div>
+                                <div class="reward-bank-description">Награда получена</div>
                                 <div class="reward-bank-meta">
                                     <div class="reward-bank-date">${formattedDate}</div>
-                                    <div class="reward-bank-stars">${reward.stars} ⭐</div>
+                                    <div class="reward-bank-stars">${reward.starsUsed} ⭐</div>
                                 </div>
                             </div>
+                            ${appState.role === 'admin' ? `
+                                <div class="reward-bank-actions">
+                                    <button class="reward-delete-btn" onclick="deleteReward(${reward.id})" title="Удалить награду">
+                                        🗑️
+                                    </button>
+                                </div>
+                            ` : ''}
                         </div>
                     `;
                 }).join('');
+                
+                // Отладочная информация после рендеринга
+                console.log('After rendering rewards:', {
+                    rewardsCount: sortedRewards.length,
+                    containerScrollHeight: container.scrollHeight,
+                    containerClientHeight: container.clientHeight,
+                    containerMaxHeight: window.getComputedStyle(container).maxHeight,
+                    shouldShowScroll: container.scrollHeight > container.clientHeight
+                });
             }
 
             function changeAchievementLevel(direction) {

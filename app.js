@@ -751,6 +751,28 @@
                 return thresholds.filter((threshold) => weeklyXP >= threshold).length;
             }
 
+            // Function to get next weekly target (fixed at 750 XP)
+            function getNextWeeklyTarget() {
+                return 750;
+            }
+
+            // Function to get weekly progress percentage (based on 750 XP max)
+            function getWeeklyProgressPercent() {
+                const currentXP = appState.progress.weeklyXP;
+                return Math.min(100, (currentXP / 750) * 100);
+            }
+
+            // Function to get weekly progress stage
+            function getWeeklyProgressStage(currentXP) {
+                if (currentXP < 500) {
+                    return 'beginner'; // 0-499 XP
+                } else if (currentXP < 750) {
+                    return 'intermediate'; // 500-749 XP
+                } else {
+                    return 'expert'; // 750+ XP
+                }
+            }
+
             // DOM Updates
             function updateProgressDisplay() {
                 const { progress } = appState;
@@ -1322,7 +1344,9 @@
                             </div>
                             <div class="task-details">
                                 <h4>${escapeHTML(task.name)}</h4>
-                                <p>${escapeHTML(task.description)}</p>
+                                <button class="btn-description" onclick="showTaskDescription(event, ${task.id})" title="Подробное описание" aria-label="Подробное описание">
+                                    📄 Подробнее
+                                </button>
                             </div>
                         </div>
                         <div class="task-meta">
@@ -1344,6 +1368,67 @@
             `,
                     )
                     .join("");
+            }
+
+            // Function to show task description modal
+            function showTaskDescription(event, taskId) {
+                event.stopPropagation(); // Prevent task completion when clicking description button
+                
+                const task = appState.tasks.find(t => t.id === taskId);
+                if (!task) return;
+                
+                // Create modal content
+                const modalContent = `
+                    <div class="description-modal-overlay" onclick="hideTaskDescription()">
+                        <div class="description-modal-content" onclick="event.stopPropagation()">
+                            <div class="description-modal-header">
+                                <div class="description-modal-icon">${task.icon}</div>
+                                <h3 class="description-modal-title">${escapeHTML(task.name)}</h3>
+                                <button class="description-modal-close" onclick="hideTaskDescription()" aria-label="Закрыть">
+                                    ✕
+                                </button>
+                            </div>
+                            <div class="description-modal-body">
+                                <div class="description-modal-meta">
+                                    <div class="description-meta-item">
+                                        <span class="description-meta-icon">⏱️</span>
+                                        <span class="description-meta-text">${task.duration} минут</span>
+                                    </div>
+                                    <div class="description-meta-item">
+                                        <span class="description-meta-icon">⭐</span>
+                                        <span class="description-meta-text">+${task.xpReward} XP</span>
+                                    </div>
+                                </div>
+                                <div class="description-modal-description">
+                                    <h4>Описание задания:</h4>
+                                    <p>${escapeHTML(task.description)}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add modal to body
+                document.body.insertAdjacentHTML('beforeend', modalContent);
+                
+                // Add animation class after a small delay
+                setTimeout(() => {
+                    const modal = document.querySelector('.description-modal-overlay');
+                    if (modal) {
+                        modal.classList.add('show');
+                    }
+                }, 10);
+            }
+            
+            // Function to hide task description modal
+            function hideTaskDescription() {
+                const modal = document.querySelector('.description-modal-overlay');
+                if (modal) {
+                    modal.classList.remove('show');
+                    setTimeout(() => {
+                        modal.remove();
+                    }, 300);
+                }
             }
 
             function renderRewards() {
@@ -1559,16 +1644,199 @@
                 const task = appState.tasks.find((t) => t.id === taskId);
                 if (!task) return;
 
+                // Show confirmation modal instead of immediate completion
+                showTaskCompletionModal(task);
+            }
+
+            // Function to show task completion confirmation modal
+            function showTaskCompletionModal(task) {
+                // Create modal content
+                const modalContent = `
+                    <div class="completion-modal-overlay" onclick="hideTaskCompletionModal()">
+                        <div class="completion-modal-content" onclick="event.stopPropagation()">
+                            <div class="completion-modal-header">
+                                <div class="completion-modal-icon">${task.icon}</div>
+                                <h3 class="completion-modal-title">Подтверждение выполнения</h3>
+                                <button class="completion-modal-close" onclick="hideTaskCompletionModal()" aria-label="Закрыть">
+                                    ✕
+                                </button>
+                            </div>
+                            <div class="completion-modal-body">
+                                <div class="completion-task-info">
+                                    <h4>${escapeHTML(task.name)}</h4>
+                                    <p class="completion-task-description">${escapeHTML(task.description)}</p>
+                                </div>
+                                
+                                <div class="completion-adjustments">
+                                    <h4>Настройки выполнения:</h4>
+                                    
+                                    <div class="completion-input-group">
+                                        <label for="completionXP">Получено XP:</label>
+                                        <div class="completion-input-wrapper">
+                                            <input type="number" id="completionXP" value="${task.xpReward}" min="1" max="500" class="completion-input">
+                                            <span class="completion-input-suffix">XP</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="completion-input-group">
+                                        <label for="completionTime">Затрачено времени:</label>
+                                        <div class="completion-input-wrapper">
+                                            <input type="number" id="completionTime" value="${task.duration}" min="1" max="500" class="completion-input">
+                                            <span class="completion-input-suffix">мин</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="completion-weekly-progress">
+                                    <h4>Недельный прогресс:</h4>
+                                    <div class="weekly-progress-container">
+                                        <div class="weekly-progress-bar ${getWeeklyProgressStage(appState.progress.weeklyXP)}">
+                                            <div class="weekly-progress-fill" id="weeklyProgressFill" style="width: ${getWeeklyProgressPercent()}%"></div>
+                                            <div class="weekly-progress-text">
+                                                <span class="current-weekly-xp">${appState.progress.weeklyXP}</span>
+                                                <span class="weekly-xp-separator">/</span>
+                                                <span class="max-weekly-xp">750</span>
+                                                <span class="weekly-xp-label">XP</span>
+                                            </div>
+                                        </div>
+                                        <div class="weekly-progress-preview" id="weeklyProgressPreview">
+                                            <div class="xp-addition-animation">
+                                                <span class="xp-addition-text">+<span id="previewXPAddition">${task.xpReward}</span> XP</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="completion-modal-footer">
+                                <button class="btn btn-secondary" onclick="hideTaskCompletionModal()">
+                                    Отмена
+                                </button>
+                                <button class="btn btn-primary" onclick="confirmTaskCompletion(${task.id})">
+                                    ✅ Подтвердить выполнение
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add modal to body
+                document.body.insertAdjacentHTML('beforeend', modalContent);
+                
+                // Add event listeners for real-time preview updates
+                const xpInput = document.getElementById('completionXP');
+                const timeInput = document.getElementById('completionTime');
+                
+                xpInput.addEventListener('input', updateCompletionPreview);
+                timeInput.addEventListener('input', updateCompletionPreview);
+                
+                // Add animation class after a small delay
+                setTimeout(() => {
+                    const modal = document.querySelector('.completion-modal-overlay');
+                    if (modal) {
+                        modal.classList.add('show');
+                    }
+                }, 10);
+            }
+            
+            // Function to update completion preview
+            function updateCompletionPreview() {
+                const xpInput = document.getElementById('completionXP');
+                const timeInput = document.getElementById('completionTime');
+                
+                if (!xpInput || !timeInput) return;
+                
+                const newXP = parseInt(xpInput.value) || 0;
+                const newTime = parseInt(timeInput.value) || 0;
+                
+                // Update XP addition text
+                const previewXPAddition = document.getElementById('previewXPAddition');
+                if (previewXPAddition) {
+                    previewXPAddition.textContent = newXP;
+                }
+                
+                // Update weekly progress bar with animation
+                const weeklyProgressFill = document.getElementById('weeklyProgressFill');
+                const weeklyProgressBar = document.querySelector('.weekly-progress-bar');
+                const currentWeeklyXP = appState.progress.weeklyXP;
+                const newWeeklyXP = currentWeeklyXP + newXP;
+                
+                // Calculate new progress percentage (based on 750 XP max)
+                const newProgressPercent = Math.min(100, (newWeeklyXP / 750) * 100);
+                const newStage = getWeeklyProgressStage(newWeeklyXP);
+                
+                if (weeklyProgressFill && weeklyProgressBar) {
+                    // Update progress bar class for color changes
+                    weeklyProgressBar.className = `weekly-progress-bar ${newStage}`;
+                    
+                    // Animate the progress bar
+                    weeklyProgressFill.style.transition = 'width 0.5s ease-out';
+                    weeklyProgressFill.style.width = newProgressPercent + '%';
+                    
+                    // Add pulse animation to show XP addition
+                    const xpAdditionAnimation = document.querySelector('.xp-addition-animation');
+                    if (xpAdditionAnimation) {
+                        xpAdditionAnimation.classList.add('pulse');
+                        setTimeout(() => {
+                            xpAdditionAnimation.classList.remove('pulse');
+                        }, 500);
+                    }
+                }
+            }
+            
+            // Function to hide task completion modal
+            function hideTaskCompletionModal() {
+                const modal = document.querySelector('.completion-modal-overlay');
+                if (modal) {
+                    modal.classList.remove('show');
+                    setTimeout(() => {
+                        modal.remove();
+                    }, 300);
+                }
+            }
+            
+            // Function to confirm task completion with custom values
+            function confirmTaskCompletion(taskId) {
+                const task = appState.tasks.find((t) => t.id === taskId);
+                if (!task) return;
+                
+                const xpInput = document.getElementById('completionXP');
+                const timeInput = document.getElementById('completionTime');
+                
+                if (!xpInput || !timeInput) return;
+                
+                const customXP = parseInt(xpInput.value) || task.xpReward;
+                const customTime = parseInt(timeInput.value) || task.duration;
+                
+                // Validate inputs
+                if (customXP < 1 || customXP > 500) {
+                    showNotification('XP должно быть от 1 до 500', 'error');
+                    return;
+                }
+                
+                if (customTime < 1 || customTime > 500) {
+                    showNotification('Время должно быть от 1 до 500 минут', 'error');
+                    return;
+                }
+                
+                // Hide modal first
+                hideTaskCompletionModal();
+                
+                // Execute task completion with custom values
+                executeTaskCompletion(task, customXP, customTime);
+            }
+            
+            // Function to execute actual task completion
+            function executeTaskCompletion(task, customXP, customTime) {
                 // Animate task completion
-                const taskElement = e.currentTarget.closest('.task-item');
+                const taskElement = document.querySelector(`[onclick*="completeTask(event, ${task.id})"]`).closest('.task-item');
                 taskElement.classList.add("task-completed");
 
                 setTimeout(() => {
                     ensureWeeklyReset();
-                    // Update progress
-                    appState.progress.totalXP += task.xpReward;
-                    appState.progress.currentLevelXP += task.xpReward;
-                    appState.progress.weeklyXP += task.xpReward;
+                    // Update progress with custom values
+                    appState.progress.totalXP += customXP;
+                    appState.progress.currentLevelXP += customXP;
+                    appState.progress.weeklyXP += customXP;
                     
                     // Обновляем лучшую неделю
                     updateBestWeekProgress();
@@ -1597,23 +1865,20 @@
                             document.getElementById("currentLevel").classList.remove("level-up");
                         }, 1000);
                     } else {
-                        showNotification(`Задание выполнено! +${task.xpReward} XP`, "success");
+                        showNotification(`Задание выполнено! +${customXP} XP`, "success");
                     }
 
-                    // Log activity
+                    // Log activity with custom values
                     const today = formatDate(new Date());
                     if (!appState.activityData[today]) {
                         appState.activityData[today] = [];
                     }
                     
-                    // Используем реальную длительность задания
-                    const timeSpent = task.duration || 15;
-                    
                     appState.activityData[today].push({
                         taskId: task.id,
                         taskName: task.name,
-                        xpEarned: task.xpReward,
-                        timeSpent: timeSpent,
+                        xpEarned: customXP,
+                        timeSpent: customTime,
                         completedAt: new Date(),
                     });
 
@@ -1637,7 +1902,8 @@
                     
                     // 3. Проверяем, что все показатели обновлены
                     console.log('✅ Задание выполнено, показатели обновлены');
-                    console.log('   - Получено XP:', task.xpReward);
+                    console.log('   - Получено XP:', customXP);
+                    console.log('   - Затрачено времени:', customTime);
                     console.log('   - Новый общий XP:', appState.progress.totalXP);
                     console.log('   - Новый уровень:', appState.progress.level);
                     console.log('   - XP за неделю:', appState.progress.weeklyXP);
@@ -1652,7 +1918,7 @@
                     }, 1000);
 
                     taskElement.classList.remove("task-completed");
-                }, 600);
+                }, 100);
             }
 
             function addTask(event) {
@@ -1713,8 +1979,8 @@
 
                 if (Number.isNaN(xpReward)) xpReward = 50;
                 if (Number.isNaN(duration)) duration = 15;
-                xpReward = Math.min(500, Math.max(10, xpReward));
-                duration = Math.min(120, Math.max(5, duration));
+                xpReward = Math.min(500, Math.max(1, xpReward));
+                duration = Math.min(500, Math.max(1, duration));
 
                 const newTask = {
                     id: Date.now(),
@@ -2005,8 +2271,8 @@
 
                 if (Number.isNaN(xpReward)) xpReward = 50;
                 if (Number.isNaN(duration)) duration = 15;
-                xpReward = Math.min(500, Math.max(10, xpReward));
-                duration = Math.min(120, Math.max(5, duration));
+                xpReward = Math.min(500, Math.max(1, xpReward));
+                duration = Math.min(500, Math.max(1, duration));
 
                 // Обновляем задание
                 task.name = name;

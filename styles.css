@@ -368,12 +368,7 @@
                 word-wrap: break-word;
             }
 
-            .task-details p {
-                font-size: 0.875rem;
-                color: #64748b;
-                line-height: 1.4;
-                word-wrap: break-word;
-            }
+
 
             .task-meta {
                 display: flex;
@@ -406,6 +401,552 @@
                 align-items: center;
                 gap: 8px;
                 flex-shrink: 0;
+            }
+
+            .btn-description {
+                background: #f0f9ff;
+                color: #0369a1;
+                border: 1px solid #bae6fd;
+                border-radius: 6px;
+                padding: 6px 12px;
+                font-size: 0.75rem;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                white-space: nowrap;
+                margin-top: 8px;
+                align-self: flex-start;
+            }
+
+            .btn-description:hover {
+                background: #e0f2fe;
+                border-color: #0369a1;
+                transform: translateY(-1px);
+            }
+
+            .btn-description:focus {
+                outline: 2px solid #0369a1;
+                outline-offset: 2px;
+            }
+
+            /* Description Modal */
+            .description-modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2000;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                padding: 20px;
+            }
+
+            .description-modal-overlay.show {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .description-modal-content {
+                background: white;
+                border-radius: 16px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                max-width: 500px;
+                width: 100%;
+                max-height: 80vh;
+                overflow: hidden;
+                transform: translateY(20px) scale(0.95);
+                transition: all 0.3s ease;
+            }
+
+            .description-modal-overlay.show .description-modal-content {
+                transform: translateY(0) scale(1);
+            }
+
+            .description-modal-header {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 20px 24px 16px;
+                border-bottom: 1px solid #e5e7eb;
+                background: #f9fafb;
+            }
+
+            .description-modal-icon {
+                width: 40px;
+                height: 40px;
+                background: #1e40af;
+                color: white;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.2rem;
+                flex-shrink: 0;
+            }
+
+            .description-modal-title {
+                font-size: 1.25rem;
+                font-weight: 600;
+                color: #1f2937;
+                margin: 0;
+                flex: 1;
+                line-height: 1.3;
+            }
+
+            .description-modal-close {
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                color: #6b7280;
+                cursor: pointer;
+                padding: 4px;
+                border-radius: 6px;
+                transition: all 0.2s ease;
+                width: 32px;
+                height: 32px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .description-modal-close:hover {
+                background: #f3f4f6;
+                color: #374151;
+            }
+
+            .description-modal-body {
+                padding: 24px;
+                overflow-y: auto;
+                max-height: calc(80vh - 100px);
+            }
+
+            .description-modal-meta {
+                display: flex;
+                gap: 20px;
+                margin-bottom: 20px;
+                padding: 16px;
+                background: #f8fafc;
+                border-radius: 12px;
+                border: 1px solid #e2e8f0;
+            }
+
+            .description-meta-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .description-meta-icon {
+                font-size: 1.1rem;
+            }
+
+            .description-meta-text {
+                font-weight: 500;
+                color: #374151;
+            }
+
+            .description-modal-description h4 {
+                font-size: 1rem;
+                font-weight: 600;
+                color: #1f2937;
+                margin: 0 0 12px 0;
+            }
+
+            .description-modal-description p {
+                font-size: 0.95rem;
+                line-height: 1.6;
+                color: #4b5563;
+                margin: 0;
+                white-space: pre-wrap;
+            }
+
+            /* Task Completion Modal */
+            .completion-modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.6);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 3000;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                padding: 20px;
+            }
+
+            .completion-modal-overlay.show {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .completion-modal-content {
+                background: white;
+                border-radius: 20px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                max-width: 600px;
+                width: 100%;
+                max-height: 90vh;
+                overflow: hidden;
+                transform: translateY(30px) scale(0.9);
+                transition: all 0.3s ease;
+            }
+
+            .completion-modal-overlay.show .completion-modal-content {
+                transform: translateY(0) scale(1);
+            }
+
+            .completion-modal-header {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                padding: 24px 28px 20px;
+                border-bottom: 1px solid #e5e7eb;
+                background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            }
+
+            .completion-modal-icon {
+                width: 48px;
+                height: 48px;
+                background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+                color: white;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.4rem;
+                flex-shrink: 0;
+                box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+            }
+
+            .completion-modal-title {
+                font-size: 1.4rem;
+                font-weight: 700;
+                color: #1f2937;
+                margin: 0;
+                flex: 1;
+                line-height: 1.3;
+            }
+
+            .completion-modal-close {
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                color: #6b7280;
+                cursor: pointer;
+                padding: 8px;
+                border-radius: 8px;
+                transition: all 0.2s ease;
+                width: 36px;
+                height: 36px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .completion-modal-close:hover {
+                background: #f3f4f6;
+                color: #374151;
+            }
+
+            .completion-modal-body {
+                padding: 28px;
+                overflow-y: auto;
+                max-height: calc(90vh - 200px);
+            }
+
+            .completion-task-info {
+                margin-bottom: 24px;
+                padding: 20px;
+                background: #f8fafc;
+                border-radius: 12px;
+                border: 1px solid #e2e8f0;
+            }
+
+            .completion-task-info h4 {
+                font-size: 1.2rem;
+                font-weight: 600;
+                color: #1f2937;
+                margin: 0 0 8px 0;
+            }
+
+            .completion-task-description {
+                font-size: 0.95rem;
+                line-height: 1.6;
+                color: #4b5563;
+                margin: 0;
+                white-space: pre-wrap;
+            }
+
+            .completion-adjustments {
+                margin-bottom: 24px;
+            }
+
+            .completion-adjustments h4 {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #1f2937;
+                margin: 0 0 16px 0;
+            }
+
+            .completion-input-group {
+                margin-bottom: 16px;
+            }
+
+            .completion-input-group label {
+                display: block;
+                font-size: 0.9rem;
+                font-weight: 500;
+                color: #374151;
+                margin-bottom: 6px;
+            }
+
+            .completion-input-wrapper {
+                position: relative;
+                display: flex;
+                align-items: center;
+            }
+
+            .completion-input {
+                flex: 1;
+                padding: 12px 16px;
+                border: 2px solid #d1d5db;
+                border-radius: 8px;
+                font-size: 1rem;
+                font-weight: 500;
+                color: #1f2937;
+                background: white;
+                transition: all 0.2s ease;
+            }
+
+            .completion-input:focus {
+                outline: none;
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+
+            .completion-input-suffix {
+                position: absolute;
+                right: 12px;
+                font-size: 0.85rem;
+                font-weight: 500;
+                color: #6b7280;
+                pointer-events: none;
+            }
+
+            .completion-weekly-progress {
+                background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+                border: 1px solid #bae6fd;
+                border-radius: 12px;
+                padding: 20px;
+            }
+
+            .completion-weekly-progress h4 {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #0369a1;
+                margin: 0 0 16px 0;
+            }
+
+            .weekly-progress-container {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .weekly-progress-bar {
+                position: relative;
+                border-radius: 12px;
+                height: 24px;
+                overflow: hidden;
+                border: 2px solid;
+                transition: all 0.3s ease;
+            }
+
+            /* Beginner stage (0-499 XP) - Orange/Red gradient */
+            .weekly-progress-bar.beginner {
+                background: #fef3c7;
+                border-color: #fbbf24;
+            }
+
+            .weekly-progress-bar.beginner .weekly-progress-fill {
+                background: linear-gradient(90deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+            }
+
+            /* Intermediate stage (500-749 XP) - Blue gradient */
+            .weekly-progress-bar.intermediate {
+                background: #dbeafe;
+                border-color: #3b82f6;
+            }
+
+            .weekly-progress-bar.intermediate .weekly-progress-fill {
+                background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 50%, #1e40af 100%);
+            }
+
+            /* Expert stage (750+ XP) - Green gradient */
+            .weekly-progress-bar.expert {
+                background: #dcfce7;
+                border-color: #22c55e;
+            }
+
+            .weekly-progress-bar.expert .weekly-progress-fill {
+                background: linear-gradient(90deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
+            }
+
+            .weekly-progress-fill {
+                height: 100%;
+                border-radius: 10px;
+                transition: width 0.5s ease-out;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .weekly-progress-fill::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+                animation: shimmer 2s infinite;
+            }
+
+            @keyframes shimmer {
+                0% { left: -100%; }
+                100% { left: 100%; }
+            }
+
+            .weekly-progress-text {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 0.85rem;
+                font-weight: 600;
+                text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+                transition: color 0.3s ease;
+            }
+
+            /* Text colors for different stages */
+            .weekly-progress-bar.beginner .weekly-progress-text {
+                color: #b45309;
+            }
+
+            .weekly-progress-bar.intermediate .weekly-progress-text {
+                color: #1e40af;
+            }
+
+            .weekly-progress-bar.expert .weekly-progress-text {
+                color: #15803d;
+            }
+
+            .current-weekly-xp {
+                transition: color 0.3s ease;
+            }
+
+            .weekly-xp-separator {
+                color: #64748b;
+            }
+
+            .max-weekly-xp {
+                color: #64748b;
+            }
+
+            .weekly-xp-label {
+                font-size: 0.75rem;
+                transition: color 0.3s ease;
+            }
+
+            .weekly-progress-preview {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 40px;
+            }
+
+            .xp-addition-animation {
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: white;
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-weight: 600;
+                font-size: 0.9rem;
+                box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+                transition: all 0.3s ease;
+            }
+
+            .xp-addition-animation.pulse {
+                transform: scale(1.1);
+                box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+            }
+
+            .xp-addition-text {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            .completion-modal-footer {
+                display: flex;
+                gap: 12px;
+                padding: 20px 28px 28px;
+                border-top: 1px solid #e5e7eb;
+                background: #f9fafb;
+            }
+
+            .completion-modal-footer .btn {
+                flex: 1;
+                padding: 12px 24px;
+                font-size: 1rem;
+                font-weight: 600;
+                border-radius: 10px;
+                transition: all 0.2s ease;
+            }
+
+            .completion-modal-footer .btn-secondary {
+                background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+                color: white;
+                border: 1px solid #dc2626;
+                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+                text-align: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .completion-modal-footer .btn-secondary:hover {
+                background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+                transform: translateY(-1px);
+                box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+            }
+
+            .completion-modal-footer .btn-primary {
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: white;
+                border: 1px solid #059669;
+                box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            }
+
+            .completion-modal-footer .btn-primary:hover {
+                background: linear-gradient(135deg, #059669 0%, #047857 100%);
+                transform: translateY(-1px);
+                box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
             }
 
             /* Calendar */
@@ -1317,8 +1858,10 @@
                     margin-bottom: 3px;
                 }
                 
-                .task-details p {
-                    font-size: 0.8rem;
+                .btn-description {
+                    font-size: 0.7rem;
+                    padding: 5px 10px;
+                    margin-top: 6px;
                 }
                 
                 .task-meta {
@@ -1485,8 +2028,10 @@
                     margin-bottom: 2px;
                 }
                 
-                .task-details p {
-                    font-size: 0.75rem;
+                .btn-description {
+                    font-size: 0.65rem;
+                    padding: 4px 8px;
+                    margin-top: 4px;
                 }
                 
                 .task-meta {
@@ -1655,8 +2200,10 @@
                     margin-bottom: 2px;
                 }
                 
-                .task-details p {
-                    font-size: 0.7rem;
+                .btn-description {
+                    font-size: 0.6rem;
+                    padding: 4px 6px;
+                    margin-top: 4px;
                 }
                 
                 .task-meta {
@@ -1891,6 +2438,15 @@
                 .form-input {
                     border-width: 0.5px;
                 }
+                
+                /* Weekly progress high DPI adjustments */
+                .weekly-progress-bar {
+                    border-width: 1px;
+                }
+                
+                .weekly-progress-fill {
+                    border-radius: 8px;
+                }
             }
             
             /* Touch Device Optimizations */
@@ -1906,6 +2462,24 @@
                 .btn-icon-delete {
                     min-width: 44px;
                     min-height: 44px;
+                }
+                
+                .btn-description {
+                    min-height: 44px;
+                    padding: 8px 12px;
+                }
+                
+                /* Weekly progress touch device optimizations */
+                .weekly-progress-bar {
+                    min-height: 44px;
+                }
+                
+                .xp-addition-animation {
+                    min-height: 44px;
+                    min-width: 44px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                 }
                 
                 .form-input {
@@ -2053,6 +2627,39 @@
                 .form-input:focus {
                     -webkit-appearance: none;
                 }
+                
+                /* Weekly progress iOS optimizations */
+                .weekly-progress-bar {
+                    -webkit-tap-highlight-color: transparent;
+                }
+                
+                .xp-addition-animation {
+                    -webkit-tap-highlight-color: transparent;
+                }
+            }
+
+            /* Landscape orientation on mobile devices */
+            @media screen and (max-width: 768px) and (orientation: landscape) {
+                .completion-modal-content {
+                    max-height: 95vh;
+                }
+                
+                .completion-modal-body {
+                    padding: 16px;
+                    max-height: calc(95vh - 150px);
+                }
+                
+                .completion-weekly-progress {
+                    padding: 12px;
+                }
+                
+                .weekly-progress-bar {
+                    height: 20px;
+                }
+                
+                .weekly-progress-text {
+                    font-size: 0.75rem;
+                }
             }
 
             /* Extra small screens - vertical layout for task actions */
@@ -2070,6 +2677,172 @@
                 .task-actions {
                     justify-content: center;
                     margin-top: 4px;
+                }
+
+                /* Weekly progress extra small screen adjustments */
+                .completion-weekly-progress {
+                    padding: 12px;
+                }
+                
+                .weekly-progress-bar {
+                    height: 18px;
+                    border-radius: 10px;
+                }
+                
+                .weekly-progress-text {
+                    font-size: 0.7rem;
+                    gap: 1px;
+                }
+                
+                .weekly-xp-label {
+                    font-size: 0.65rem;
+                }
+                
+                .xp-addition-animation {
+                    padding: 5px 10px;
+                    font-size: 0.7rem;
+                    border-radius: 14px;
+                }
+                
+                .completion-weekly-progress h4 {
+                    font-size: 1rem;
+                    margin-bottom: 12px;
+                }
+            }
+
+            /* Mobile modal adjustments */
+            @media screen and (max-width: 768px) {
+                .description-modal-overlay {
+                    padding: 16px;
+                }
+                
+                .description-modal-content {
+                    max-width: 100%;
+                    max-height: 90vh;
+                }
+                
+                .description-modal-header {
+                    padding: 16px 20px 12px;
+                }
+                
+                .description-modal-title {
+                    font-size: 1.1rem;
+                }
+                
+                .description-modal-body {
+                    padding: 20px;
+                }
+                
+                .description-modal-meta {
+                    flex-direction: column;
+                    gap: 12px;
+                }
+
+                /* Weekly progress tablet adjustments */
+                .weekly-progress-bar {
+                    height: 22px;
+                }
+                
+                .weekly-progress-text {
+                    font-size: 0.8rem;
+                }
+                
+                .xp-addition-animation {
+                    padding: 7px 14px;
+                    font-size: 0.85rem;
+                }
+            }
+
+            @media screen and (max-width: 480px) {
+                .description-modal-overlay {
+                    padding: 12px;
+                }
+                
+                .description-modal-header {
+                    padding: 14px 16px 10px;
+                }
+                
+                .description-modal-icon {
+                    width: 36px;
+                    height: 36px;
+                    font-size: 1.1rem;
+                }
+                
+                .description-modal-title {
+                    font-size: 1rem;
+                }
+                
+                .description-modal-body {
+                    padding: 16px;
+                }
+                
+                .description-modal-meta {
+                    padding: 12px;
+                }
+
+                /* Completion modal mobile adjustments */
+                .completion-modal-overlay {
+                    padding: 12px;
+                }
+                
+                .completion-modal-content {
+                    max-width: 100%;
+                    max-height: 95vh;
+                }
+                
+                .completion-modal-header {
+                    padding: 16px 20px 12px;
+                }
+                
+                .completion-modal-icon {
+                    width: 40px;
+                    height: 40px;
+                    font-size: 1.2rem;
+                }
+                
+                .completion-modal-title {
+                    font-size: 1.2rem;
+                }
+                
+                .completion-modal-body {
+                    padding: 20px;
+                }
+                
+                .completion-task-info {
+                    padding: 16px;
+                }
+                
+                .completion-weekly-progress {
+                    padding: 16px;
+                }
+                
+                .weekly-progress-bar {
+                    height: 20px;
+                    border-width: 1px;
+                }
+                
+                .weekly-progress-text {
+                    font-size: 0.75rem;
+                    gap: 2px;
+                }
+                
+                .weekly-xp-label {
+                    font-size: 0.7rem;
+                }
+                
+                .xp-addition-animation {
+                    padding: 6px 12px;
+                    font-size: 0.75rem;
+                    border-radius: 16px;
+                }
+                
+                .completion-modal-footer {
+                    padding: 16px 20px 20px;
+                    flex-direction: column;
+                }
+                
+                .completion-modal-footer .btn {
+                    width: 100%;
                 }
             }
             

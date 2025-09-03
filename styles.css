@@ -1,4 +1,29 @@
 ﻿
+            /* Исправленная система z-index */
+            :root {
+                --z-base: 1;
+                --z-dropdown: 100;
+                --z-sticky: 200;
+                --z-fixed: 300;
+                --z-modal-backdrop: 1000;
+                --z-modal: 1100;
+                --z-modal-close: 1200;
+                --z-tooltip: 1300;
+                --z-notification: 1400;
+                --z-popup: 1500;
+                --z-debug: 9999;
+            }
+
+            /* Fallback для браузеров без поддержки CSS переменных */
+            .modal-overlay { z-index: 1000; }
+            .modal { z-index: 1100; }
+            .close-btn { z-index: 1200; }
+            .notification { z-index: 1400; }
+            .popup-notification { z-index: 1500; }
+            .settings-panel { z-index: 300; }
+            .settings-menu { z-index: 100; }
+            .autocomplete-list { z-index: 100; }
+
             * {
                 margin: 0;
                 padding: 0;
@@ -487,7 +512,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                z-index: 2000;
+                z-index: var(--z-modal);
                 opacity: 0;
                 visibility: hidden;
                 transition: all 0.3s ease;
@@ -624,7 +649,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                z-index: 3000;
+                z-index: var(--z-modal);
                 opacity: 0;
                 visibility: hidden;
                 transition: all 0.3s ease;
@@ -1868,7 +1893,8 @@
                 display: none;
                 align-items: center;
                 justify-content: center;
-                z-index: 1000;
+                z-index: var(--z-modal);
+                transition: opacity 0.3s ease, visibility 0.3s ease;
             }
 
             .modal.show {
@@ -1882,6 +1908,7 @@
                 max-width: 500px;
                 width: 90%;
                 max-height: 80vh;
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
                 overflow-y: auto;
             }
 
@@ -1942,7 +1969,7 @@
                 border-radius: 8px;
                 color: white;
                 font-weight: 500;
-                z-index: 1001;
+                z-index: var(--z-modal-close);
                 display: none;
                 align-items: center;
                 gap: 12px;
@@ -3533,7 +3560,7 @@
                 position: fixed;
                 top: 20px;
                 left: 20px;
-                z-index: 1000;
+                z-index: var(--z-fixed);
                 display: flex;
                 flex-direction: column;
                 gap: 12px;
@@ -3735,7 +3762,7 @@
                 max-height: 70vh;
                 overflow-y: auto;
                 display: none;
-                z-index: 1000;
+                z-index: var(--z-dropdown);
                 transform: translateX(-20px);
             }
 
@@ -3755,7 +3782,7 @@
                 font-size: 24px;
                 color: white;
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                z-index: 1001;
+                z-index: var(--z-modal-close);
                 box-shadow: 0 8px 25px rgba(30, 64, 175, 0.5);
                 animation: closeBtnAppear 0.5s ease-out;
             }
@@ -4025,7 +4052,7 @@
                 overflow-y: auto;
                 box-shadow: 0 10px 25px rgba(0,0,0,0.1);
                 display: none;
-                z-index: 1002;
+                z-index: var(--z-dropdown);
             }
             .autocomplete-item {
                 padding: 10px 12px;
@@ -4228,7 +4255,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                z-index: 99998;
+                z-index: var(--z-modal);
                 opacity: 0;
                 visibility: hidden;
                 transition: all 0.3s ease;
@@ -5402,7 +5429,7 @@
                 width: 100%;
                 height: 100%;
                 background: rgba(0, 0, 0, 0.7);
-                z-index: 999;
+                z-index: var(--z-modal-backdrop);
                 display: none;
             }
 
@@ -5412,7 +5439,7 @@
 
             /* Ensure modals are above overlay */
             .modal {
-                z-index: 1000;
+                z-index: var(--z-modal);
             }
 
             /* Hide main content when modals are shown */
@@ -5909,7 +5936,7 @@
                 border-radius: 12px;
                 padding: 12px 16px;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                z-index: 10000;
+                z-index: var(--z-notification);
                 display: flex;
                 align-items: center;
                 gap: 8px;
@@ -6679,7 +6706,7 @@
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                z-index: 99999;
+                z-index: var(--z-popup);
                 display: flex;
                 flex-direction: column;
                 gap: 12px;
@@ -6965,7 +6992,7 @@
             top: 50% !important;
             left: 50% !important;
             transform: translate(-50%, -50%) scale(0.8) !important;
-            z-index: 99999 !important;
+            z-index: var(--z-popup);
             background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
             border: 1px solid #e2e8f0 !important;
             border-radius: 20px !important;

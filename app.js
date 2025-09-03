@@ -1,4 +1,99 @@
-﻿            // Available icons for tasks (replaced Font Awesome with emojis)
+﻿            // Система управления таймаутами
+            const activeTimeouts = new Set();
+
+            function safeSetTimeout(callback, delay) {
+                const timeoutId = setTimeout(() => {
+                    activeTimeouts.delete(timeoutId);
+                    callback();
+                }, delay);
+                activeTimeouts.add(timeoutId);
+                return timeoutId;
+            }
+
+            function clearAllTimeouts() {
+                activeTimeouts.forEach(id => clearTimeout(id));
+                activeTimeouts.clear();
+            }
+
+            // Кэш DOM элементов
+            const DOM_CACHE = {
+                taskList: null,
+                currentLevel: null,
+                totalXP: null,
+                weeklyProgress: null,
+                monthlyProgress: null,
+                achievementsUnlocked: null,
+                rewardsReceived: null,
+                totalStarsSpent: null
+            };
+
+            function getCachedElement(id) {
+                if (!DOM_CACHE[id]) {
+                    DOM_CACHE[id] = document.getElementById(id);
+                }
+                return DOM_CACHE[id];
+            }
+
+            function safeGetCachedElement(id) {
+                const element = getCachedElement(id);
+                if (!element) {
+                    console.warn(`Element with id "${id}" not found`);
+                }
+                return element;
+            }
+
+            function invalidateCache(id) {
+                if (DOM_CACHE[id]) {
+                    DOM_CACHE[id] = null;
+                }
+            }
+
+            // Обработка ошибок
+            function safeExecute(fn, context = 'Unknown') {
+                try {
+                    return fn();
+                } catch (error) {
+                    console.error(`Error in ${context}:`, error);
+                    showNotification('Произошла ошибка. Попробуйте еще раз.', 'error');
+                }
+            }
+
+            // Валидация данных
+            function validateTaskData(task) {
+                if (!task.name || task.name.trim().length === 0) {
+                    throw new Error('Название задания не может быть пустым');
+                }
+                if (!task.xpReward || task.xpReward < 1) {
+                    throw new Error('XP награда должна быть больше 0');
+                }
+                if (!task.duration || task.duration < 1) {
+                    throw new Error('Длительность должна быть больше 0');
+                }
+                return true;
+            }
+
+            // Безопасное обновление UI
+            function safeUpdateUI() {
+                if (document.readyState === 'complete') {
+                    try {
+                        updateProgressDisplay();
+                        renderTasks();
+                        renderRewards();
+                        generateCalendar();
+                        updateDayActivity();
+                        renderWeeklyChart();
+                    } catch (error) {
+                        console.error('Ошибка при обновлении UI:', error);
+                    }
+                } else {
+                    // Если DOM не готов, ждем его готовности
+                    document.addEventListener('DOMContentLoaded', () => {
+                        safeUpdateUI();
+                    });
+                }
+            }
+
+            // Available icons for tasks (replaced Font Awesome with emojis)
             const availableIcons = [
                 { class: "📚", name: "Книга" },
                 { class: "✏️", name: "Карандаш" },
@@ -380,13 +475,8 @@
                         // Обновляем локальное состояние
                         appState = { ...appState, ...restoredData, ...localSettings };
                         
-                        // Обновляем UI
-                        updateProgressDisplay();
-                        renderTasks();
-                        renderRewards();
-                        generateCalendar();
-                        updateDayActivity();
-                        renderWeeklyChart();
+                        // Обновляем UI безопасно
+                        safeUpdateUI();
                         
                         console.log('✅ Данные успешно загружены из Firebase');
                         // Уведомление о загрузке показывается только при синхронизации
@@ -536,7 +626,7 @@
                 messageEl.textContent = message;
                 notification.className = `notification ${type} show`;
 
-                setTimeout(() => {
+                safeSetTimeout(() => {
                     notification.classList.remove("show");
                 }, 3000);
             }
@@ -696,10 +786,11 @@
             function updateProgressDisplay() {
                 const { progress } = appState;
 
-                document.getElementById("currentLevel").textContent =
-                    progress.level;
-                document.getElementById("totalXP").textContent =
-                    progress.totalXP.toLocaleString();
+                const currentLevelEl = safeGetCachedElement("currentLevel");
+                const totalXPEl = safeGetCachedElement("totalXP");
+                
+                if (currentLevelEl) currentLevelEl.textContent = progress.level;
+                if (totalXPEl) totalXPEl.textContent = progress.totalXP.toLocaleString();
                 updateBestWeekDisplay();
 
                 const xpNeeded = getXPRequiredForLevel(progress.level);
@@ -1343,7 +1434,8 @@
             }
 
             function renderTasks() {
-                const taskList = document.getElementById("taskList");
+                const taskList = safeGetCachedElement("taskList");
+                if (!taskList) return;
                 
                 // Показываем/скрываем кнопку добавления задания в зависимости от роли
                 const addTaskBtn = document.getElementById('addTaskBtn');
@@ -1430,12 +1522,12 @@
                 document.body.insertAdjacentHTML('beforeend', modalContent);
                 
                 // Add animation class after a small delay
-                setTimeout(() => {
+                requestAnimationFrame(() => {
                     const modal = document.querySelector('.description-modal-overlay');
                     if (modal) {
                         modal.classList.add('show');
                     }
-                }, 10);
+                });
             }
             
             // Function to hide task description modal
@@ -1443,7 +1535,7 @@
                 const modal = document.querySelector('.description-modal-overlay');
                 if (modal) {
                     modal.classList.remove('show');
-                    setTimeout(() => {
+                    safeSetTimeout(() => {
                         modal.remove();
                     }, 300);
                 }
@@ -1753,17 +1845,17 @@
                 dateInput.addEventListener('change', updateCompletionPreview);
                 
                 // Initial preview update to show correct progress
-                setTimeout(() => {
+                requestAnimationFrame(() => {
                     updateCompletionPreview();
-                }, 100);
+                });
                 
                 // Add animation class after a small delay
-                setTimeout(() => {
+                requestAnimationFrame(() => {
                     const modal = document.querySelector('.completion-modal-overlay');
                     if (modal) {
                         modal.classList.add('show');
                     }
-                }, 10);
+                });
             }
             
             // Function to update completion preview
@@ -1815,7 +1907,7 @@
                     const xpAdditionAnimation = document.querySelector('.xp-addition-animation');
                     if (xpAdditionAnimation) {
                         xpAdditionAnimation.classList.add('pulse');
-                        setTimeout(() => {
+                        safeSetTimeout(() => {
                             xpAdditionAnimation.classList.remove('pulse');
                         }, 500);
                     }
@@ -1837,7 +1929,7 @@
                 const modal = document.querySelector('.completion-modal-overlay');
                 if (modal) {
                     modal.classList.remove('show');
-                        setTimeout(() => {
+                    safeSetTimeout(() => {
                         modal.remove();
                     }, 300);
                 }
@@ -1898,7 +1990,7 @@
                 const taskElement = document.querySelector(`[onclick*="completeTask(event, ${task.id})"]`).closest('.task-item');
                 taskElement.classList.add("task-completed");
 
-                setTimeout(() => {
+                safeSetTimeout(() => {
                     // Log activity with custom values and date first
                     const activityDate = formatDate(completionDate);
                     if (!appState.activityData[activityDate]) {
@@ -1948,7 +2040,7 @@
                     showTaskCompletionNotification(task, customXP);
                     
                     // Delay star notifications to ensure modal is closed
-                    setTimeout(() => {
+                    safeSetTimeout(() => {
                         updateWeeklyStars();
                     }, 1000); // 1 second delay to ensure modal is closed
                     
@@ -1975,7 +2067,7 @@
                     
                     // Автоматически сохраняем в Firebase после выполнения задания
                     // Увеличиваем задержку, чтобы уведомления о звездах успели показаться
-                    setTimeout(() => {
+                    safeSetTimeout(() => {
                         saveDataToFirebaseSilent();
                     }, 3000); // 3 секунды вместо 1
 
@@ -1986,21 +2078,26 @@
             function addTask(event) {
                 event.preventDefault();
 
-                // Проверяем роль пользователя
-                if (appState.role === 'viewer') {
-                    showNotification('Режим просмотра: добавление заданий недоступно', 'warning');
-                    return;
-                }
+                return safeExecute(() => {
+                    // Проверяем роль пользователя
+                    if (appState.role === 'viewer') {
+                        showNotification('Режим просмотра: добавление заданий недоступно', 'warning');
+                        return;
+                    }
 
-                const name = document.getElementById("taskName").value;
-                const description =
-                    document.getElementById("taskDescription").value;
-                let xpReward = parseInt(
-                    document.getElementById("taskXP").value, 10
-                );
-                let duration = parseInt(
-                    document.getElementById("taskDuration").value, 10
-                );
+                    const name = document.getElementById("taskName").value;
+                    const description =
+                        document.getElementById("taskDescription").value;
+                    let xpReward = parseInt(
+                        document.getElementById("taskXP").value, 10
+                    );
+                    let duration = parseInt(
+                        document.getElementById("taskDuration").value, 10
+                    );
+
+                    // Валидация данных
+                    const taskData = { name, xpReward, duration };
+                    validateTaskData(taskData);
 
                 // Если поле Название задания содержит специальную команду очистки
                 if (name.trim().toLowerCase() === 'очистить' || name.trim().toLowerCase() === 'clear') {
@@ -2035,7 +2132,7 @@
                         showNotification('Все задания очищены! Все показатели пересчитаны.', 'success');
                         
                                             // Автоматически сохраняем в Firebase после очистки заданий
-                    setTimeout(() => {
+                    safeSetTimeout(() => {
                         saveDataToFirebaseSilent();
                     }, 1000);
                     }
@@ -2087,13 +2184,14 @@
                     showNotification("Новое задание добавлено! Все показатели пересчитаны.", "success");
                     
                     // Автоматически сохраняем в Firebase после добавления задания
-                    setTimeout(() => {
+                    safeSetTimeout(() => {
                         saveDataToFirebaseSilent();
                     }, 1000);
 
-                // Reset form
-                document.getElementById("taskForm").reset();
-                renderWeeklyChart();
+                    // Reset form
+                    document.getElementById("taskForm").reset();
+                    renderWeeklyChart();
+                }, 'addTask');
             }
 
             function addReward(event) {
@@ -2150,7 +2248,7 @@
                     showNotification("Награда получена! Все показатели пересчитаны.", "success");
                     
                     // Автоматически сохраняем в Firebase после получения награды
-                    setTimeout(() => {
+                    safeSetTimeout(() => {
                         saveDataToFirebaseSilent();
                     }, 1000);
 
@@ -2246,7 +2344,7 @@
             function hideTaskModal() {
                 document.getElementById("taskModal").classList.remove("show");
                 // Reset icon selection to first icon
-                setTimeout(() => {
+                safeSetTimeout(() => {
                     const firstIcon = document.querySelector('.icon-option');
                     if (firstIcon) {
                         document.querySelectorAll('.icon-option').forEach(option => {
@@ -2288,7 +2386,7 @@
             function hideEditTaskModal() {
                 document.getElementById("editTaskModal").classList.remove("show");
                 // Reset icon selection to first icon
-                setTimeout(() => {
+                safeSetTimeout(() => {
                     const firstIcon = document.querySelector('#editIconSelector .icon-option');
                     if (firstIcon) {
                         document.querySelectorAll('#editIconSelector .icon-option').forEach(option => {
@@ -2391,7 +2489,7 @@
                 showNotification("Задание обновлено! Все показатели пересчитаны.", "success");
                 
                 // Автоматически сохраняем в Firebase после обновления задания
-                setTimeout(() => {
+                safeSetTimeout(() => {
                     saveDataToFirebaseSilent();
                 }, 1000);
             }
@@ -2509,7 +2607,7 @@
                         showNotification('Все награды очищены! Все показатели пересчитаны.', 'success');
                         
                                             // Автоматически сохраняем в Firebase после очистки наград
-                    setTimeout(() => {
+                    safeSetTimeout(() => {
                         saveDataToFirebaseSilent();
                     }, 1000);
                         
@@ -2545,7 +2643,7 @@
                 showNotification('Награда сохранена! Все показатели пересчитаны.', 'success');
                 
                                     // Автоматически сохраняем в Firebase после сохранения идеи награды
-                    setTimeout(() => {
+                    safeSetTimeout(() => {
                         saveDataToFirebaseSilent();
                     }, 1000);
                 
@@ -2732,8 +2830,8 @@
                         // 1. Пересчитываем лучшую неделю
                         recalculateBestWeek();
                         
-                        // 2. Обновляем все отображения
-                        updateProgressDisplay();
+                        // 2. Обновляем все отображения безопасно
+                        safeUpdateUI();
                         updateBestWeekDisplay();
                         updateRedeemControls();
                         updateProgressWeekSection();
@@ -2818,12 +2916,12 @@
                 updateSyncStatus();
                 
                 // Проверяем, нужна ли первичная синхронизация (с задержкой, чтобы не мешать загрузке PIN-кодов)
-                setTimeout(() => {
+                safeSetTimeout(() => {
                     checkFirstTimeSync();
                 }, 1000);
                 
                 // Резервный таймаут - если что-то пошло не так, показываем верификацию через 10 секунд
-                const fallbackTimeout = setTimeout(() => {
+                const fallbackTimeout = safeSetTimeout(() => {
                     console.log('⏰ Резервный таймаут: показываем верификацию принудительно...');
                     showSyncStatus('error', 'Принудительный запуск');
                     showVerificationAfterSync();
@@ -2905,7 +3003,7 @@
                     showNotification('Задание удалено! Все показатели пересчитаны.', 'success');
                     
                     // Автоматически сохраняем в Firebase после удаления задания
-                    setTimeout(() => {
+                    safeSetTimeout(() => {
                         saveDataToFirebaseSilent();
                     }, 1000);
                 }
@@ -2974,7 +3072,7 @@
                 console.log('   - Лучшая неделя:', appState.progress.bestWeekXP);
 
                                     // Автоматически сохраняем в Firebase после удаления активности
-                    setTimeout(() => {
+                    safeSetTimeout(() => {
                         saveDataToFirebaseSilent();
                     }, 1000);
 
@@ -3156,7 +3254,7 @@
                     console.log('🏆 Текущая неделя XP:', appState.progress.weeklyXP);
                     
                     // Автоматически сохраняем в Firebase после полного пересчета прогресса
-                    setTimeout(() => {
+                    safeSetTimeout(() => {
                         saveDataToFirebaseSilent();
                     }, 1000);
             }
@@ -3199,7 +3297,7 @@
                     showNotification('Все задания удалены! Все показатели пересчитаны.', 'success');
                     
                     // Автоматически сохраняем в Firebase после очистки заданий
-                    setTimeout(() => {
+                    safeSetTimeout(() => {
                         saveDataToFirebaseSilent();
                     }, 1000);
                 }
@@ -3236,7 +3334,7 @@
                 }
                 
                 // Закрываем меню с небольшой задержкой для анимации
-                setTimeout(() => {
+                safeSetTimeout(() => {
                     menu.classList.remove('show');
                     const btn = document.querySelector('.settings-btn');
                     if (btn) btn.setAttribute('aria-expanded', 'false');
@@ -3514,7 +3612,7 @@
                         showNotification('Слепок применен! Все показатели пересчитаны.', 'success');
                         
                                             // Автоматически сохраняем в Firebase после применения снимка
-                    setTimeout(() => {
+                    safeSetTimeout(() => {
                         saveDataToFirebaseSilent();
                     }, 1000);
             }
@@ -3594,7 +3692,7 @@
                         showNotification('Данные импортированы успешно! Все показатели пересчитаны.', 'success');
                         
                         // Автоматически сохраняем в Firebase после импорта данных
-                        setTimeout(() => {
+                        safeSetTimeout(() => {
                             saveDataToFirebaseSilent();
                         }, 1000);
                         
@@ -3738,7 +3836,7 @@
                     showNotification('Прогресс полностью сброшен! Все показатели обновлены.', 'success');
                     
                     // Автоматически сохраняем в Firebase после сброса прогресса
-                    setTimeout(() => {
+                    safeSetTimeout(() => {
                         saveDataToFirebaseSilent();
                     }, 1000);
                 }
@@ -3793,8 +3891,7 @@
                 }
             });
 
-            // Initialize app when page loads
-            document.addEventListener("DOMContentLoaded", initApp);
+            // Initialize app when page loads (removed duplicate)
 
 
 
@@ -4209,7 +4306,7 @@
                     console.log('🎁 Rewards bank expanded');
                     
                     // Отладочная информация после открытия панели
-                    setTimeout(() => {
+                    safeSetTimeout(() => {
                         const container = document.getElementById('rewardsBankContent');
                         if (container) {
                             console.log('After panel opened:', {
@@ -4251,7 +4348,7 @@
                 console.log('🧪 Простое уведомление добавлено в DOM');
                 
                 // Remove after 3 seconds
-                setTimeout(() => {
+                safeSetTimeout(() => {
                     if (notification.parentNode) {
                         notification.parentNode.removeChild(notification);
                         console.log('🧪 Простое уведомление удалено');
@@ -4322,7 +4419,7 @@
                 console.log('🏆 Тестовое модальное окно добавлено в DOM');
                 
                 // Добавляем класс show
-                setTimeout(() => {
+                safeSetTimeout(() => {
                     const modal = document.getElementById('testAchievementModal');
                     if (modal) {
                         modal.classList.add('show');
@@ -4348,7 +4445,7 @@
                 const modal = document.getElementById('testAchievementModal');
                 if (modal) {
                     modal.classList.remove('show');
-                    setTimeout(() => {
+                    safeSetTimeout(() => {
                         modal.remove();
                         console.log('🏆 Тестовое модальное окно удалено');
                     }, 300);
@@ -4466,7 +4563,7 @@
                 console.log('🎁 Тестируем переключение...');
                 toggleRewardsBank();
                 
-                setTimeout(() => {
+                safeSetTimeout(() => {
                     console.log('After toggle - display style:', content.style.display);
                     console.log('After toggle - expanded state:', rewardsBankExpanded);
                 }, 100);
@@ -4510,7 +4607,7 @@
                 });
                 
                 // Удаляем через 5 секунд
-                setTimeout(() => {
+                safeSetTimeout(() => {
                     if (testDiv.parentNode) {
                         testDiv.parentNode.removeChild(testDiv);
                         console.log('🔍 Тестовый элемент удален');
@@ -4631,7 +4728,7 @@
                 showNotification(`Награда "${reward.description}" удалена! ${starsReturned} ⭐ возвращено в банк. Все показатели пересчитаны.`, 'success');
                 
                 // Auto-save to Firebase
-                setTimeout(() => {
+                safeSetTimeout(() => {
                     saveDataToFirebaseSilent();
                 }, 1000);
             }
@@ -4879,8 +4976,7 @@
 
 
 
-            // Initialize app when page loads
-            document.addEventListener("DOMContentLoaded", initApp);
+            // Initialize app when page loads (removed duplicate)
 
             // Network status handlers
             window.addEventListener('online', () => {
@@ -5003,7 +5099,7 @@
                 showNotification(appState.userName === 'Михаил' ? 'Режим Михаила' : 'Режим администратора', 'info');
                 
                 // Автоматически сохраняем в Firebase после смены учетной записи
-                setTimeout(() => {
+                safeSetTimeout(() => {
                     saveDataToFirebaseSilent();
                 }, 1000);
             }
@@ -5432,7 +5528,7 @@
                         showNotification('Вход выполнен успешно! Все показатели пересчитаны.', 'success');
                         
                         // Автоматически сохраняем в Firebase после успешного входа
-                        setTimeout(() => {
+                        safeSetTimeout(() => {
                             saveDataToFirebaseSilent();
                         }, 1000);
                         
@@ -5505,7 +5601,7 @@
                     applyRolePermissions();
                     
                     // Автоматически сохраняем в Firebase после установки PIN-кода
-                    setTimeout(() => {
+                    safeSetTimeout(() => {
                         saveDataToFirebaseSilent();
                     }, 1000);
                     
@@ -5924,7 +6020,7 @@
                         saveBtn.classList.add('success');
                         
                         // Reset to normal state after 2 seconds
-                        setTimeout(() => {
+                        safeSetTimeout(() => {
                             saveBtn.classList.remove('success');
                         }, 2000);
                         
@@ -5935,7 +6031,7 @@
                         saveBtn.classList.add('error');
                         
                         // Reset to normal state after 3 seconds
-                        setTimeout(() => {
+                        safeSetTimeout(() => {
                             saveBtn.classList.remove('error');
                         }, 3000);
                         
@@ -5947,7 +6043,7 @@
                     saveBtn.classList.add('error');
                     
                     // Reset to normal state after 3 seconds
-                    setTimeout(() => {
+                    safeSetTimeout(() => {
                         saveBtn.classList.remove('error');
                     }, 3000);
                     
@@ -6476,7 +6572,7 @@
                         // Экспоненциальная задержка между попытками
                         const waitTime = delay * Math.pow(2, attempt - 1);
                         console.log(`⏳ Ожидание ${waitTime}ms перед следующей попыткой...`);
-                        await new Promise(resolve => setTimeout(resolve, waitTime));
+                        await new Promise(resolve => safeSetTimeout(resolve, waitTime));
                     }
                 }
             }
@@ -6866,7 +6962,7 @@
                 
                 // Автоматически скрываем через 3 секунды для успешных статусов
                 if (status === 'success') {
-                    setTimeout(() => {
+                    safeSetTimeout(() => {
                         if (indicator.parentNode) {
                             indicator.remove();
                         }
@@ -7594,7 +7690,7 @@
                 console.log('🔔 Notification element added to body:', notificationEl);
 
                 // Show animation
-                setTimeout(() => {
+                safeSetTimeout(() => {
                     notificationEl.style.transform = 'translate(-50%, -50%) scale(1)';
                     notificationEl.style.opacity = '1';
                     console.log('🔔 Notification shown:', notification.id);
@@ -7618,7 +7714,7 @@
                 notificationEl.style.opacity = '0';
 
                 // Remove from DOM after animation
-                setTimeout(() => {
+                safeSetTimeout(() => {
                     if (notificationEl.parentNode) {
                         notificationEl.parentNode.removeChild(notificationEl);
                     }
@@ -7629,7 +7725,7 @@
                     }
 
                     // Process next notification in queue
-                    setTimeout(() => {
+                    safeSetTimeout(() => {
                         processNotificationQueue();
                     }, 100);
                 }, 400);
@@ -8076,7 +8172,7 @@
             }
 
             // Запускаем систему бэкапов после загрузки
-            setTimeout(initializeBackupSystem, 2000);
+            safeSetTimeout(initializeBackupSystem, 2000);
 
             // ==================== ТЕСТИРОВАНИЕ СИСТЕМЫ БЭКАПОВ ====================
 

@@ -6234,25 +6234,43 @@
                 console.log('🔧 Восстанавливаем типы данных...');
                 
                 // Функция для безопасного создания Date объекта
-                function safeStringToDate(dateString) {
-                    if (!dateString) return null;
+                function safeStringToDate(dateValue) {
+                    if (!dateValue) return null;
                     
                     try {
-                        const date = new Date(dateString);
-                        if (!isNaN(date.getTime())) {
+                        // Если это Firebase Timestamp объект
+                        if (dateValue && typeof dateValue.toDate === 'function') {
+                            const date = dateValue.toDate();
+                            console.log('🔄 Firebase Timestamp преобразован в Date:', date);
                             return date;
-                        } else {
-                            console.warn('⚠️ Некорректная строка даты:', dateString);
-                            return null;
                         }
+                        
+                        // Если это строка
+                        if (typeof dateValue === 'string') {
+                            const date = new Date(dateValue);
+                            if (!isNaN(date.getTime())) {
+                                return date;
+                            } else {
+                                console.warn('⚠️ Некорректная строка даты:', dateValue);
+                                return null;
+                            }
+                        }
+                        
+                        // Если это уже Date объект
+                        if (dateValue instanceof Date) {
+                            return dateValue;
+                        }
+                        
+                        console.warn('⚠️ Неизвестный тип даты:', typeof dateValue, dateValue);
+                        return null;
                     } catch (error) {
-                        console.warn('⚠️ Ошибка при создании Date из строки:', dateString, error);
+                        console.warn('⚠️ Ошибка при создании Date:', dateValue, error);
                         return null;
                     }
                 }
                 
                 // Restore Date objects
-                if (restored.currentMonth && typeof restored.currentMonth === 'string') {
+                if (restored.currentMonth) {
                     const date = safeStringToDate(restored.currentMonth);
                     if (date) {
                         restored.currentMonth = date;
@@ -6263,7 +6281,7 @@
                     }
                 }
                 
-                if (restored.selectedDate && typeof restored.selectedDate === 'string') {
+                if (restored.selectedDate) {
                     const date = safeStringToDate(restored.selectedDate);
                     if (date) {
                         restored.selectedDate = date;
@@ -6274,7 +6292,7 @@
                     }
                 }
                 
-                if (restored.resetDate && typeof restored.resetDate === 'string') {
+                if (restored.resetDate) {
                     const date = safeStringToDate(restored.resetDate);
                     if (date) {
                         restored.resetDate = date;
@@ -6291,7 +6309,7 @@
                     Object.keys(restored.activityData).forEach(dateStr => {
                         if (restored.activityData[dateStr] && Array.isArray(restored.activityData[dateStr])) {
                             restored.activityData[dateStr].forEach(activity => {
-                                if (activity.completedAt && typeof activity.completedAt === 'string') {
+                                if (activity.completedAt) {
                                     const date = safeStringToDate(activity.completedAt);
                                     if (date) {
                                         activity.completedAt = date;
@@ -8535,21 +8553,35 @@
                     
                     const backupData = backupDoc.data();
                     
-                    // Восстанавливаем данные
-                    appState.progress = backupData.progress;
-                    appState.tasks = backupData.tasks;
-                    appState.rewards = backupData.rewards;
-                    appState.activityData = backupData.activityData;
-                    appState.rewardPlan = backupData.rewardPlan;
-                    appState.resetDate = backupData.resetDate;
-                    appState.user = backupData.user;
-                    appState.userName = backupData.userName;
-                    appState.role = backupData.role;
-                    appState.isVerified = backupData.isVerified;
-                    appState.pinCodes = backupData.pinCodes;
-                    appState.currentMonth = backupData.currentMonth;
-                    appState.selectedDate = backupData.selectedDate;
-                    appState.progressView = backupData.progressView;
+                    // ВАЖНО: Восстанавливаем типы данных из бэкапа
+                    console.log('🔧 Восстанавливаем типы данных из бэкапа...');
+                    const restoredData = restoreDataTypes(backupData);
+                    
+                    // Восстанавливаем данные с правильными типами
+                    appState.progress = restoredData.progress || backupData.progress;
+                    appState.tasks = restoredData.tasks || backupData.tasks;
+                    appState.rewards = restoredData.rewards || backupData.rewards;
+                    appState.activityData = restoredData.activityData || backupData.activityData;
+                    appState.rewardPlan = restoredData.rewardPlan || backupData.rewardPlan;
+                    appState.resetDate = restoredData.resetDate || backupData.resetDate;
+                    appState.user = restoredData.user || backupData.user;
+                    appState.userName = restoredData.userName || backupData.userName;
+                    appState.role = restoredData.role || backupData.role;
+                    appState.isVerified = restoredData.isVerified || backupData.isVerified;
+                    appState.pinCodes = restoredData.pinCodes || backupData.pinCodes;
+                    appState.currentMonth = restoredData.currentMonth || backupData.currentMonth;
+                    appState.selectedDate = restoredData.selectedDate || backupData.selectedDate;
+                    appState.progressView = restoredData.progressView || backupData.progressView;
+                    
+                    // ВАЖНО: Сбрасываем флаг инициализации для разрешения сохранения
+                    appState.isInitializing = false;
+                    console.log('🔄 Флаг инициализации сброшен после восстановления из бэкапа');
+                    
+                    // ВАЖНО: Очищаем кэш DOM элементов для корректного обновления
+                    Object.keys(DOM_CACHE).forEach(key => {
+                        DOM_CACHE[key] = null;
+                    });
+                    console.log('🔄 Кэш DOM элементов очищен после восстановления из бэкапа');
                     
                     // Обновляем UI
                     updateProgressDisplay();
@@ -8566,7 +8598,26 @@
                     updateAchievementsBank();
                     updateLearningTimeDisplay();
                     
-                    showNotification('Данные восстановлены из бэкапа!', 'success');
+                    // ВАЖНО: Сохраняем восстановленные данные локально и в Firebase
+                    console.log('💾 Сохраняем восстановленные данные локально...');
+                    const localSaveResult = saveState();
+                    
+                    console.log('💾 Сохраняем восстановленные данные в Firebase...');
+                    const firebaseSaveResult = await saveDataToFirebaseSilent();
+                    
+                    if (localSaveResult && firebaseSaveResult) {
+                        console.log('✅ Восстановленные данные успешно сохранены локально и в Firebase');
+                        showNotification('Данные восстановлены из бэкапа и сохранены!', 'success');
+                    } else if (localSaveResult) {
+                        console.log('✅ Восстановленные данные сохранены локально, Firebase недоступен');
+                        showNotification('Данные восстановлены из бэкапа и сохранены локально', 'success');
+                    } else if (firebaseSaveResult) {
+                        console.log('✅ Восстановленные данные сохранены в Firebase, localStorage недоступен');
+                        showNotification('Данные восстановлены из бэкапа и сохранены в Firebase', 'success');
+                    } else {
+                        console.warn('⚠️ Не удалось сохранить восстановленные данные');
+                        showNotification('Данные восстановлены из бэкапа, но не сохранены', 'warning');
+                    }
                     
                     // Закрываем модальное окно менеджера
                     const modal = document.querySelector('.backup-manager-modal');

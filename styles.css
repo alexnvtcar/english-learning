@@ -142,6 +142,8 @@
                 margin: 0;
                 min-height: 3rem;
                 line-height: 1;
+                flex-wrap: nowrap;
+                overflow: visible;
             }
             
             .stat-unit {
@@ -154,6 +156,8 @@
                 background-clip: text;
                 text-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
                 line-height: 1;
+                white-space: nowrap;
+                flex-shrink: 0;
             }
 
             .stat-label {
@@ -3867,13 +3871,13 @@
             .settings-divider {
                 height: 1px;
                 background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
-                margin: 16px 0;
+                margin: 8px 0;
                 border: none;
             }
 
             /* Блоки настроек */
             .settings-block {
-                margin-bottom: 20px;
+                margin-bottom: 12px;
             }
 
             .settings-block-title {

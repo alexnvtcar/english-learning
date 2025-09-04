@@ -72,10 +72,135 @@
                 return true;
             }
 
+            // Ensure default values are set for first run
+            function ensureDefaultValues() {
+                console.log('🔧 Проверяем и устанавливаем значения по умолчанию...');
+                
+                // Инициализируем tasks если не существует
+                if (!appState.tasks || !Array.isArray(appState.tasks)) {
+                    appState.tasks = [];
+                    console.log('📝 tasks инициализирован как пустой массив');
+                }
+                
+                // Инициализируем rewards если не существует
+                if (!appState.rewards || !Array.isArray(appState.rewards)) {
+                    appState.rewards = [];
+                    console.log('🎁 rewards инициализирован как пустой массив');
+                }
+                
+                // Инициализируем activityData если не существует
+                if (!appState.activityData || typeof appState.activityData !== 'object') {
+                    appState.activityData = {};
+                    console.log('📊 activityData инициализирован как пустой объект');
+                }
+                
+                // Инициализируем rewardPlan если не существует
+                if (!appState.rewardPlan || !Array.isArray(appState.rewardPlan)) {
+                    appState.rewardPlan = [];
+                    console.log('🎯 rewardPlan инициализирован как пустой массив');
+                }
+                
+                // Инициализируем resetDate если не существует
+                if (!appState.resetDate || typeof appState.resetDate.getFullYear !== 'function') {
+                    appState.resetDate = new Date();
+                    console.log('📅 resetDate инициализирован как текущая дата');
+                }
+                
+                // Инициализируем currentMonth если не существует
+                if (!appState.currentMonth || typeof appState.currentMonth.getFullYear !== 'function') {
+                    appState.currentMonth = new Date();
+                    console.log('📅 currentMonth инициализирован как текущая дата');
+                }
+                
+                // Инициализируем selectedDate если не существует
+                if (!appState.selectedDate || typeof appState.selectedDate.getFullYear !== 'function') {
+                    appState.selectedDate = new Date();
+                    console.log('📅 selectedDate инициализирован как текущая дата');
+                }
+                
+                // Инициализируем progress если не существует
+                if (!appState.progress || typeof appState.progress !== 'object') {
+                    appState.progress = {
+                        level: 1,
+                        totalXP: 0,
+                        currentLevelXP: 0,
+                        weeklyXP: 0,
+                        weeklyStars: 0,
+                        starBank: 0,
+                        bestWeekXP: 0,
+                        bestWeekRange: '',
+                        dailyXP: {},
+                        dailyTasksCompleted: {},
+                        dailyRewardsRedeemed: {},
+                        dailyLearningTime: {}
+                    };
+                    console.log('📈 progress инициализирован со значениями по умолчанию');
+                } else {
+                    // Проверяем и инициализируем отдельные поля progress
+                    if (typeof appState.progress.level === 'undefined') appState.progress.level = 1;
+                    if (typeof appState.progress.totalXP === 'undefined' || appState.progress.totalXP < 0) appState.progress.totalXP = 0;
+                    if (typeof appState.progress.currentLevelXP === 'undefined' || appState.progress.currentLevelXP < 0) appState.progress.currentLevelXP = 0;
+                    if (typeof appState.progress.weeklyXP === 'undefined' || appState.progress.weeklyXP < 0) appState.progress.weeklyXP = 0;
+                    if (typeof appState.progress.weeklyStars === 'undefined' || appState.progress.weeklyStars < 0) appState.progress.weeklyStars = 0;
+                    if (typeof appState.progress.starBank === 'undefined' || appState.progress.starBank < 0) appState.progress.starBank = 0;
+                    if (typeof appState.progress.bestWeekXP === 'undefined' || appState.progress.bestWeekXP < 0) appState.progress.bestWeekXP = 0;
+                    if (typeof appState.progress.bestWeekRange === 'undefined') appState.progress.bestWeekRange = '';
+                    if (!appState.progress.dailyXP || typeof appState.progress.dailyXP !== 'object') appState.progress.dailyXP = {};
+                    if (!appState.progress.dailyTasksCompleted || typeof appState.progress.dailyTasksCompleted !== 'object') appState.progress.dailyTasksCompleted = {};
+                    if (!appState.progress.dailyRewardsRedeemed || typeof appState.progress.dailyRewardsRedeemed !== 'object') appState.progress.dailyRewardsRedeemed = {};
+                    if (!appState.progress.dailyLearningTime || typeof appState.progress.dailyLearningTime !== 'object') appState.progress.dailyLearningTime = {};
+                    console.log('📈 Проверены и установлены значения по умолчанию для полей progress');
+                }
+                
+                // Инициализируем role если не существует
+                if (!appState.role) {
+                    appState.role = 'viewer';
+                    console.log('👤 role инициализирован как viewer');
+                }
+                
+                // Инициализируем userName если не существует
+                if (!appState.userName) {
+                    appState.userName = 'Михаил';
+                    console.log('👤 userName инициализирован как Михаил');
+                }
+                
+                // Инициализируем pinCodes если не существует
+                if (!appState.pinCodes || typeof appState.pinCodes !== 'object') {
+                    appState.pinCodes = {};
+                    console.log('🔑 pinCodes инициализирован как пустой объект');
+                }
+                
+                // Инициализируем progressView если не существует
+                if (!appState.progressView || typeof appState.progressView !== 'object') {
+                    appState.progressView = {
+                        weekOffset: 0,
+                        monthOffset: 0
+                    };
+                    console.log('📊 progressView инициализирован со значениями по умолчанию');
+                }
+                
+                // Инициализируем isVerified если не существует
+                if (typeof appState.isVerified === 'undefined') {
+                    appState.isVerified = false;
+                    console.log('🔒 isVerified инициализирован как false');
+                }
+                
+                // Инициализируем isInitializing если не существует
+                if (typeof appState.isInitializing === 'undefined') {
+                    appState.isInitializing = false;
+                    console.log('🔄 isInitializing инициализирован как false');
+                }
+                
+                console.log('✅ Все значения по умолчанию установлены');
+            }
+
             // Безопасное обновление UI
             function safeUpdateUI() {
                 if (document.readyState === 'complete') {
                     try {
+                        // Убеждаемся, что все значения инициализированы перед обновлением UI
+                        ensureDefaultValues();
+                        
                         updateProgressDisplay();
                         renderTasks();
                         renderRewards();
@@ -84,6 +209,8 @@
                         renderWeeklyChart();
                     } catch (error) {
                         console.error('Ошибка при обновлении UI:', error);
+                        // При ошибке пытаемся инициализировать значения по умолчанию
+                        ensureDefaultValues();
                     }
                 } else {
                     // Если DOM не готов, ждем его готовности
@@ -349,6 +476,8 @@
                         console.log('👤 Текущий пользователь:', appState.userName);
                     } else {
                         console.log('📭 Локальное состояние не найдено, используем значения по умолчанию');
+                        // При первом запуске на новом устройстве инициализируем значения по умолчанию
+                        ensureDefaultValues();
                     }
                     
                     // Дополнительная проверка для критических полей
@@ -1437,6 +1566,12 @@
                 const taskList = safeGetCachedElement("taskList");
                 if (!taskList) return;
                 
+                // Убеждаемся, что tasks инициализирован
+                if (!appState.tasks || !Array.isArray(appState.tasks)) {
+                    console.warn('⚠️ tasks не инициализирован, устанавливаем пустой массив');
+                    appState.tasks = [];
+                }
+                
                 // Показываем/скрываем кнопку добавления задания в зависимости от роли
                 const addTaskBtn = document.getElementById('addTaskBtn');
                 if (addTaskBtn) {
@@ -1478,6 +1613,24 @@
             `,
                     )
                     .join("");
+                
+                // Исправление для iPhone: переустанавливаем обработчики событий
+                if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
+                    // Принудительно обновляем z-index и pointer-events для всех элементов
+                    const taskItems = taskList.querySelectorAll('.task-item');
+                    taskItems.forEach(item => {
+                        item.style.position = 'relative';
+                        item.style.zIndex = '1';
+                        item.style.pointerEvents = 'auto';
+                        
+                        const buttons = item.querySelectorAll('button');
+                        buttons.forEach(btn => {
+                            btn.style.position = 'relative';
+                            btn.style.zIndex = '2';
+                            btn.style.pointerEvents = 'auto';
+                        });
+                    });
+                }
             }
 
             // Function to show task description modal
@@ -1542,6 +1695,12 @@
             }
 
             function renderRewards() {
+                // Убеждаемся, что rewards инициализирован
+                if (!appState.rewards || !Array.isArray(appState.rewards)) {
+                    console.warn('⚠️ rewards не инициализирован, устанавливаем пустой массив');
+                    appState.rewards = [];
+                }
+                
                 // Update achievements bank
                 updateAchievementsBank();
                 
@@ -2694,6 +2853,12 @@
             function initApp() {
                 console.log('🚀 Инициализация приложения...');
                 
+                // ПРИНУДИТЕЛЬНАЯ инициализация appState для новых устройств
+                if (!window.appState) {
+                    window.appState = {};
+                    console.log('🔧 appState создан с нуля для нового устройства');
+                }
+                
                 // Проверяем возможности устройства
                 const deviceInfo = checkDeviceCapabilities();
                 
@@ -2709,6 +2874,23 @@
                 if (savedUserName && (savedUserName === 'Михаил' || savedUserName === 'Admin')) {
                     appState.userName = savedUserName;
                     console.log(`👤 Восстановлен пользователь: ${savedUserName}`);
+                }
+                
+                // Инициализируем значения по умолчанию для первого запуска
+                ensureDefaultValues();
+                
+                // ПРИНУДИТЕЛЬНАЯ проверка и исправление для новых устройств
+                if (appState.progress && appState.progress.totalXP > 1000) {
+                    console.log('⚠️ Обнаружено неправильное значение totalXP:', appState.progress.totalXP, 'исправляем на 0');
+                    appState.progress.totalXP = 0;
+                }
+                
+                // Убеждаемся, что все поля progress корректны
+                if (appState.progress) {
+                    if (appState.progress.level < 1) appState.progress.level = 1;
+                    if (appState.progress.totalXP < 0) appState.progress.totalXP = 0;
+                    if (appState.progress.currentLevelXP < 0) appState.progress.currentLevelXP = 0;
+                    console.log('🔧 Progress поля исправлены для нового устройства');
                 }
                 
                 // Устанавливаем базовые значения по умолчанию
@@ -2905,6 +3087,9 @@
                 }
                 
                 console.log('✅ Приложение инициализировано');
+                
+                // Инициализируем PWA
+                initPWA();
                 
                 // Устанавливаем флаг завершения инициализации
                 appState.isInitializing = false;
@@ -4732,6 +4917,23 @@
                     saveDataToFirebaseSilent();
                 }, 1000);
             }
+            
+            // Исправление для iPhone: переустанавливаем обработчики событий для Банка достижений
+            if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
+                const achievementItems = container.querySelectorAll('.achievement-bank-item');
+                achievementItems.forEach(item => {
+                    item.style.position = 'relative';
+                    item.style.zIndex = '1';
+                    item.style.pointerEvents = 'auto';
+                    
+                    const buttons = item.querySelectorAll('button');
+                    buttons.forEach(btn => {
+                        btn.style.position = 'relative';
+                        btn.style.zIndex = '2';
+                        btn.style.pointerEvents = 'auto';
+                    });
+                });
+            }
 
             function updateRewardsBank() {
                 console.log('🎁 updateRewardsBank called');
@@ -4832,6 +5034,23 @@
                     containerMaxHeight: window.getComputedStyle(container).maxHeight,
                     shouldShowScroll: container.scrollHeight > container.clientHeight
                 });
+                
+                // Исправление для iPhone: переустанавливаем обработчики событий для Банка наград
+                if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
+                    const rewardItems = container.querySelectorAll('.reward-bank-item');
+                    rewardItems.forEach(item => {
+                        item.style.position = 'relative';
+                        item.style.zIndex = '1';
+                        item.style.pointerEvents = 'auto';
+                        
+                        const buttons = item.querySelectorAll('button');
+                        buttons.forEach(btn => {
+                            btn.style.position = 'relative';
+                            btn.style.zIndex = '2';
+                            btn.style.pointerEvents = 'auto';
+                        });
+                    });
+                }
             }
 
             function changeAchievementLevel(direction) {
@@ -7439,6 +7658,101 @@
                 }
             }
 
+            // PWA инициализация
+            let deferredPrompt;
+            let installButton;
+
+            function initPWA() {
+                console.log('📱 Инициализация PWA...');
+                
+                // Создаем кнопку установки
+                createInstallButton();
+                
+                // Обработчик события beforeinstallprompt
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    console.log('📱 PWA: beforeinstallprompt сработал');
+                    e.preventDefault();
+                    deferredPrompt = e;
+                    showInstallButton();
+                });
+                
+                // Обработчик события appinstalled
+                window.addEventListener('appinstalled', () => {
+                    console.log('📱 PWA: Приложение установлено');
+                    hideInstallButton();
+                    deferredPrompt = null;
+                });
+                
+                // Проверяем, установлено ли уже приложение
+                if (window.matchMedia('(display-mode: standalone)').matches) {
+                    console.log('📱 PWA: Приложение уже установлено');
+                    hideInstallButton();
+                }
+            }
+            
+            function createInstallButton() {
+                // Создаем кнопку установки
+                const installBtn = document.createElement('button');
+                installBtn.id = 'installPWAButton';
+                installBtn.innerHTML = '📱 Установить приложение';
+                installBtn.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 10000;
+                    background: #1e40af;
+                    color: white;
+                    border: none;
+                    padding: 12px 20px;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+                    transition: all 0.3s ease;
+                    display: none;
+                `;
+                
+                // Добавляем hover эффект
+                installBtn.addEventListener('mouseenter', () => {
+                    installBtn.style.background = '#1d4ed8';
+                    installBtn.style.transform = 'translateY(-2px)';
+                });
+                
+                installBtn.addEventListener('mouseleave', () => {
+                    installBtn.style.background = '#1e40af';
+                    installBtn.style.transform = 'translateY(0)';
+                });
+                
+                // Обработчик клика
+                installBtn.addEventListener('click', async () => {
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        console.log('📱 PWA: Результат установки:', outcome);
+                        deferredPrompt = null;
+                        hideInstallButton();
+                    }
+                });
+                
+                document.body.appendChild(installBtn);
+                installButton = installBtn;
+            }
+            
+            function showInstallButton() {
+                if (installButton) {
+                    installButton.style.display = 'block';
+                    console.log('📱 PWA: Кнопка установки показана');
+                }
+            }
+            
+            function hideInstallButton() {
+                if (installButton) {
+                    installButton.style.display = 'none';
+                    console.log('📱 PWA: Кнопка установки скрыта');
+                }
+            }
+
             // Initialize the app when DOM is loaded
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', initApp);
@@ -7661,7 +7975,7 @@
                     top: 50% !important;
                     left: 50% !important;
                     transform: translate(-50%, -50%) scale(0.8) !important;
-                    z-index: 99999 !important;
+                    z-index: 10000 !important;
                     background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%) !important;
                     border: 3px solid #3b82f6 !important;
                     border-radius: 20px !important;
@@ -7712,11 +8026,18 @@
                     notificationEl.style.transform = 'translate(-50%, -50%) scale(1)';
                     notificationEl.style.opacity = '1';
                     console.log('🔔 Notification shown:', notification.id);
+                    
+                    // Auto-close after 5 seconds
+                    safeSetTimeout(() => {
+                        closeNotification(notification.id);
+                    }, 5000);
                 }, 100);
             }
 
             // Close notification
             function closeNotification(notificationId) {
+                console.log('🔔 closeNotification called for ID:', notificationId);
+                
                 const notificationEl = document.querySelector(`[data-notification-id="${notificationId}"]`);
                 if (!notificationEl) {
                     console.warn(`⚠️ Уведомление с ID ${notificationId} не найдено`);
@@ -7748,6 +8069,58 @@
                     }, 100);
                 }, 400);
             }
+            
+            // Force close all notifications
+            function closeAllNotifications() {
+                console.log('🔔 closeAllNotifications called');
+                
+                // Close all popup notifications
+                const popupNotifications = document.querySelectorAll('.popup-notification');
+                popupNotifications.forEach(el => {
+                    const id = el.getAttribute('data-notification-id');
+                    if (id) {
+                        closeNotification(parseInt(id));
+                    }
+                });
+                
+                // Clear notification queue
+                notificationQueue.length = 0;
+                isProcessingQueue = false;
+                
+                // Hide simple notifications
+                const simpleNotification = document.getElementById('notification');
+                if (simpleNotification) {
+                    simpleNotification.classList.remove('show');
+                }
+                
+                console.log('🔔 All notifications closed');
+            }
+            
+            // Add keyboard listener for Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeAllNotifications();
+                }
+            });
+            
+            // Функция для полной переинициализации приложения (для новых устройств)
+            function reinitializeApp() {
+                console.log('🔄 Полная переинициализация приложения...');
+                
+                // Очищаем localStorage
+                localStorage.clear();
+                console.log('🗑️ localStorage очищен');
+                
+                // Сбрасываем appState
+                window.appState = {};
+                console.log('🗑️ appState сброшен');
+                
+                // Перезагружаем страницу
+                window.location.reload();
+            }
+            
+            // Добавляем функцию в глобальную область для отладки
+            window.reinitializeApp = reinitializeApp;
 
             // Star notification function removed
 

@@ -1,7 +1,7 @@
 // Service Worker для PWA - версия без диалогов обновления
-const CACHE_NAME = 'english-learning-v1.2.0';
-const STATIC_CACHE = 'static-v1.2.0';
-const DYNAMIC_CACHE = 'dynamic-v1.2.0';
+const CACHE_NAME = 'english-learning-v1.3.0';
+const STATIC_CACHE = 'static-v1.3.0';
+const DYNAMIC_CACHE = 'dynamic-v1.3.0';
 
 // Файлы для кэширования
 const STATIC_FILES = [
@@ -12,12 +12,13 @@ const STATIC_FILES = [
   './animations-fix.css',
   './z-index-fix.css',
   './settings.json',
-  './manifest.json'
+  './manifest.json',
+  './browserconfig.xml'
 ];
 
 // Установка Service Worker - БЕЗ диалогов обновления
 self.addEventListener('install', (event) => {
-  console.log('🔧 Service Worker: Установка v1.2.0...');
+  console.log('🔧 Service Worker: Установка v1.3.0...');
   
   event.waitUntil(
     caches.open(STATIC_CACHE)
@@ -38,7 +39,7 @@ self.addEventListener('install', (event) => {
 
 // Активация Service Worker - БЕЗ диалогов обновления
 self.addEventListener('activate', (event) => {
-  console.log('🚀 Service Worker: Активация v1.2.0...');
+  console.log('🚀 Service Worker: Активация v1.3.0...');
   
   event.waitUntil(
     caches.keys()

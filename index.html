@@ -4,18 +4,64 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="English Learning" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        
+        <!-- PWA Meta Tags -->
+        <meta name="theme-color" content="#1e40af" />
+        <meta name="application-name" content="English Learning" />
+        <meta name="msapplication-TileColor" content="#1e40af" />
+        <meta name="msapplication-config" content="browserconfig.xml" />
+        
+        <!-- PWA Manifest -->
+        <link rel="manifest" href="./manifest.json" />
+        
+        <!-- Apple Touch Icons для iOS -->
+        <link rel="apple-touch-icon" sizes="57x57" href="./icons/icon-57x57.svg" />
+        <link rel="apple-touch-icon" sizes="60x60" href="./icons/icon-60x60.svg" />
+        <link rel="apple-touch-icon" sizes="72x72" href="./icons/icon-72x72.svg" />
+        <link rel="apple-touch-icon" sizes="76x76" href="./icons/icon-76x76.svg" />
+        <link rel="apple-touch-icon" sizes="114x114" href="./icons/icon-114x114.svg" />
+        <link rel="apple-touch-icon" sizes="120x120" href="./icons/icon-120x120.svg" />
+        <link rel="apple-touch-icon" sizes="144x144" href="./icons/icon-144x144.svg" />
+        <link rel="apple-touch-icon" sizes="152x152" href="./icons/icon-152x152.svg" />
+        <link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180x180.svg" />
+        <link rel="apple-touch-icon" href="./icons/icon-180x180.svg" />
+        
+        <!-- iOS Splash Screens -->
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <link rel="apple-touch-startup-image" href="./icons/icon-180x180.svg" />
+        
+        <!-- Стандартные иконки -->
+        <link rel="icon" type="image/svg+xml" sizes="16x16" href="./icons/icon-192x192.svg" />
+        <link rel="icon" type="image/svg+xml" sizes="32x32" href="./icons/icon-192x192.svg" />
+        <link rel="icon" type="image/svg+xml" sizes="48x48" href="./icons/icon-192x192.svg" />
+        <link rel="icon" type="image/svg+xml" sizes="64x64" href="./icons/icon-192x192.svg" />
+        <link rel="icon" type="image/svg+xml" sizes="96x96" href="./icons/icon-192x192.svg" />
+        <link rel="icon" type="image/svg+xml" sizes="128x128" href="./icons/icon-192x192.svg" />
+        <link rel="icon" type="image/svg+xml" sizes="192x192" href="./icons/icon-192x192.svg" />
+        <link rel="icon" type="image/svg+xml" sizes="256x256" href="./icons/icon-512x512.svg" />
+        <link rel="icon" type="image/svg+xml" sizes="512x512" href="./icons/icon-512x512.svg" />
+        <link rel="shortcut icon" href="./icons/icon-192x192.svg" />
+        
         <title>Геймификация изучения английского языка</title>
-        <!-- Offline mode: removed external icon/font links -->
         <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="animations-fix.css">
+        <link rel="stylesheet" href="z-index-fix.css">
     </head>
     <body>
         <!-- Settings Panel -->
         <div class="settings-panel">
             <button class="settings-btn" onclick="toggleSettingsMenu()" aria-label="Открыть настройки" aria-haspopup="true" aria-expanded="false">
                 ⚙️
+            </button>
+            
+            <!-- PWA Install Button -->
+            <button id="install-pwa-btn" class="install-pwa-btn" style="display: none;" aria-label="Установить приложение">
+                📱 Установить
             </button>
 
             <button class="save-btn" onclick="saveDataToFirebase()" aria-label="Сохранить данные" title="Сохранить в Firebase">
@@ -1139,5 +1185,164 @@
 
         <!-- App Script -->
         <script src="app.js"></script>
+        
+        <!-- PWA Service Worker Registration -->
+        <script>
+            // Регистрация Service Worker
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', async () => {
+                    try {
+                        const registration = await navigator.serviceWorker.register('./sw.js');
+                        console.log('✅ Service Worker зарегистрирован:', registration);
+                        
+                        // Проверка обновлений - отключена для iPhone
+                        // registration.addEventListener('updatefound', () => {
+                        //     // Обновления обрабатываются автоматически в Service Worker
+                        // });
+                        
+                        // PWA Installation для iPhone
+                        let deferredPrompt;
+                        const installButton = document.getElementById('install-pwa-btn');
+                        
+                        // Слушаем событие beforeinstallprompt
+                        window.addEventListener('beforeinstallprompt', (e) => {
+                            console.log('📱 PWA: beforeinstallprompt сработал');
+                            e.preventDefault();
+                            deferredPrompt = e;
+                            
+                            // Показываем кнопку установки
+                            if (installButton) {
+                                installButton.style.display = 'block';
+                                installButton.addEventListener('click', async () => {
+                                    if (deferredPrompt) {
+                                        deferredPrompt.prompt();
+                                        const { outcome } = await deferredPrompt.userChoice;
+                                        console.log('📱 PWA: Результат установки:', outcome);
+                                        deferredPrompt = null;
+                                        installButton.style.display = 'none';
+                                    }
+                                });
+                            }
+                        });
+                        
+                        // Слушаем событие appinstalled
+                        window.addEventListener('appinstalled', () => {
+                            console.log('✅ PWA: Приложение установлено');
+                            if (installButton) {
+                                installButton.style.display = 'none';
+                            }
+                        });
+                        
+                        // Проверяем, установлено ли уже приложение
+                        if (window.matchMedia('(display-mode: standalone)').matches) {
+                            console.log('✅ PWA: Приложение уже установлено');
+                            if (installButton) {
+                                installButton.style.display = 'none';
+                            }
+                        }
+                        
+                    } catch (error) {
+                        console.error('❌ Ошибка регистрации Service Worker:', error);
+                    }
+                });
+            }
+            
+            // Обработка установки PWA
+            let deferredPrompt;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                console.log('📱 PWA: Готов к установке');
+                e.preventDefault();
+                deferredPrompt = e;
+                
+                // Показать кнопку установки
+                showInstallButton();
+            });
+            
+            // Обработка успешной установки
+            window.addEventListener('appinstalled', () => {
+                console.log('🎉 PWA установлено!');
+                hideInstallButton();
+                deferredPrompt = null;
+            });
+            
+            // Функция показа кнопки установки
+            function showInstallButton() {
+                const installBtn = document.createElement('button');
+                installBtn.id = 'install-pwa-btn';
+                installBtn.className = 'install-pwa-btn';
+                installBtn.innerHTML = '📱 Установить приложение';
+                installBtn.onclick = installPWA;
+                
+                // Добавляем стили
+                installBtn.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #1e40af, #3b82f6);
+                    color: white;
+                    border: none;
+                    border-radius: 12px;
+                    padding: 12px 20px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+                    cursor: pointer;
+                    z-index: 1000;
+                    transition: all 0.3s ease;
+                `;
+                
+                document.body.appendChild(installBtn);
+            }
+            
+            // Функция скрытия кнопки установки
+            function hideInstallButton() {
+                const installBtn = document.getElementById('install-pwa-btn');
+                if (installBtn) {
+                    installBtn.remove();
+                }
+            }
+            
+            // Функция установки PWA
+            async function installPWA() {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log('📱 PWA установка:', outcome);
+                    deferredPrompt = null;
+                }
+            }
+            
+            // Проверка режима PWA
+            function isPWA() {
+                return window.matchMedia('(display-mode: standalone)').matches ||
+                       window.navigator.standalone === true;
+            }
+            
+            // Проверка iOS
+            function isIOS() {
+                return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            }
+            
+            // Добавление PWA-специфичных стилей
+            if (isPWA()) {
+                document.body.classList.add('pwa-mode');
+                console.log('📱 PWA режим активен');
+                
+                // iOS специфичные настройки
+                if (isIOS()) {
+                    document.body.classList.add('ios-pwa');
+                    console.log('🍎 iOS PWA режим активен');
+                    
+                    // Исправление для iOS viewport
+                    const viewport = document.querySelector('meta[name="viewport"]');
+                    if (viewport) {
+                        viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+                    }
+                    
+                    // Исправление для iOS скролла
+                    document.body.style.webkitOverflowScrolling = 'touch';
+                }
+            }
+        </script>
     </body>
 </html>

@@ -11,7 +11,6 @@
                 --z-tooltip: 1300;
                 --z-notification: 1400;
                 --z-popup: 1500;
-                --z-debug: 9999;
             }
 
             /* Fallback для браузеров без поддержки CSS переменных */
@@ -1688,6 +1687,9 @@
                 animation: timeChartCenterFloat 4s ease-in-out infinite;
                 position: relative;
                 z-index: 2;
+                overflow: hidden;
+                padding: 8px;
+                box-sizing: border-box;
             }
 
             .time-chart-center::before {
@@ -1727,6 +1729,10 @@
                 color: #1e40af;
                 animation: timeChartTextPulse 2s ease-in-out infinite;
                 text-shadow: 0 2px 4px rgba(30, 64, 175, 0.2);
+                line-height: 1.1;
+                text-align: center;
+                word-wrap: break-word;
+                max-width: 100%;
             }
 
             .time-chart-label {
@@ -2911,6 +2917,7 @@
                 .time-chart-center {
                     width: 110px;
                     height: 110px;
+                    padding: 6px;
                 }
                 
                 .time-chart-total {
@@ -3577,7 +3584,7 @@
                     left: 18px;
                 }
                 
-                .settings-btn, .save-btn {
+                .settings-btn, .save-btn, .install-pwa-btn {
                     width: 45px;
                     height: 45px;
                     font-size: 1.1rem;
@@ -3590,7 +3597,7 @@
                     left: 15px;
                 }
                 
-                .settings-btn, .save-btn {
+                .settings-btn, .save-btn, .install-pwa-btn {
                     width: 42px;
                     height: 42px;
                     font-size: 1rem;
@@ -3603,7 +3610,7 @@
                     left: 10px;
                 }
                 
-                .settings-btn, .save-btn {
+                .settings-btn, .save-btn, .install-pwa-btn {
                     width: 40px;
                     height: 40px;
                     font-size: 0.9rem;
@@ -3616,14 +3623,14 @@
                     left: 8px;
                 }
                 
-                .settings-btn, .save-btn {
+                .settings-btn, .save-btn, .install-pwa-btn {
                     width: 36px;
                     height: 36px;
                     font-size: 0.8rem;
                 }
             }
 
-            .settings-btn, .save-btn {
+            .settings-btn, .save-btn, .install-pwa-btn {
                 width: 50px;
                 height: 50px;
                 border: none;
@@ -3648,6 +3655,19 @@
                 background: #1d4ed8;
                 transform: translateY(-2px);
                 box-shadow: 0 6px 16px rgba(30, 64, 175, 0.4);
+            }
+
+            /* PWA Install Button */
+            .install-pwa-btn {
+                background: linear-gradient(135deg, #10b981, #059669);
+                box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+                margin-left: 10px;
+            }
+
+            .install-pwa-btn:hover {
+                background: linear-gradient(135deg, #059669, #047857);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
             }
 
 
@@ -4513,6 +4533,9 @@
                 max-height: 400px;
                 overflow-y: auto;
                 padding-right: 8px;
+                -webkit-overflow-scrolling: touch;
+                position: relative;
+                z-index: 1;
             }
 
             .achievements-bank-content::-webkit-scrollbar {
@@ -4995,6 +5018,9 @@
                 max-height: 400px;
                 overflow-y: auto;
                 padding-right: 8px;
+                -webkit-overflow-scrolling: touch;
+                position: relative;
+                z-index: 1;
             }
 
             .rewards-bank-content::-webkit-scrollbar {
@@ -6084,6 +6110,7 @@
                 .time-chart-center {
                     width: 95px;
                     height: 95px;
+                    padding: 5px;
                 }
 
                 .time-chart-total {
@@ -6556,6 +6583,7 @@
                 .time-chart-center {
                     width: 75px;
                     height: 75px;
+                    padding: 4px;
                 }
 
                 .time-chart-total {
@@ -7009,6 +7037,179 @@
             opacity: 0 !important;
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        }
+
+        /* PWA стили */
+        .pwa-mode {
+            /* Скрываем адресную строку в PWA режиме */
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
+
+        .pwa-mode .settings-panel {
+            /* Адаптация для PWA */
+            top: calc(20px + env(safe-area-inset-top));
+        }
+
+        /* Кнопка установки PWA */
+        .install-pwa-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .install-pwa-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(30, 64, 175, 0.4);
+        }
+
+        .install-pwa-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Адаптация для мобильных устройств в PWA */
+        @media (max-width: 768px) {
+            .pwa-mode .container {
+                padding: 10px;
+            }
+            
+            .pwa-mode .card {
+                margin-bottom: 16px;
+                padding: 16px;
+            }
+            
+            .install-pwa-btn {
+                bottom: 10px;
+                right: 10px;
+                padding: 10px 16px;
+                font-size: 12px;
+            }
+        }
+
+        /* Стили для standalone режима */
+        @media (display-mode: standalone) {
+            body {
+                /* Убираем отступы для полноэкранного режима */
+                margin: 0;
+                padding: 0;
+            }
+            
+            .container {
+                /* Адаптируем контейнер для PWA */
+                padding-top: 10px;
+            }
+        }
+
+        /* Стили для iOS Safari в PWA режиме */
+        @supports (-webkit-touch-callout: none) {
+            .pwa-mode {
+                /* iOS специфичные стили */
+                -webkit-overflow-scrolling: touch;
+                /* Исправление для iOS viewport */
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+                padding-left: env(safe-area-inset-left);
+                padding-right: env(safe-area-inset-right);
+            }
+            
+            .pwa-mode .modal {
+                /* Исправление для iOS модальных окон */
+                -webkit-transform: translateZ(0);
+                /* Фикс для iOS Safari */
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+            }
+            
+            /* Исправление для iOS кнопок */
+            .pwa-mode button {
+                -webkit-tap-highlight-color: transparent;
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+            }
+            
+            /* Исправление для iOS input полей */
+            .pwa-mode input,
+            .pwa-mode textarea {
+                -webkit-appearance: none;
+                border-radius: 0;
+            }
+            
+            /* Исправление для iOS скролла */
+            .pwa-mode .task-list,
+            .pwa-mode .rewards-bank-content,
+            .pwa-mode .achievements-bank-content {
+                -webkit-overflow-scrolling: touch;
+                overflow-y: auto;
+                position: relative;
+                z-index: 1;
+            }
+            
+            /* Исправление для кнопок после выполнения задания на iOS */
+            .pwa-mode .achievement-bank-item,
+            .pwa-mode .reward-bank-item {
+                position: relative;
+                z-index: 1;
+                pointer-events: auto;
+            }
+            
+            .pwa-mode .achievement-bank-item button,
+            .pwa-mode .reward-bank-item button {
+                position: relative;
+                z-index: 2;
+                pointer-events: auto;
+            }
+        }
+        
+        /* Дополнительные iOS стили */
+        @media screen and (max-width: 768px) {
+            /* Исправление для iOS Safari на мобильных */
+            .pwa-mode .container {
+                padding-top: max(20px, env(safe-area-inset-top));
+                padding-bottom: max(20px, env(safe-area-inset-bottom));
+            }
+            
+            .pwa-mode .settings-panel {
+                top: max(20px, env(safe-area-inset-top));
+            }
+            
+            /* Исправление для iOS клавиатуры */
+            .pwa-mode .modal-content {
+                max-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            /* Исправление для модальных окон Банка достижений и наград на iOS */
+            .pwa-mode .achievements-bank-modal,
+            .pwa-mode .rewards-bank-modal {
+                -webkit-transform: translateZ(0);
+                transform: translateZ(0);
+            }
+            
+            .pwa-mode .achievements-bank-modal .modal-content,
+            .pwa-mode .rewards-bank-modal .modal-content {
+                -webkit-overflow-scrolling: touch;
+                overflow-y: auto;
+                position: relative;
+                z-index: 1;
+            }
         }
 
         

@@ -1478,24 +1478,6 @@
             `,
                     )
                     .join("");
-                
-                // Исправление для iPhone: переустанавливаем обработчики событий
-                if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
-                    // Принудительно обновляем z-index и pointer-events для всех элементов
-                    const taskItems = taskList.querySelectorAll('.task-item');
-                    taskItems.forEach(item => {
-                        item.style.position = 'relative';
-                        item.style.zIndex = '1';
-                        item.style.pointerEvents = 'auto';
-                        
-                        const buttons = item.querySelectorAll('button');
-                        buttons.forEach(btn => {
-                            btn.style.position = 'relative';
-                            btn.style.zIndex = '2';
-                            btn.style.pointerEvents = 'auto';
-                        });
-                    });
-                }
             }
 
             // Function to show task description modal
@@ -4750,23 +4732,6 @@
                     saveDataToFirebaseSilent();
                 }, 1000);
             }
-            
-            // Исправление для iPhone: переустанавливаем обработчики событий для Банка достижений
-            if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
-                const achievementItems = container.querySelectorAll('.achievement-bank-item');
-                achievementItems.forEach(item => {
-                    item.style.position = 'relative';
-                    item.style.zIndex = '1';
-                    item.style.pointerEvents = 'auto';
-                    
-                    const buttons = item.querySelectorAll('button');
-                    buttons.forEach(btn => {
-                        btn.style.position = 'relative';
-                        btn.style.zIndex = '2';
-                        btn.style.pointerEvents = 'auto';
-                    });
-                });
-            }
 
             function updateRewardsBank() {
                 console.log('🎁 updateRewardsBank called');
@@ -4867,23 +4832,6 @@
                     containerMaxHeight: window.getComputedStyle(container).maxHeight,
                     shouldShowScroll: container.scrollHeight > container.clientHeight
                 });
-                
-                // Исправление для iPhone: переустанавливаем обработчики событий для Банка наград
-                if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
-                    const rewardItems = container.querySelectorAll('.reward-bank-item');
-                    rewardItems.forEach(item => {
-                        item.style.position = 'relative';
-                        item.style.zIndex = '1';
-                        item.style.pointerEvents = 'auto';
-                        
-                        const buttons = item.querySelectorAll('button');
-                        buttons.forEach(btn => {
-                            btn.style.position = 'relative';
-                            btn.style.zIndex = '2';
-                            btn.style.pointerEvents = 'auto';
-                        });
-                    });
-                }
             }
 
             function changeAchievementLevel(direction) {

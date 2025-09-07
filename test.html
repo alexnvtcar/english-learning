@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест PWA установки</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .btn {
+            background: #1e40af;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 10px 10px 0;
+        }
+        .btn:hover {
+            background: #1d4ed8;
+        }
+        .success {
+            background: #10b981;
+        }
+        .warning {
+            background: #f59e0b;
+        }
+        .info {
+            background: #3b82f6;
+        }
+        .url-box {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            margin: 10px 0;
+            border-left: 4px solid #1e40af;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>📱 Тест установки PWA</h1>
+        <p>Этот файл поможет проверить, что PWA установка работает правильно.</p>
+        
+        <div class="url-box">
+            <strong>Правильный URL для тестирования:</strong><br>
+            <span id="correctUrl">http://localhost:8000</span>
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <a href="http://localhost:8000" class="btn success">🚀 Открыть приложение</a>
+            <button onclick="copyUrl()" class="btn info">📋 Скопировать URL</button>
+        </div>
+        
+        <div class="card" style="background: #fef3c7; border-left: 4px solid #f59e0b;">
+            <h3>⚠️ Важно!</h3>
+            <p>Для установки PWA приложение должно быть открыто через HTTP сервер, а не как файл.</p>
+            <p><strong>НЕ используйте:</strong> file:///C:/Users/.../index.html</p>
+            <p><strong>ИСПОЛЬЗУЙТЕ:</strong> http://localhost:8000</p>
+        </div>
+        
+        <div class="card" style="background: #f0f9ff; border-left: 4px solid #3b82f6;">
+            <h3>🔧 Как запустить сервер:</h3>
+            <ol>
+                <li>Откройте командную строку в папке проекта</li>
+                <li>Выполните команду: <code>python -m http.server 8000</code></li>
+                <li>Откройте браузер и перейдите на <code>http://localhost:8000</code></li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function copyUrl() {
+            const url = 'http://localhost:8000';
+            navigator.clipboard.writeText(url).then(() => {
+                alert('URL скопирован в буфер обмена!');
+            }).catch(() => {
+                // Fallback для старых браузеров
+                const textArea = document.createElement('textarea');
+                textArea.value = url;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('URL скопирован в буфер обмена!');
+            });
+        }
+        
+        // Проверяем текущий протокол
+        if (window.location.protocol === 'file:') {
+            document.body.insertAdjacentHTML('afterbegin', `
+                <div style="background: #dc2626; color: white; padding: 15px; text-align: center; font-weight: bold;">
+                    ⚠️ ОШИБКА: Приложение открыто как файл! Используйте HTTP сервер.
+                </div>
+            `);
+        } else {
+            document.body.insertAdjacentHTML('afterbegin', `
+                <div style="background: #10b981; color: white; padding: 15px; text-align: center; font-weight: bold;">
+                    ✅ Отлично! Приложение открыто через HTTP сервер.
+                </div>
+            `);
+        }
+    </script>
+</body>
+</html>
+

@@ -17,10 +17,6 @@
         <meta name="msapplication-config" content="browserconfig.xml" />
         
         <!-- Дополнительные PWA теги для лучшей совместимости -->
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-title" content="English Learning" />
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="msapplication-tap-highlight" content="no" />
         
         <!-- Стандартные иконки -->
         <link rel="icon" type="image/svg+xml" href="./icons/icon.svg" />
@@ -46,16 +42,14 @@
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <link rel="apple-touch-startup-image" href="./icons/icon-180x180.svg" />
         
-        <!-- Стандартные иконки -->
+        <!-- Дополнительные размеры иконок -->
         <link rel="icon" type="image/svg+xml" sizes="16x16" href="./icons/icon-192x192.svg" />
         <link rel="icon" type="image/svg+xml" sizes="32x32" href="./icons/icon-192x192.svg" />
         <link rel="icon" type="image/svg+xml" sizes="48x48" href="./icons/icon-192x192.svg" />
         <link rel="icon" type="image/svg+xml" sizes="64x64" href="./icons/icon-192x192.svg" />
         <link rel="icon" type="image/svg+xml" sizes="96x96" href="./icons/icon-192x192.svg" />
         <link rel="icon" type="image/svg+xml" sizes="128x128" href="./icons/icon-192x192.svg" />
-        <link rel="icon" type="image/svg+xml" sizes="192x192" href="./icons/icon-192x192.svg" />
         <link rel="icon" type="image/svg+xml" sizes="256x256" href="./icons/icon-512x512.svg" />
-        <link rel="icon" type="image/svg+xml" sizes="512x512" href="./icons/icon-512x512.svg" />
         <link rel="shortcut icon" href="./icons/icon-192x192.svg" />
         
         <title>Геймификация изучения английского языка</title>
@@ -79,6 +73,9 @@
                 <span class="save-icon">💾</span>
                 <span class="save-text">Сохранить</span>
             </button>
+            <button class="exit-btn" onclick="exitApp()" aria-label="Выход" title="Сохранить и выйти">
+                <span class="exit-icon">❌</span>
+            </button>
             <div class="settings-menu" id="settingsMenu">
                 <!-- Кнопка закрытия -->
                 <div class="settings-close-btn" onclick="closeSettingsMenu()" aria-label="Закрыть настройки">
@@ -91,6 +88,10 @@
                     <div class="settings-item" onclick="showChangeAccountModal()">
                         👤
                         Сменить учетную запись
+                    </div>
+                    <div class="settings-item" onclick="installPWA()" id="pwaInstallMenuItem">
+                        📱
+                        Установить приложение
                     </div>
                     </div>
                 </div>
@@ -135,6 +136,30 @@
                         <div class="settings-item" onclick="checkDeviceCapabilities()">
                             📱
                             Диагностика устройства
+                        </div>
+                        <div class="settings-item" onclick="openTestPage('test.html')">
+                            🧪
+                            Общий тест приложения
+                        </div>
+                        <div class="settings-item" onclick="openTestPage('test-app-ios.html')">
+                            🍎
+                            iOS тест приложения
+                        </div>
+                        <div class="settings-item" onclick="openTestPage('test-iphone.html')">
+                            📱
+                            iPhone эмулятор
+                        </div>
+                        <div class="settings-item" onclick="showTestSelector()">
+                            🔧
+                            Выбор теста по устройству
+                        </div>
+                        <div class="settings-item" onclick="forceIOSSync()" style="background: #fef3c7; border-left: 4px solid #f59e0b;">
+                            🍎
+                            Принудительная iOS синхронизация
+                        </div>
+                        <div class="settings-item" onclick="diagnoseIOSSync()" style="background: #f0f9ff; border-left: 4px solid #3b82f6;">
+                            🔍
+                            Диагностика iOS синхронизации
                         </div>
                     </div>
                 </div>
@@ -1258,70 +1283,7 @@
                 });
             }
             
-            // Обработка установки PWA
-            let deferredPrompt;
-            window.addEventListener('beforeinstallprompt', (e) => {
-                console.log('📱 PWA: Готов к установке');
-                e.preventDefault();
-                deferredPrompt = e;
-                
-                // Показать кнопку установки
-                showInstallButton();
-            });
-            
-            // Обработка успешной установки
-            window.addEventListener('appinstalled', () => {
-                console.log('🎉 PWA установлено!');
-                hideInstallButton();
-                deferredPrompt = null;
-            });
-            
-            // Функция показа кнопки установки
-            function showInstallButton() {
-                const installBtn = document.createElement('button');
-                installBtn.id = 'install-pwa-btn';
-                installBtn.className = 'install-pwa-btn';
-                installBtn.innerHTML = '📱 Установить приложение';
-                installBtn.onclick = installPWA;
-                
-                // Добавляем стили
-                installBtn.style.cssText = `
-                    position: fixed;
-                    bottom: 20px;
-                    right: 20px;
-                    background: linear-gradient(135deg, #1e40af, #3b82f6);
-                    color: white;
-                    border: none;
-                    border-radius: 12px;
-                    padding: 12px 20px;
-                    font-size: 14px;
-                    font-weight: 600;
-                    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
-                    cursor: pointer;
-                    z-index: 1000;
-                    transition: all 0.3s ease;
-                `;
-                
-                document.body.appendChild(installBtn);
-            }
-            
-            // Функция скрытия кнопки установки
-            function hideInstallButton() {
-                const installBtn = document.getElementById('install-pwa-btn');
-                if (installBtn) {
-                    installBtn.remove();
-                }
-            }
-            
-            // Функция установки PWA
-            async function installPWA() {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    console.log('📱 PWA установка:', outcome);
-                    deferredPrompt = null;
-                }
-            }
+            // PWA функции перенесены в app.js
             
             // Проверка режима PWA
             function isPWA() {
@@ -1355,5 +1317,54 @@
                 }
             }
         </script>
+        
+        <!-- Модальное окно выбора теста -->
+        <div class="modal" id="testSelectorModal">
+            <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="testSelectorModalTitle" style="max-width:600px; position:relative;">
+                <button class="close-btn" onclick="hideTestSelectorModal()">&times;</button>
+                <div class="modal-header">
+                    <h3 class="modal-title" id="testSelectorModalTitle">🔧 Выбор теста по устройству</h3>
+                </div>
+                <div class="test-selector-content">
+                    <div class="device-info">
+                        <h4>📱 Информация об устройстве:</h4>
+                        <div id="deviceInfoDisplay"></div>
+                    </div>
+                    
+                    <div class="test-options">
+                        <h4>🧪 Доступные тесты:</h4>
+                        
+                        <div class="test-option" onclick="openTestPage('test.html')">
+                            <div class="test-icon">🧪</div>
+                            <div class="test-info">
+                                <div class="test-name">Общий тест приложения</div>
+                                <div class="test-description">Базовое тестирование функций приложения</div>
+                            </div>
+                        </div>
+                        
+                        <div class="test-option" onclick="openTestPage('test-app-ios.html')">
+                            <div class="test-icon">🍎</div>
+                            <div class="test-info">
+                                <div class="test-name">iOS тест приложения</div>
+                                <div class="test-description">Специальное тестирование для iOS устройств</div>
+                            </div>
+                        </div>
+                        
+                        <div class="test-option" onclick="openTestPage('test-iphone.html')">
+                            <div class="test-icon">📱</div>
+                            <div class="test-info">
+                                <div class="test-name">iPhone эмулятор</div>
+                                <div class="test-description">Полная эмуляция iPhone с диагностикой ошибок</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="recommended-test">
+                        <h4>💡 Рекомендуемый тест:</h4>
+                        <div id="recommendedTest"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>

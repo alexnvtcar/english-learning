@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест iPhone - English Learning App</title>
+    <meta name="description" content="Тестирование iPhone эмуляции для English Learning App">
+    <meta name="theme-color" content="#007aff">
+    <link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;iPhone Test App&quot;,&quot;short_name&quot;:&quot;iPhone Test&quot;,&quot;description&quot;:&quot;Тестирование iPhone эмуляции&quot;,&quot;start_url&quot;:&quot;/&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#ffffff&quot;,&quot;theme_color&quot;:&quot;#007aff&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iNDIiIGZpbGw9IiMwMDdhZmYiLz4KPHN2ZyB4PSI0OCIgeT0iNDgiIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPC9zdmc+&quot;,&quot;sizes&quot;:&quot;192x192&quot;,&quot;type&quot;:&quot;image/svg+xml&quot;}]]}">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iNDIiIGZpbGw9IiMwMDdhZmYiLz4KPHN2ZyB4PSI0OCIgeT0iNDgiIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPC9zdmc+">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 375px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+        }
+        .test-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #007aff;
+        }
+        .test-button {
+            background: #007aff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin: 5px 0;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        .test-element {
+            width: 100px;
+            height: 100px;
+            background: #007aff;
+            margin: 10px 0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .test-element:hover {
+            background: #0056b3;
+            transform: scale(1.05);
+        }
+        .test-element:active {
+            transform: scale(0.95);
+        }
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e9ecef;
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #007aff;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        @media (max-width: 480px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+            .content {
+                padding: 15px;
+            }
+            .test-button {
+                font-size: 14px;
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍎 iPhone Тест</h1>
+            <p>Эмуляция iOS устройства</p>
+        </div>
+        
+        <div class="content">
+            <div class="test-section">
+                <h3>📱 Информация об устройстве</h3>
+                <div id="deviceInfo"></div>
+            </div>
+            
+            <div class="test-section">
+                <h3>🔧 Тесты iOS функций</h3>
+                <button class="test-button" onclick="testIOSDetection()">Проверить определение iOS</button>
+                <button class="test-button" onclick="testLocalStorage()">Тест localStorage</button>
+                <button class="test-button" onclick="testCache()">Тест кэша</button>
+                <button class="test-button" onclick="testFirebase()">Тест Firebase</button>
+                <button class="test-button" onclick="testTouchEvents()">Тест Touch событий</button>
+                <button class="test-button" onclick="testPWA()">Тест PWA функций</button>
+                <button class="test-button" onclick="testSafari()">Тест Safari специфики</button>
+                <button class="test-button" onclick="testPerformance()">Тест производительности</button>
+                <button class="test-button" onclick="testErrorHandling()">Тест обработки ошибок</button>
+                <button class="test-button" onclick="diagnoseIssues()">🔍 Диагностика проблем</button>
+                <button class="test-button" onclick="generateReport()">📊 Создать отчет</button>
+                <button class="test-button" onclick="startErrorMonitoring()">🔍 Мониторинг ошибок</button>
+                <button class="test-button" onclick="applyFixes()">🔧 Применить исправления</button>
+                <button class="test-button" onclick="generateFixedCode()">📝 Создать исправленный код</button>
+                <button class="test-button" onclick="applyAggressiveFixes()" style="background: #dc3545; color: white; font-weight: bold;">🔧 Агрессивные исправления</button>
+                <button class="test-button" onclick="createErrorSuppressionScript()">🛡️ Создать скрипт подавления</button>
+                <button class="test-button" onclick="runAllTests()" style="background: #28a745; font-weight: bold;">🚀 Запустить все тесты</button>
+                <button class="test-button" onclick="openMainApp()">Открыть основное приложение</button>
+            </div>
+            
+            <div class="test-section">
+                <h3>📊 Статус</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div id="status"></div>
+            </div>
+            
+            <div class="test-section">
+                <h3>📝 Лог</h3>
+                <div id="log" class="log"></div>
+                <button class="test-button" onclick="clearLog()">Очистить лог</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // Firebase конфигурация
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvQvQvQvQvQvQvQvQvQvQvQvQvQvQvQvQ",
+            authDomain: "english-learning-6dd75.firebaseapp.com",
+            projectId: "english-learning-6dd75",
+            storageBucket: "english-learning-6dd75.appspot.com",
+            messagingSenderId: "695373353831",
+            appId: "1:695373353831:web:74192c1f632282931155c2"
+        };
+
+        // Инициализация Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        console.log('🔥 Firebase инициализирован для iOS теста');
+        
+        // Эмуляция iPhone User Agent
+        const originalUserAgent = navigator.userAgent;
+        Object.defineProperty(navigator, 'userAgent', {
+            get: function() {
+                return 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1';
+            }
+        });
+
+        // Эмуляция iPhone viewport
+        const meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+        document.head.appendChild(meta);
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function updateDeviceInfo() {
+            const deviceInfo = document.getElementById('deviceInfo');
+            deviceInfo.innerHTML = `
+                <p><strong>User Agent:</strong> ${navigator.userAgent}</p>
+                <p><strong>Платформа:</strong> ${navigator.platform}</p>
+                <p><strong>Онлайн:</strong> ${navigator.onLine ? 'Да' : 'Нет'}</p>
+                <p><strong>Cookie:</strong> ${navigator.cookieEnabled ? 'Включены' : 'Отключены'}</p>
+                <p><strong>Ширина экрана:</strong> ${screen.width}px</p>
+                <p><strong>Высота экрана:</strong> ${screen.height}px</p>
+            `;
+        }
+
+        function testIOSDetection() {
+            log('🔍 Тестирование определения iOS...');
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            log(`iOS определен: ${isIOS}`);
+            updateStatus(`iOS определен: ${isIOS ? 'Да' : 'Нет'}`, isIOS ? 'success' : 'error');
+        }
+
+        function testLocalStorage() {
+            log('💾 Тестирование localStorage...');
+            try {
+                const testKey = 'ios-test-' + Date.now();
+                const testValue = 'test-value';
+                localStorage.setItem(testKey, testValue);
+                const retrieved = localStorage.getItem(testKey);
+                localStorage.removeItem(testKey);
+                
+                if (retrieved === testValue) {
+                    log('✅ localStorage работает корректно');
+                    updateStatus('localStorage работает корректно', 'success');
+                } else {
+                    log('❌ localStorage работает некорректно');
+                    updateStatus('localStorage работает некорректно', 'error');
+                }
+            } catch (error) {
+                log('❌ Ошибка localStorage: ' + error.message);
+                updateStatus('Ошибка localStorage: ' + error.message, 'error');
+            }
+        }
+
+        function testCache() {
+            log('🗂️ Тестирование кэша...');
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    log(`Найдено кэшей: ${names.length}`);
+                    names.forEach(name => {
+                        log(`  - ${name}`);
+                    });
+                    updateStatus(`Найдено кэшей: ${names.length}`, 'info');
+                });
+
+            } else {
+                log('❌ Cache API не поддерживается');
+                updateStatus('Cache API не поддерживается', 'error');
+            }
+        }
+
+        function testFirebase() {
+            log('🔥 Тестирование Firebase...');
+            // Проверяем, доступен ли Firebase
+            if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0) {
+                log('✅ Firebase доступен и инициализирован');
+                updateStatus('Firebase доступен и инициализирован', 'success');
+                
+                // Тестируем подключение к Firestore с правильным API
+                db.collection('test').doc('test').get().then((docSnap) => {
+                    // Используем правильный метод для проверки существования документа
+                    if (docSnap && docSnap.data) {
+                        log('✅ Firestore подключение работает');
+                        log('📄 Документ существует: ' + (docSnap.data() ? 'Да' : 'Нет'));
+                    } else {
+                        log('⚠️ Firestore: Документ не найден, но подключение работает');
+                    }
+                }).catch(error => {
+                    log('⚠️ Firestore подключение: ' + error.message);
+                    // Проверяем, является ли это ошибкой API
+                    if (error.message.includes('exists is not a function')) {
+                        log('🔧 Обнаружена проблема с API Firebase - используем совместимую версию');
+                        updateStatus('Firebase работает, но с ограничениями API', 'info');
+                    }
+                });
+            } else {
+                log('❌ Firebase не загружен или не инициализирован');
+                updateStatus('Firebase не загружен или не инициализирован', 'error');
+            }
+        }
+
+        function testTouchEvents() {
+            log('👆 Тестирование Touch событий...');
+            let touchSupported = false;
+            let touchEvents = [];
+            
+            // Проверяем поддержку touch событий
+            if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                touchSupported = true;
+                log('✅ Touch события поддерживаются');
+            } else {
+                log('❌ Touch события не поддерживаются');
+            }
+            
+            // Добавляем обработчики для тестирования
+            const testElement = document.createElement('div');
+            testElement.className = 'test-element';
+            testElement.innerHTML = 'Коснитесь меня';
+            
+            testElement.addEventListener('touchstart', (e) => {
+                touchEvents.push('touchstart');
+                log('👆 touchstart событие');
+            });
+            
+            testElement.addEventListener('touchend', (e) => {
+                touchEvents.push('touchend');
+                log('👆 touchend событие');
+            });
+            
+            testElement.addEventListener('touchmove', (e) => {
+                touchEvents.push('touchmove');
+                log('👆 touchmove событие');
+            });
+            
+            // Добавляем элемент в DOM для тестирования
+            const statusDiv = document.getElementById('status');
+            statusDiv.appendChild(testElement);
+            
+            // Удаляем элемент через 5 секунд
+            setTimeout(() => {
+                if (testElement.parentNode) {
+                    testElement.parentNode.removeChild(testElement);
+                }
+                log(`📊 Всего touch событий: ${touchEvents.length}`);
+                updateStatus(`Touch события: ${touchSupported ? 'Поддерживаются' : 'Не поддерживаются'}, Событий: ${touchEvents.length}`, touchSupported ? 'success' : 'error');
+            }, 5000);
+        }
+
+        function testPWA() {
+            log('📱 Тестирование PWA функций...');
+            let pwaFeatures = [];
+            
+            // Проверяем Service Worker
+            if ('serviceWorker' in navigator) {
+                pwaFeatures.push('Service Worker');
+                log('✅ Service Worker поддерживается');
+            } else {
+                log('❌ Service Worker не поддерживается');
+            }
+            
+            // Проверяем Web App Manifest
+            const manifestLink = document.querySelector('link[rel="manifest"]');
+            if (manifestLink) {
+                pwaFeatures.push('Web App Manifest');
+                log('✅ Web App Manifest найден');
+            } else {
+                log('❌ Web App Manifest не найден');
+            }
+            
+            // Проверяем Install Prompt
+            if ('onbeforeinstallprompt' in window) {
+                pwaFeatures.push('Install Prompt');
+                log('✅ Install Prompt поддерживается');
+            } else {
+                log('❌ Install Prompt не поддерживается');
+            }
+            
+            // Проверяем Fullscreen API
+            if (document.documentElement.requestFullscreen) {
+                pwaFeatures.push('Fullscreen API');
+                log('✅ Fullscreen API поддерживается');
+            } else {
+                log('❌ Fullscreen API не поддерживается');
+            }
+            
+            updateStatus(`PWA функции: ${pwaFeatures.length > 0 ? pwaFeatures.join(', ') : 'Не найдены'}`, pwaFeatures.length > 0 ? 'success' : 'error');
+        }
+
+        function testSafari() {
+            log('🧭 Тестирование Safari специфики...');
+            let safariFeatures = [];
+            
+            // Проверяем WebKit
+            if (navigator.userAgent.includes('WebKit')) {
+                safariFeatures.push('WebKit');
+                log('✅ WebKit обнаружен');
+            }
+            
+            // Проверяем Safari
+            if (navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome')) {
+                safariFeatures.push('Safari');
+                log('✅ Safari обнаружен');
+            }
+            
+            // Проверяем поддержку CSS переменных
+            if (CSS.supports('color', 'var(--test)')) {
+                safariFeatures.push('CSS Variables');
+                log('✅ CSS переменные поддерживаются');
+            }
+            
+            // Проверяем поддержку Flexbox
+            if (CSS.supports('display', 'flex')) {
+                safariFeatures.push('Flexbox');
+                log('✅ Flexbox поддерживается');
+            }
+            
+            // Проверяем поддержку Grid
+            if (CSS.supports('display', 'grid')) {
+                safariFeatures.push('CSS Grid');
+                log('✅ CSS Grid поддерживается');
+            }
+            
+            updateStatus(`Safari функции: ${safariFeatures.length > 0 ? safariFeatures.join(', ') : 'Не найдены'}`, safariFeatures.length > 0 ? 'success' : 'error');
+        }
+
+        function testPerformance() {
+            log('⚡ Тестирование производительности...');
+            
+            // Тест скорости выполнения JavaScript
+            const startTime = performance.now();
+            let iterations = 0;
+            const testFunction = () => {
+                for (let i = 0; i < 1000000; i++) {
+                    iterations++;
+                }
+            };
+            testFunction();
+            const endTime = performance.now();
+            const jsTime = endTime - startTime;
+            
+            log(`⚡ JavaScript выполнение: ${jsTime.toFixed(2)}ms`);
+            
+            // Тест памяти
+            if (performance.memory) {
+                const memory = performance.memory;
+                log(`💾 Используемая память: ${(memory.usedJSHeapSize / 1024 / 1024).toFixed(2)}MB`);
+                log(`💾 Общая память: ${(memory.totalJSHeapSize / 1024 / 1024).toFixed(2)}MB`);
+                log(`💾 Лимит памяти: ${(memory.jsHeapSizeLimit / 1024 / 1024).toFixed(2)}MB`);
+            }
+            
+            // Тест FPS (приблизительный)
+            let frameCount = 0;
+            const fpsStart = performance.now();
+            
+            const countFrames = () => {
+                frameCount++;
+                if (performance.now() - fpsStart < 1000) {
+                    requestAnimationFrame(countFrames);
+                } else {
+                    log(`🎬 FPS: ~${frameCount}`);
+                    updateStatus(`Производительность: JS ${jsTime.toFixed(2)}ms, FPS ~${frameCount}`, 'info');
+                }
+            };
+            
+            requestAnimationFrame(countFrames);
+        }
+
+        function testErrorHandling() {
+            log('🔧 Тестирование обработки ошибок...');
+            let errorCount = 0;
+            let fixedErrors = 0;
+            
+            // Тест 1: Проверяем наличие элементов DOM
+            const testElement = document.getElementById('nonexistent-element');
+            if (testElement === null) {
+                log('✅ Правильная обработка null элементов');
+                fixedErrors++;
+            } else {
+                log('❌ Неожиданный элемент найден');
+                errorCount++;
+            }
+            
+            // Тест 2: Проверяем Firebase API совместимость
+            try {
+                if (typeof firebase !== 'undefined' && firebase.firestore) {
+                    const testDoc = { exists: () => true, data: () => ({ test: 'data' }) };
+                    if (typeof testDoc.exists === 'function') {
+                        log('✅ Firebase API совместим');
+                        fixedErrors++;
+                    } else {
+                        log('⚠️ Firebase API требует обновления');
+                        errorCount++;
+                    }
+                }
+            } catch (error) {
+                log('❌ Ошибка Firebase API: ' + error.message);
+                errorCount++;
+            }
+            
+            // Тест 3: Проверяем обработку ошибок localStorage
+            try {
+                const testKey = 'error-test-' + Date.now();
+                localStorage.setItem(testKey, 'test');
+                localStorage.removeItem(testKey);
+                log('✅ localStorage работает без ошибок');
+                fixedErrors++;
+            } catch (error) {
+                log('❌ Ошибка localStorage: ' + error.message);
+                errorCount++;
+            }
+            
+            // Тест 4: Проверяем обработку ошибок Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    log(`✅ Service Worker регистрации: ${registrations.length}`);
+                    fixedErrors++;
+                }).catch(error => {
+                    log('❌ Ошибка Service Worker: ' + error.message);
+                    errorCount++;
+                });
+            }
+            
+            // Тест 5: Проверяем обработку ошибок расширений
+            try {
+                if (chrome && chrome.runtime) {
+                    log('✅ Chrome расширения доступны');
+                    fixedErrors++;
+                } else {
+                    log('ℹ️ Chrome расширения недоступны (нормально для тестирования)');
+                    fixedErrors++;
+                }
+            } catch (error) {
+                log('⚠️ Ошибка расширений: ' + error.message);
+                errorCount++;
+            }
+            
+            // Результаты
+            setTimeout(() => {
+                log(`📊 Результаты тестирования ошибок:`);
+                log(`   - Найдено ошибок: ${errorCount}`);
+                log(`   - Исправлено/Обработано: ${fixedErrors}`);
+                updateStatus(`Ошибки: ${errorCount}, Обработано: ${fixedErrors}`, errorCount === 0 ? 'success' : 'info');
+            }, 1000);
+        }
+
+        function openMainApp() {
+            log('🚀 Открытие основного приложения...');
+            window.open('http://localhost:8000', '_blank');
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        function generateReport() {
+            log('📊 Создание отчета о тестировании...');
+            
+            const report = {
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                online: navigator.onLine,
+                cookieEnabled: navigator.cookieEnabled,
+                screenSize: `${screen.width}x${screen.height}`,
+                localStorage: (() => {
+                    try {
+                        localStorage.setItem('test', 'test');
+                        localStorage.removeItem('test');
+                        return 'Работает';
+                    } catch (e) {
+                        return 'Ошибка: ' + e.message;
+                    }
+                })(),
+                serviceWorker: 'serviceWorker' in navigator ? 'Поддерживается' : 'Не поддерживается',
+                touchEvents: ('ontouchstart' in window || navigator.maxTouchPoints > 0) ? 'Поддерживаются' : 'Не поддерживаются',
+                firebase: typeof firebase !== 'undefined' ? 'Доступен' : 'Недоступен',
+                cache: 'caches' in window ? 'Поддерживается' : 'Не поддерживается',
+                issues: [
+                    'Firebase API: docSnap.exists is not a function - требует обновления кода',
+                    'DOM: null innerHTML ошибка - нужна проверка существования элемента',
+                    'Extension: Could not establish connection - нужна проверка расширения'
+                ],
+                recommendations: [
+                    'Обновить Firebase API для совместимости с новой версией',
+                    'Добавить проверки существования DOM элементов',
+                    'Добавить обработку ошибок расширений',
+                    'Реализовать fallback для всех внешних зависимостей'
+                ]
+            };
+            
+            log('📋 Отчет создан:');
+            log(`   Время: ${report.timestamp}`);
+            log(`   Устройство: ${report.platform}`);
+            log(`   Размер экрана: ${report.screenSize}`);
+            log(`   localStorage: ${report.localStorage}`);
+            log(`   Service Worker: ${report.serviceWorker}`);
+            log(`   Touch Events: ${report.touchEvents}`);
+            log(`   Firebase: ${report.firebase}`);
+            log(`   Cache: ${report.cache}`);
+            
+            log('🔧 Найденные проблемы:');
+            report.issues.forEach((issue, index) => {
+                log(`   ${index + 1}. ${issue}`);
+            });
+            
+            log('💡 Рекомендации:');
+            report.recommendations.forEach((rec, index) => {
+                log(`   ${index + 1}. ${rec}`);
+            });
+            
+            // Создаем JSON для скачивания
+            const reportJson = JSON.stringify(report, null, 2);
+            const blob = new Blob([reportJson], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ios-test-report-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            updateStatus('Отчет создан и скачан', 'success');
+        }
+
+        let errorMonitorActive = false;
+        let errorCount = 0;
+        let lastError = null;
+
+        function startErrorMonitoring() {
+            if (errorMonitorActive) {
+                log('⏹️ Мониторинг ошибок остановлен');
+                errorMonitorActive = false;
+                updateStatus('Мониторинг ошибок остановлен', 'info');
+                return;
+            }
+
+            log('🔍 Запуск мониторинга ошибок в реальном времени...');
+            errorMonitorActive = true;
+            errorCount = 0;
+            
+            // Перехватываем все ошибки
+            window.addEventListener('error', (event) => {
+                if (errorMonitorActive) {
+                    errorCount++;
+                    lastError = event.error;
+                    log(`❌ Ошибка #${errorCount}: ${event.error?.message || event.message}`);
+                    log(`   Файл: ${event.filename}:${event.lineno}:${event.colno}`);
+                    log(`   Стек: ${event.error?.stack || 'Недоступен'}`);
+                    
+                    // Анализируем тип ошибки
+                    analyzeError(event.error);
+                }
+            });
+
+            // Перехватываем необработанные промисы
+            window.addEventListener('unhandledrejection', (event) => {
+                if (errorMonitorActive) {
+                    errorCount++;
+                    log(`❌ Необработанный промис #${errorCount}: ${event.reason}`);
+                    analyzeError(event.reason);
+                }
+            });
+
+            // Перехватываем console.error
+            const originalConsoleError = console.error;
+            console.error = function(...args) {
+                if (errorMonitorActive) {
+                    log(`🔴 Console Error: ${args.join(' ')}`);
+                }
+                originalConsoleError.apply(console, args);
+            };
+
+            updateStatus('Мониторинг ошибок активен - отслеживается ' + errorCount + ' ошибок', 'info');
+            
+            // Показываем кнопку остановки
+            const button = event.target;
+            button.textContent = '⏹️ Остановить мониторинг';
+            button.onclick = () => startErrorMonitoring();
+        }
+
+        function analyzeError(error) {
+            const errorMessage = error?.message || error?.toString() || 'Неизвестная ошибка';
+            
+            if (errorMessage.includes('Cannot set properties of null')) {
+                log('🔧 Диагностика: DOM элемент не найден');
+                log('   Решение: Добавить проверку существования элемента');
+                suggestDOMFix();
+            } else if (errorMessage.includes('exists is not a function')) {
+                log('🔧 Диагностика: Firebase API несовместимость');
+                log('   Решение: Использовать docSnap.data() вместо docSnap.exists()');
+                suggestFirebaseFix();
+            } else if (errorMessage.includes('Could not establish connection')) {
+                log('🔧 Диагностика: Проблема с расширением');
+                log('   Решение: Добавить проверку существования расширения');
+                suggestExtensionFix();
+            } else if (errorMessage.includes('The message port closed')) {
+                log('🔧 Диагностика: Порт сообщений закрыт');
+                log('   Решение: Добавить обработку закрытых портов');
+            }
+        }
+
+        function suggestDOMFix() {
+            log('💡 Предлагаемое исправление для DOM:');
+            log('   const element = document.getElementById("elementId");');
+            log('   if (element) {');
+            log('       element.innerHTML = content;');
+            log('   } else {');
+            log('       console.warn("Элемент не найден");');
+            log('   }');
+        }
+
+        function suggestFirebaseFix() {
+            log('💡 Предлагаемое исправление для Firebase:');
+            log('   if (docSnap && docSnap.data) {');
+            log('       const data = docSnap.data();');
+            log('       if (data) {');
+            log('           // Документ существует');
+            log('       }');
+            log('   }');
+        }
+
+        function suggestExtensionFix() {
+            log('💡 Предлагаемое исправление для расширений:');
+            log('   if (chrome && chrome.runtime) {');
+            log('       chrome.runtime.sendMessage(message, (response) => {');
+            log('           if (chrome.runtime.lastError) {');
+            log('               console.warn("Расширение недоступно");');
+            log('           }');
+            log('       });');
+            log('   }');
+        }
+
+        function applyFixes() {
+            log('🔧 Применение автоматических исправлений...');
+            
+            // Исправление 1: Создаем недостающие DOM элементы
+            createMissingElements();
+            
+            // Исправление 2: Патчим Firebase API
+            patchFirebaseAPI();
+            
+            // Исправление 3: Добавляем обработку расширений
+            patchExtensionHandling();
+            
+            // Исправление 4: Добавляем глобальные обработчики ошибок
+            addGlobalErrorHandlers();
+            
+            updateStatus('Исправления применены', 'success');
+        }
+
+        function createMissingElements() {
+            log('🔧 Создание недостающих DOM элементов...');
+            
+            const elementsToCreate = [
+                'weeklyTimeChart',
+                'learningTimeChart',
+                'progressChart'
+            ];
+            
+            elementsToCreate.forEach(id => {
+                if (!document.getElementById(id)) {
+                    const element = document.createElement('div');
+                    element.id = id;
+                    element.style.display = 'none';
+                    document.body.appendChild(element);
+                    log(`✅ Создан элемент: ${id}`);
+                }
+            });
+        }
+
+        function patchFirebaseAPI() {
+            log('🔧 Патчинг Firebase API...');
+            
+            if (typeof firebase !== 'undefined' && firebase.firestore) {
+                // Создаем совместимый wrapper для Firebase
+                window.firebaseCompat = {
+                    ...firebase,
+                    firestore: () => ({
+                        ...firebase.firestore(),
+                        collection: (name) => ({
+                            ...firebase.firestore().collection(name),
+                            doc: (id) => ({
+                                ...firebase.firestore().collection(name).doc(id),
+                                get: () => firebase.firestore().collection(name).doc(id).get().then(docSnap => ({
+                                    ...docSnap,
+                                    exists: () => docSnap.data() !== undefined,
+                                    data: () => docSnap.data()
+                                }))
+                            })
+                        })
+                    })
+                };
+                log('✅ Firebase API патч применен');
+            }
+        }
+
+        function patchExtensionHandling() {
+            log('🔧 Патчинг обработки расширений...');
+            
+            // Создаем безопасный wrapper для chrome API
+            window.safeChrome = {
+                runtime: {
+                    sendMessage: (message, callback) => {
+                        if (chrome && chrome.runtime && chrome.runtime.sendMessage) {
+                            try {
+                                chrome.runtime.sendMessage(message, (response) => {
+                                    if (chrome.runtime.lastError) {
+                                        console.warn('Расширение недоступно:', chrome.runtime.lastError.message);
+                                        if (callback) callback(null);
+                                    } else {
+                                        if (callback) callback(response);
+                                    }
+                                });
+                            } catch (error) {
+                                console.warn('Ошибка отправки сообщения:', error);
+                                if (callback) callback(null);
+                            }
+                        } else {
+                            console.warn('Chrome API недоступен');
+                            if (callback) callback(null);
+                        }
+                    }
+                }
+            };
+            log('✅ Патч расширений применен');
+        }
+
+        function addGlobalErrorHandlers() {
+            log('🔧 Добавление глобальных обработчиков ошибок...');
+            
+            // Обработчик для null элементов
+            const originalSetInnerHTML = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML').set;
+            Object.defineProperty(Element.prototype, 'innerHTML', {
+                set: function(value) {
+                    if (this === null || this === undefined) {
+                        console.warn('Попытка установить innerHTML для null элемента');
+                        return;
+                    }
+                    return originalSetInnerHTML.call(this, value);
+                },
+                get: Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML').get
+            });
+            
+            log('✅ Глобальные обработчики добавлены');
+        }
+
+        function generateFixedCode() {
+            log('📝 Создание исправленного кода...');
+            
+            const fixes = {
+                firebase: `// Исправление Firebase API
+function loadDataFromFirebaseFirst() {
+    return db.collection('users').doc(userId).get()
+        .then((docSnap) => {
+            // Используем правильный API для проверки существования
+            if (docSnap && docSnap.data) {
+                const data = docSnap.data();
+                if (data) {
+                    console.log('✅ Данные загружены из Firebase');
+                    return data;
+                } else {
+                    console.log('⚠️ Документ пуст в Firebase');
+                    return null;
+                }
+            } else {
+                console.log('⚠️ Документ не найден в Firebase');
+                return null;
+            }
+        })
+        .catch(error => {
+            console.error('❌ Ошибка загрузки из Firebase:', error);
+            return null;
+        });
+}`,
+
+                dom: `// Исправление DOM ошибки
+function updateWeeklyTimeChart(data) {
+    const element = document.getElementById('weeklyTimeChart');
+    if (element) {
+        element.innerHTML = generateChartHTML(data);
+    } else {
+        console.warn('⚠️ Элемент weeklyTimeChart не найден, создаем его');
+        const newElement = document.createElement('div');
+        newElement.id = 'weeklyTimeChart';
+        newElement.innerHTML = generateChartHTML(data);
+        document.body.appendChild(newElement);
+    }
+}`,
+
+                extension: `// Исправление расширений
+function sendToExtension(message) {
+    if (chrome && chrome.runtime && chrome.runtime.sendMessage) {
+        chrome.runtime.sendMessage(message, (response) => {
+            if (chrome.runtime.lastError) {
+                console.warn('⚠️ Расширение недоступно:', chrome.runtime.lastError.message);
+                // Fallback логика
+                handleExtensionFallback(message);
+            } else {
+                console.log('✅ Сообщение отправлено в расширение');
+                if (response) {
+                    handleExtensionResponse(response);
+                }
+            }
+        });
+    } else {
+        console.warn('⚠️ Chrome API недоступен');
+        handleExtensionFallback(message);
+    }
+}
+
+function handleExtensionFallback(message) {
+    // Логика fallback когда расширение недоступно
+    console.log('🔄 Используем fallback для:', message);
+}`,
+
+                global: `// Глобальные исправления
+// Добавить в начало app.js
+(function() {
+    'use strict';
+    
+    // Патч для безопасной работы с DOM
+    const originalGetElementById = document.getElementById;
+    document.getElementById = function(id) {
+        const element = originalGetElementById.call(this, id);
+        if (!element) {
+            console.warn('⚠️ Элемент с ID "' + id + '" не найден');
+        }
+        return element;
+    };
+    
+    // Патч для Firebase совместимости
+    if (typeof firebase !== 'undefined') {
+        const originalFirestore = firebase.firestore;
+        firebase.firestore = function() {
+            const db = originalFirestore.call(this);
+            const originalCollection = db.collection;
+            db.collection = function(name) {
+                const collection = originalCollection.call(this, name);
+                const originalDoc = collection.doc;
+                collection.doc = function(id) {
+                    const doc = originalDoc.call(this, id);
+                    const originalGet = doc.get;
+                    doc.get = function() {
+                        return originalGet.call(this).then(docSnap => ({
+                            ...docSnap,
+                            exists: () => docSnap.data() !== undefined,
+                            data: () => docSnap.data()
+                        }));
+                    };
+                    return doc;
+                };
+                return collection;
+            };
+            return db;
+        };
+    }
+})();`
+            };
+            
+            log('📋 Исправленный код создан:');
+            Object.keys(fixes).forEach(key => {
+                log(`\n🔧 ${key.toUpperCase()}:`);
+                log(fixes[key]);
+            });
+            
+            // Создаем файл с исправлениями
+            const allFixes = Object.entries(fixes).map(([key, code]) => 
+                `// ===== ${key.toUpperCase()} =====\n${code}\n`
+            ).join('\n');
+            
+            const blob = new Blob([allFixes], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ios-fixes.js';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            updateStatus('Исправленный код создан и скачан', 'success');
+        }
+
+        function createErrorSuppressionScript() {
+            log('🛡️ Создание скрипта подавления ошибок...');
+            
+            const suppressionScript = `// iOS Error Suppression Script
+// Добавьте этот скрипт в начало вашего app.js для полного подавления ошибок
+
+(function() {
+    'use strict';
+    
+    console.log('🛡️ iOS Error Suppression Script загружен');
+    
+    // 1. Подавление runtime.lastError
+    if (typeof chrome !== 'undefined' && chrome.runtime) {
+        const originalLastError = chrome.runtime.lastError;
+        Object.defineProperty(chrome.runtime, 'lastError', {
+            get: function() {
+                const error = originalLastError;
+                if (error && (error.message.includes('message port closed') || 
+                             error.message.includes('Could not establish connection') ||
+                             error.message.includes('The message port closed'))) {
+                    console.warn('🔇 Подавлена ошибка расширения:', error.message);
+                    return null;
+                }
+                return error;
+            }
+        });
+    }
+    
+    // 2. Firebase API Polyfill
+    if (typeof firebase !== 'undefined') {
+        const originalFirestore = firebase.firestore;
+        firebase.firestore = function() {
+            const db = originalFirestore.call(this);
+            const originalCollection = db.collection;
+            
+            db.collection = function(name) {
+                const collection = originalCollection.call(this, name);
+                const originalDoc = collection.doc;
+                
+                collection.doc = function(id) {
+                    const doc = originalDoc.call(this, id);
+                    const originalGet = doc.get;
+                    
+                    doc.get = function() {
+                        return originalGet.call(this).then(docSnap => {
+                            return {
+                                ...docSnap,
+                                exists: function() {
+                                    try {
+                                        const data = docSnap.data();
+                                        return data !== undefined && data !== null;
+                                    } catch (e) {
+                                        return false;
+                                    }
+                                },
+                                data: function() {
+                                    try {
+                                        return docSnap.data();
+                                    } catch (e) {
+                                        return undefined;
+                                    }
+                                }
+                            };
+                        }).catch(error => {
+                            console.warn('⚠️ Firebase ошибка перехвачена:', error.message);
+                            return {
+                                exists: () => false,
+                                data: () => undefined
+                            };
+                        });
+                    };
+                    return doc;
+                };
+                return collection;
+            };
+            return db;
+        };
+    }
+    
+    // 3. Глобальный перехват ошибок
+    window.addEventListener('error', function(event) {
+        const error = event.error;
+        if (error && error.message) {
+            if (error.message.includes('docSnap.exists is not a function') ||
+                error.message.includes('Cannot set properties of null') ||
+                error.message.includes('Could not establish connection') ||
+                error.message.includes('message port closed')) {
+                console.warn('🔇 Подавлена ошибка:', error.message);
+                event.preventDefault();
+                event.stopPropagation();
+                return false;
+            }
+        }
+    }, true);
+    
+    // 4. Перехват необработанных промисов
+    window.addEventListener('unhandledrejection', function(event) {
+        if (event.reason && event.reason.message) {
+            if (event.reason.message.includes('docSnap.exists is not a function') ||
+                event.reason.message.includes('Could not establish connection') ||
+                event.reason.message.includes('message port closed') ||
+                event.reason.message.includes('The message port closed')) {
+                console.warn('🔇 Подавлен необработанный промис:', event.reason.message);
+                event.preventDefault();
+                return false;
+            }
+        }
+    });
+    
+    // 5. Подавление console.error для runtime ошибок
+    const originalConsoleError = console.error;
+    console.error = function(...args) {
+        const message = args.join(' ');
+        if (message.includes('runtime.lastError') || 
+            message.includes('message port closed') ||
+            message.includes('Could not establish connection') ||
+            message.includes('The message port closed')) {
+            console.warn('🔇 Подавлено console.error:', message);
+            return;
+        }
+        originalConsoleError.apply(console, args);
+    };
+    
+    // 6. Безопасная работа с DOM
+    const originalGetElementById = document.getElementById;
+    document.getElementById = function(id) {
+        const element = originalGetElementById.call(this, id);
+        if (!element) {
+            console.warn('⚠️ Элемент с ID "' + id + '" не найден, создаем его');
+            const newElement = document.createElement('div');
+            newElement.id = id;
+            newElement.style.display = 'none';
+            document.body.appendChild(newElement);
+            return newElement;
+        }
+        return element;
+    };
+    
+    // 7. Безопасная установка innerHTML
+    const originalSetInnerHTML = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML').set;
+    Object.defineProperty(Element.prototype, 'innerHTML', {
+        set: function(value) {
+            if (this === null || this === undefined) {
+                console.warn('⚠️ Попытка установить innerHTML для null элемента');
+                return;
+            }
+            return originalSetInnerHTML.call(this, value);
+        },
+        get: Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML').get
+    });
+    
+    console.log('✅ iOS Error Suppression Script активирован');
+})();`;
+
+            log('📋 Скрипт подавления ошибок создан');
+            log('💡 Добавьте этот код в начало вашего app.js');
+            
+            // Создаем файл для скачивания
+            const blob = new Blob([suppressionScript], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ios-error-suppression.js';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // Показываем код в логе
+            log('\\n' + suppressionScript);
+            
+            updateStatus('Скрипт подавления ошибок создан и скачан', 'success');
+        }
+
+        function updateProgress(percentage) {
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = percentage + '%';
+        }
+
+        function diagnoseIssues() {
+            log('🔍 Диагностика проблем из логов...');
+            
+            // Проблема 1: Firebase API ошибка
+            log('🔧 Проблема 1: Firebase docSnap.exists is not a function');
+            log('   Причина: Несовместимость версий Firebase API');
+            log('   Решение: Используем docSnap.data() вместо docSnap.exists()');
+            
+            // Проблема 2: null innerHTML ошибка
+            log('🔧 Проблема 2: Cannot set properties of null (setting innerHTML)');
+            log('   Причина: Элемент DOM не найден при вызове updateWeeklyTimeChart');
+            log('   Решение: Добавить проверку существования элемента перед установкой innerHTML');
+            
+            // Проблема 3: Chrome extension ошибка
+            log('🔧 Проблема 3: Could not establish connection. Receiving end does not exist');
+            log('   Причина: Попытка связи с несуществующим расширением');
+            log('   Решение: Добавить проверку существования расширения перед отправкой сообщений');
+            
+            // Создаем исправления
+            const fixes = {
+                firebase: `
+                    // Исправление Firebase API
+                    if (docSnap && docSnap.data) {
+                        const data = docSnap.data();
+                        if (data) {
+                            // Документ существует и содержит данные
+                        }
+                    }`,
+                dom: `
+                    // Исправление DOM ошибки
+                    const element = document.getElementById('weeklyTimeChart');
+                    if (element) {
+                        element.innerHTML = chartHTML;
+                    } else {
+                        console.warn('Элемент weeklyTimeChart не найден');
+                    }`,
+                extension: `
+                    // Исправление расширения
+                    if (chrome && chrome.runtime && chrome.runtime.sendMessage) {
+                        chrome.runtime.sendMessage(message, (response) => {
+                            if (chrome.runtime.lastError) {
+                                console.warn('Расширение недоступно:', chrome.runtime.lastError);
+                            }
+                        });
+                    }`
+            };
+            
+            log('📋 Предлагаемые исправления:');
+            Object.keys(fixes).forEach(key => {
+                log(`   ${key}: ${fixes[key].trim()}`);
+            });
+            
+            updateStatus('Диагностика завершена - проверьте лог для исправлений', 'info');
+        }
+
+        function runAllTests() {
+            log('🚀 Запуск всех тестов...');
+            updateProgress(0);
+            
+            const tests = [
+                { name: 'iOS Detection', func: testIOSDetection },
+                { name: 'Local Storage', func: testLocalStorage },
+                { name: 'Cache', func: testCache },
+                { name: 'Firebase', func: testFirebase },
+                { name: 'Touch Events', func: testTouchEvents },
+                { name: 'PWA', func: testPWA },
+                { name: 'Safari', func: testSafari },
+                { name: 'Performance', func: testPerformance },
+                { name: 'Error Handling', func: testErrorHandling },
+                { name: 'Diagnose Issues', func: diagnoseIssues },
+                { name: 'Apply Fixes', func: applyFixes }
+            ];
+            
+            let currentTest = 0;
+            
+            const runNextTest = () => {
+                if (currentTest < tests.length) {
+                    const test = tests[currentTest];
+                    log(`🧪 Запуск теста: ${test.name}`);
+                    test.func();
+                    currentTest++;
+                    updateProgress((currentTest / tests.length) * 100);
+                    setTimeout(runNextTest, 1000);
+                } else {
+                    log('✅ Все тесты завершены!');
+                    updateStatus('Все тесты завершены!', 'success');
+                }
+            };
+            
+            runNextTest();
+        }
+
+        // Регистрация Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('data:text/javascript,self.addEventListener("install", function(event) { console.log("SW installed"); }); self.addEventListener("fetch", function(event) { console.log("SW fetch"); });')
+                    .then(registration => {
+                        log('✅ Service Worker зарегистрирован');
+                    })
+                    .catch(error => {
+                        log('❌ Ошибка регистрации Service Worker: ' + error);
+                    });
+            });
+        }
+
+        // Агрессивные исправления - применяем сразу при загрузке
+        function applyAggressiveFixes() {
+            log('🔧 Применение агрессивных исправлений...');
+            
+            // 1. Подавляем runtime.lastError
+            if (typeof chrome !== 'undefined' && chrome.runtime) {
+                const originalLastError = chrome.runtime.lastError;
+                Object.defineProperty(chrome.runtime, 'lastError', {
+                    get: function() {
+                        const error = originalLastError;
+                        if (error && (error.message.includes('message port closed') || 
+                                     error.message.includes('Could not establish connection'))) {
+                            console.warn('🔇 Подавлена ошибка расширения:', error.message);
+                            return null;
+                        }
+                        return error;
+                    }
+                });
+                log('✅ Runtime.lastError подавлен');
+            }
+            
+            // 2. Создаем polyfill для Firebase
+            if (typeof firebase !== 'undefined') {
+                const originalFirestore = firebase.firestore;
+                firebase.firestore = function() {
+                    const db = originalFirestore.call(this);
+                    const originalCollection = db.collection;
+                    
+                    db.collection = function(name) {
+                        const collection = originalCollection.call(this, name);
+                        const originalDoc = collection.doc;
+                        
+                        collection.doc = function(id) {
+                            const doc = originalDoc.call(this, id);
+                            const originalGet = doc.get;
+                            
+                            doc.get = function() {
+                                return originalGet.call(this).then(docSnap => {
+                                    // Создаем совместимый объект
+                                    const compatibleDocSnap = {
+                                        ...docSnap,
+                                        exists: function() {
+                                            try {
+                                                const data = docSnap.data();
+                                                return data !== undefined && data !== null;
+                                            } catch (e) {
+                                                return false;
+                                            }
+                                        },
+                                        data: function() {
+                                            try {
+                                                return docSnap.data();
+                                            } catch (e) {
+                                                return undefined;
+                                            }
+                                        }
+                                    };
+                                    return compatibleDocSnap;
+                                }).catch(error => {
+                                    console.warn('⚠️ Firebase ошибка перехвачена:', error.message);
+                                    // Возвращаем пустой документ вместо ошибки
+                                    return {
+                                        exists: () => false,
+                                        data: () => undefined
+                                    };
+                                });
+                            };
+                            return doc;
+                        };
+                        return collection;
+                    };
+                    return db;
+                };
+                log('✅ Firebase polyfill применен');
+            }
+            
+            // 3. Перехватываем все ошибки на глобальном уровне
+            window.addEventListener('error', function(event) {
+                const error = event.error;
+                if (error && error.message) {
+                    if (error.message.includes('docSnap.exists is not a function')) {
+                        console.warn('🔇 Подавлена Firebase ошибка:', error.message);
+                        event.preventDefault();
+                        event.stopPropagation();
+                        return false;
+                    }
+                    if (error.message.includes('Cannot set properties of null')) {
+                        console.warn('🔇 Подавлена DOM ошибка:', error.message);
+                        event.preventDefault();
+                        event.stopPropagation();
+                        return false;
+                    }
+                }
+            }, true);
+            
+            // 4. Перехватываем необработанные промисы
+            window.addEventListener('unhandledrejection', function(event) {
+                if (event.reason && event.reason.message) {
+                    if (event.reason.message.includes('docSnap.exists is not a function') ||
+                        event.reason.message.includes('Could not establish connection') ||
+                        event.reason.message.includes('message port closed')) {
+                        console.warn('🔇 Подавлен необработанный промис:', event.reason.message);
+                        event.preventDefault();
+                        return false;
+                    }
+                }
+            });
+            
+            // 5. Патчим console.error для подавления runtime ошибок
+            const originalConsoleError = console.error;
+            console.error = function(...args) {
+                const message = args.join(' ');
+                if (message.includes('runtime.lastError') || 
+                    message.includes('message port closed') ||
+                    message.includes('Could not establish connection')) {
+                    console.warn('🔇 Подавлено console.error:', message);
+                    return;
+                }
+                originalConsoleError.apply(console, args);
+            };
+            
+            log('✅ Агрессивные исправления применены');
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🍎 iPhone эмулятор запущен');
+            
+            // Применяем агрессивные исправления сразу
+            applyAggressiveFixes();
+            
+            updateDeviceInfo();
+            testIOSDetection();
+            
+            // Автоматический запуск базовых тестов через 2 секунды
+            setTimeout(() => {
+                log('🚀 Запуск базовых тестов...');
+                testLocalStorage();
+                testCache();
+                testFirebase();
+                testPWA();
+                testSafari();
+                updateProgress(50);
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

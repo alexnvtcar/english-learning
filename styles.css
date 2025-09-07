@@ -3584,7 +3584,7 @@
                     left: 18px;
                 }
                 
-                .settings-btn, .save-btn, .install-pwa-btn {
+                .settings-btn, .save-btn, .install-pwa-btn, .exit-btn {
                     width: 45px;
                     height: 45px;
                     font-size: 1.1rem;
@@ -3597,7 +3597,7 @@
                     left: 15px;
                 }
                 
-                .settings-btn, .save-btn, .install-pwa-btn {
+                .settings-btn, .save-btn, .install-pwa-btn, .exit-btn {
                     width: 42px;
                     height: 42px;
                     font-size: 1rem;
@@ -3610,7 +3610,7 @@
                     left: 10px;
                 }
                 
-                .settings-btn, .save-btn, .install-pwa-btn {
+                .settings-btn, .save-btn, .install-pwa-btn, .exit-btn {
                     width: 40px;
                     height: 40px;
                     font-size: 0.9rem;
@@ -3623,14 +3623,14 @@
                     left: 8px;
                 }
                 
-                .settings-btn, .save-btn, .install-pwa-btn {
+                .settings-btn, .save-btn, .install-pwa-btn, .exit-btn {
                     width: 36px;
                     height: 36px;
                     font-size: 0.8rem;
                 }
             }
 
-            .settings-btn, .save-btn, .install-pwa-btn {
+            .settings-btn, .save-btn, .install-pwa-btn, .exit-btn {
                 width: 50px;
                 height: 50px;
                 border: none;
@@ -3701,6 +3701,39 @@
 
             .save-btn .save-text {
                 display: none;
+            }
+
+            /* Exit Button Styles */
+            .exit-btn {
+                background: linear-gradient(135deg, #f59e0b, #f97316);
+                box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+                width: 50px;
+                height: 50px;
+                padding: 0;
+                border-radius: 50%;
+                gap: 0;
+                margin-top: 8px;
+            }
+
+            .exit-btn:hover {
+                background: linear-gradient(135deg, #d97706, #ea580c);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+            }
+
+            .exit-btn:active {
+                transform: translateY(0);
+                box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+            }
+
+            .exit-btn .exit-icon {
+                font-size: 1.2rem;
+                animation: exitPulse 2s infinite;
+            }
+
+            @keyframes exitPulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.1); }
             }
 
             /* Save Button Loading State */
@@ -3877,6 +3910,37 @@
 
             .settings-item:hover {
                 background: #f3f4f6;
+            }
+
+            .settings-item[onclick="installPWA()"] {
+                background: linear-gradient(135deg, #1e40af, #3b82f6);
+                color: white;
+                border-radius: 8px;
+                margin: 4px 0;
+                font-weight: 600;
+            }
+
+            .settings-item[onclick="installPWA()"]:hover {
+                background: linear-gradient(135deg, #1d4ed8, #2563eb);
+                transform: translateX(4px) scale(1.02);
+            }
+
+            .btn-warning {
+                background: linear-gradient(135deg, #f59e0b, #f97316);
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .btn-warning:hover {
+                background: linear-gradient(135deg, #d97706, #ea580c);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
             }
 
             .settings-item.danger {
@@ -7209,6 +7273,123 @@
                 overflow-y: auto;
                 position: relative;
                 z-index: 1;
+            }
+        }
+
+        /* Стили для модального окна выбора теста */
+        .test-selector-content {
+            padding: 20px 0;
+        }
+
+        .device-info {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .device-info h4 {
+            margin-bottom: 10px;
+            color: #1e40af;
+        }
+
+        #deviceInfoDisplay {
+            font-family: monospace;
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .test-options h4 {
+            margin-bottom: 15px;
+            color: #1e40af;
+        }
+
+        .test-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .test-option:hover {
+            border-color: #3b82f6;
+            background: #f0f9ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .test-icon {
+            font-size: 24px;
+            margin-right: 15px;
+            width: 40px;
+            text-align: center;
+        }
+
+        .test-info {
+            flex: 1;
+        }
+
+        .test-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .test-description {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .recommended-test {
+            background: #f0fdf4;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid #22c55e;
+        }
+
+        .recommended-test h4 {
+            margin-bottom: 10px;
+            color: #15803d;
+        }
+
+        #recommendedTest {
+            font-weight: 500;
+            color: #166534;
+        }
+
+        /* Адаптивность для мобильных устройств */
+        @media (max-width: 768px) {
+            .test-option {
+                padding: 12px;
+                margin-bottom: 8px;
+            }
+
+            .test-icon {
+                font-size: 20px;
+                margin-right: 12px;
+                width: 32px;
+            }
+
+            .test-name {
+                font-size: 14px;
+            }
+
+            .test-description {
+                font-size: 12px;
+            }
+
+            .device-info,
+            .recommended-test {
+                padding: 12px;
             }
         }
 

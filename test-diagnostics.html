@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест технической диагностики</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007aff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .test-button.ios {
+            background: #f59e0b;
+        }
+        .test-button.diagnostic {
+            background: #3b82f6;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Тест технической диагностики</h1>
+        <p>Эта страница поможет проверить, работают ли функции технической диагностики.</p>
+        
+        <button class="test-button" onclick="testOpenMainApp()">
+            🏠 Открыть основное приложение
+        </button>
+        
+        <button class="test-button" onclick="testOpenTestPages()">
+            🧪 Открыть тестовые страницы
+        </button>
+        
+        <button class="test-button ios" onclick="testIOSSync()">
+            🍎 Тест iOS синхронизации
+        </button>
+        
+        <button class="test-button diagnostic" onclick="testDiagnostics()">
+            🔍 Тест диагностики
+        </button>
+        
+        <button class="test-button" onclick="clearLog()">
+            🗑️ Очистить лог
+        </button>
+        
+        <div id="log" class="log"></div>
+    </div>
+
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function testOpenMainApp() {
+            log('🏠 Открытие основного приложения...');
+            window.open('index.html', '_blank');
+        }
+
+        function testOpenTestPages() {
+            log('🧪 Открытие тестовых страниц...');
+            const testPages = ['test.html', 'test-app-ios.html', 'test-iphone.html'];
+            testPages.forEach(page => {
+                log(`  - Открытие ${page}`);
+                window.open(page, '_blank');
+            });
+        }
+
+        function testIOSSync() {
+            log('🍎 Тест iOS синхронизации...');
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            log(`  - iOS устройство: ${isIOS ? 'Да' : 'Нет'}`);
+            log(`  - User Agent: ${navigator.userAgent}`);
+            log(`  - Платформа: ${navigator.platform}`);
+            log(`  - Онлайн: ${navigator.onLine}`);
+        }
+
+        function testDiagnostics() {
+            log('🔍 Тест диагностики...');
+            log('  - Проверка доступности функций...');
+            
+            const functions = [
+                'openTestPage',
+                'showTestSelector', 
+                'forceIOSSync',
+                'diagnoseIOSSync',
+                'showTechDiagnosticsBlock'
+            ];
+            
+            functions.forEach(func => {
+                const available = typeof window[func] === 'function';
+                log(`  - ${func}: ${available ? '✅ Доступна' : '❌ Недоступна'}`);
+            });
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        // Автоматический тест при загрузке
+        window.addEventListener('load', function() {
+            log('🚀 Страница загружена');
+            testDiagnostics();
+        });
+    </script>
+</body>
+</html>
+

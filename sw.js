@@ -1,7 +1,7 @@
 // Service Worker для PWA - версия без диалогов обновления
-const CACHE_NAME = 'english-learning-v1.3.0';
-const STATIC_CACHE = 'static-v1.3.0';
-const DYNAMIC_CACHE = 'dynamic-v1.3.0';
+const CACHE_NAME = 'english-learning-v1.5.0-ios';
+const STATIC_CACHE = 'static-v1.5.0-ios';
+const DYNAMIC_CACHE = 'dynamic-v1.5.0-ios';
 
 // Файлы для кэширования
 const STATIC_FILES = [
@@ -18,7 +18,7 @@ const STATIC_FILES = [
 
 // Установка Service Worker - БЕЗ диалогов обновления
 self.addEventListener('install', (event) => {
-  console.log('🔧 Service Worker: Установка v1.3.0...');
+  console.log('🔧 Service Worker: Установка v1.4.0...');
   
   event.waitUntil(
     caches.open(STATIC_CACHE)
@@ -39,7 +39,7 @@ self.addEventListener('install', (event) => {
 
 // Активация Service Worker - БЕЗ диалогов обновления
 self.addEventListener('activate', (event) => {
-  console.log('🚀 Service Worker: Активация v1.3.0...');
+  console.log('🚀 Service Worker: Активация v1.4.0...');
   
   event.waitUntil(
     caches.keys()
@@ -140,7 +140,16 @@ async function staleWhileRevalidate(request) {
   
   const fetchPromise = fetch(request).then((networkResponse) => {
     if (networkResponse.ok) {
-      cache.put(request, networkResponse.clone());
+      // Проверяем, что request поддерживает кэширование
+      if (request.url.startsWith('http://') || request.url.startsWith('https://')) {
+        try {
+          cache.put(request, networkResponse.clone()).catch(err => {
+            console.log('Cache put failed:', err);
+          });
+        } catch (error) {
+          console.log('Cache put error:', error);
+        }
+      }
     }
     return networkResponse;
   }).catch(() => {
@@ -223,4 +232,22 @@ self.addEventListener('message', (event) => {
   }
 });
 
-console.log('✅ Service Worker v1.2.0 загружен - БЕЗ диалогов обновления');
+// Специальная обработка для iOS
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('🍎 iOS: Принудительное обновление Service Worker');
+    self.skipWaiting();
+  }
+  
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    console.log('🍎 iOS: Очистка кэша');
+    caches.keys().then(names => {
+      names.forEach(name => {
+        caches.delete(name);
+        console.log('🗑️ iOS: Кэш удален:', name);
+      });
+    });
+  }
+});
+
+console.log('✅ Service Worker v1.5.0-ios загружен - БЕЗ диалогов обновления');
